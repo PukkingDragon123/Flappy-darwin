@@ -61,6 +61,20 @@
     splash: function () { noise(0.4, 0.3, 500); },
     shield: function () { tone(700, 0.15, 'triangle', 0.2, 250); },
     point: function () { tone(660, 0.05, 'square', 0.08, 720); },
+    rustle: function () { noise(0.07, 0.09, 2600); },
+    whoosh: function () { noise(0.16, 0.11, 1600, 0); tone(520, 0.14, 'sine', 0.05, 1100); },
+    pop: function () { tone(760, 0.05, 'triangle', 0.14, 1200); },
+    chirp: function () { tone(1500, 0.05, 'sine', 0.12, 2100); tone(1900, 0.05, 'sine', 0.1, null, 0.05); },
+    flare: function () { noise(0.18, 0.1, 900); },
+    arrive: function () { [660, 880, 1100].forEach(function (f, i) { tone(f, 0.1, 'triangle', 0.12, null, i * 0.07); }); },
+    snakeHiss: function () { noise(0.35, 0.13, 3200); },
+    snakeStrike: function () { tone(340, 0.1, 'sawtooth', 0.2, 90); noise(0.08, 0.14, 1400, 0.02); },
+    snakeWhiff: function () { noise(0.14, 0.09, 2000); },
+    chomp: function () { tone(160, 0.12, 'square', 0.24, 60); noise(0.1, 0.2, 700); },
+    snapperRise: function () { noise(0.4, 0.14, 600); tone(120, 0.3, 'sine', 0.1, 220); },
+    snapperMiss: function () { noise(0.3, 0.2, 500); },
+    hawkScreech: function () { tone(1400, 0.18, 'sawtooth', 0.14, 900); tone(1100, 0.16, 'sawtooth', 0.1, 700, 0.12); },
+    hawkWhoosh: function () { noise(0.22, 0.2, 1800); tone(300, 0.2, 'sine', 0.06, 120); },
     evolve: function () {
       [523, 659, 784, 1047, 1319].forEach(function (f, i) {
         tone(f, 0.16, 'square', 0.14, null, i * 0.09);

@@ -1,51 +1,69 @@
 // Procedural pixel-art sprite sheet for Flappy Darwin.
-// Sprites are authored as character maps and baked to offscreen canvases at load.
+// One shared naturalistic palette; sprites are authored as character maps and
+// baked to offscreen canvases at load. The bird is composed from parts so its
+// wings, beak, tail and crest can animate and evolve independently.
 (function () {
+  // ---- master palette (warm sepia + naturalistic green + evolution teal) ----
   const PAL = {
-    'o': '#33203a', // outline (dark plum)
-    'r': '#e98b3f', // bird orange
-    'R': '#c1622a', // bird orange shade
-    'q': '#f7ab5e', // bird orange light
-    'w': '#fbe7bb', // cream belly
-    'W': '#e5c28c', // belly shade
-    'k': '#5a3d54', // dark feather
-    'K': '#7c5470', // dark feather light
-    'y': '#f6c945', // beak yellow
-    'Y': '#cf9330', // beak shade
-    'e': '#ffffff', // eye white
-    'p': '#221426', // pupil
-    't': '#3fc0b0', // evo teal accent
-    'T': '#2c8a80', // evo teal shade
-    'g': '#5cad3c', // leaf green
-    'G': '#3d7f2a', // leaf dark
-    'l': '#96d454', // leaf light
-    'b': '#8a5532', // bark brown
-    'B': '#653a20', // bark dark
-    'n': '#a76f3e', // nut brown
+    'o': '#2b1d20', // primary outline (warm umber, not pure black)
+    'x': '#161020', // deepest ink
+    'K': '#55371f', // sepia shadow
+    'b': '#77502e', // sepia base (back / bark)
+    'H': '#9a6c41', // sepia light (sunward rim)
+    'f': '#d9c39a', // buff (wingbar / feather edge)
+    'w': '#fbe7bb', // cream belly / dry sand
+    'W': '#e5c28c', // cream shade / sand mid
+    'c': '#925127', // rufous cap / covert
+    'r': '#8a4a2a', // rufous deep
+    'n': '#a76f3e', // nut / wet sand
     'N': '#7b4d26', // nut dark
-    'c': '#e0525c', // berry red
-    'C': '#a83248', // berry dark
-    'd': '#f2748f', // berry light
-    'u': '#a8e4f2', // wing shimmer blue
-    'U': '#6db6d8', // wing shimmer shade
-    'f': '#fff3a8', // gold light
-    'F': '#e0a232', // gold shade
+    'P': '#402a1c', // dark flight feather
+    'y': '#d8b46f', // beak pale horn
+    'Y': '#a07a37', // beak shade
+    'e': '#f7f0e2', // eye white / catchlight
+    'p': '#1b1114', // pupil
+    'D': '#12572a', // green deepest
+    'G': '#3d7f2a', // green dark
+    'g': '#5cad3c', // green base
+    'm': '#7fc23e', // green mid-light
+    'l': '#96d454', // green light
+    'L': '#bfe87a', // green sunlit
+    'A': '#e0525c', // berry red / poppy
+    'C': '#a83248', // berry dark / maw interior
+    'd': '#f2748f', // berry light / flower
+    'M': '#ff5f9e', // orchid magenta
     's': '#9aa2b5', // stone gray
     'S': '#5f6579', // stone dark
     'v': '#c9d2e0', // stone light
-    'z': '#f2f7ff', // white/snow
-    'x': '#161020', // near-black
+    'z': '#f2f7ff', // snow / foam / fang
+    'u': '#a8e4f2', // shallow water shimmer
+    'U': '#68b7cf', // shallow shade
+    't': '#3fc0b0', // EVOLUTION TEAL
+    'T': '#2c8a80', // teal shade
+    'J': '#3e7a2e', // snake body
+    'j': '#c7d94a', // snake venom / aim dots
+    'h': '#3a6b4a', // snapper bog green
+    'a': '#7a5a3a', // hawk brown
+    'q': '#b98a55', // mid horn / warm mid
   };
+
+  // bird-specific roles drawn from the same family
+  const BIRD_PAL = Object.assign({}, PAL, {
+    'g': '#bd8a62', // <- legs (override green within bird sprites only)
+  });
 
   function bake(rows, pal) {
     pal = pal || PAL;
-    const h = rows.length, w = rows[0].length;
+    let w = 0;
+    for (const r of rows) if (r.length > w) w = r.length;
+    const h = rows.length;
     const cv = document.createElement('canvas');
     cv.width = w; cv.height = h;
     const c = cv.getContext('2d');
     for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const ch = rows[y][x];
+      const row = rows[y];
+      for (let x = 0; x < row.length; x++) {
+        const ch = row[x];
         if (ch && ch !== '.') {
           c.fillStyle = pal[ch] || '#f0f';
           c.fillRect(x, y, 1, 1);
@@ -54,145 +72,234 @@
     }
     return cv;
   }
+  function bakeBird(rows) { return bake(rows, BIRD_PAL); }
 
-  // ---- bird body (faces right; head top-right, tail attaches left) ----
-  const BODY = bake([
-    '..........oooo....',
-    '.........orrqqo...',
-    '........orrqqqqo..',
-    '.......orrrqqqqo..',
-    '..ooooorrrrrrrro..',
-    '.orrrrrrrrrrrrro..',
-    'orrrrrrrrrwwwwro..',
-    'orrrRrrrwwwwwwo...',
-    '.orrRRrwwwwwwWo...',
-    '..orrRwwwwwwWo....',
-    '...oRRwwwwWWo.....',
-    '....oowwWWoo......',
-    '......oooo........',
+  // ============================================================
+  //  BIRD  — a detailed finch, ~22x14 silhouette, faces right
+  // ============================================================
+  // Torso (belly cream below, sepia back above); tail attaches left,
+  // head attaches upper-right.
+  const BODY = bakeBird([
+    '......ooooo.....',
+    '....ooHHHbbo....',
+    '..ooHbbbbbbbo...',
+    '.oHHbbbbbbbbbo..',
+    '.oKbbbbbbbbbbbo.',
+    'oKKbbbbbfwwwbbo.',
+    'oKKbbbfwwwwwwwo.',
+    '.oKbbwwwwwwwwWo.',
+    '.oKwwwwwwwwwWo..',
+    '..oWWwwwwwWWo...',
+    '...oWWWwWWoo....',
+    '....oooooo......',
   ]);
 
-  // chubby overfed belly, drawn behind/below body
-  const TUMMY = bake([
-    '..ooooo...',
-    '.owwwwwo..',
-    'owwwwwwWo.',
-    'owwwwwWWo.',
-    'owwwwWWWo.',
-    '.owwWWWo..',
-    '..ooooo...',
+  // Head — round, rufous cap, pale cheek/throat, faces right.
+  const HEAD = bakeBird([
+    '..ooooo..',
+    '.occccbo.',
+    'occcbbbbo',
+    'ocbbbbbHo',
+    'obbbbbbHo',
+    'obbbbwwHo',
+    '.obbwwwo.',
+    '..ooooo..',
   ]);
 
-  const WING_UP = bake([
-    '......oo.',
-    '....ooqqo',
-    '...oqqqro',
-    '..oqrrro.',
-    '.orrrro..',
-    '.orrRo...',
-    '.oRRo....',
+  const EYE = bakeBird([
+    'oee',
+    'epp',
+    'opp',
+  ]);
+  const EYE_BLINK = bakeBird([
+    '...',
+    'ooo',
+    '...',
+  ]);
+
+  // short conical seed-cracker beak, projects right
+  const BEAK_S = bakeBird([
+    'ooo..',
+    'oyyyo',
+    'oqYYo',
+    '.oooo',
+  ]);
+  const BEAK_S_OPEN = bakeBird([
+    'oyyo.',
+    'oqyo.',
+    '.oo..',
+    'oqYo.',
+    'oYYo.',
+  ]);
+  // evolved wide beak
+  const BEAK_B = bakeBird([
+    'oooo..',
+    'oyyyyo',
+    'oqqYYo',
+    'oqYYYo',
+    '.ooooo',
+  ]);
+  const BEAK_B_OPEN = bakeBird([
+    'oyyyo.',
+    'oqqyo.',
+    'oqyo..',
+    '.oo...',
+    'oqYYo.',
+    'oYYYo.',
+  ]);
+
+  // ---- wings: covert layer (b/H) + primary tips (P) ----
+  const WING_DOWN = bakeBird([   // swept down along the flank
+    '.oooo....',
+    'obbbbo...',
+    'oHbbbPo..',
+    '.oHbbPo..',
+    '..oHbPo..',
+    '...obPPo.',
+    '....oPPo.',
+    '.....ooo.',
+  ]);
+  const WING_MID = bakeBird([    // extended outward
+    '.ooooo....',
+    'obbbbbHo..',
+    'oHbbbbbPo.',
+    '.oPPPPPPPo',
+    '..ooooooo.',
+  ]);
+  const WING_UP = bakeBird([     // raised high on upstroke
+    '.......oo',
+    '.....obHo',
+    '....obbHo',
+    '...obbbo.',
+    '..obbPo..',
+    '.obbPo...',
+    '.oHbPo...',
+    '.oPPo....',
     '..oo.....',
   ]);
-  const WING_MID = bake([
-    '.ooo.....',
-    'oqqroo...',
-    '.oqrrrro.',
-    '..oRRrrRo',
-    '...ooRRo.',
+
+  // ---- tail: notched / forked, attaches at right ----
+  const TAIL_S = bakeBird([
+    'ooo.....',
+    'oPPbbo..',
+    '.oPbbbo.',
+    '..oPbbbo',
+    '.oPbbbo.',
+    'oPPbbo..',
+    'ooo.....',
   ]);
-  const WING_DOWN = bake([
-    '.ooo....',
-    'oqrro...',
-    '.oqrro..',
-    '..orrRo.',
-    '..oRrRo.',
-    '...oRRo.',
-    '...oRo..',
-    '....o...',
+  const TAIL_BIG = bakeBird([    // evolved fanned rudder w/ teal
+    'ooo......',
+    'ottPbbo..',
+    '.oPtbbbo.',
+    '..oPtbbbo',
+    '.oPtbbbo.',
+    'ottPbbo..',
+    'ooo......',
   ]);
 
-  const BEAK_S = bake([
-    'oo...',
-    'oyyo.',
-    'oyYYo',
-    '.oo..',
+  const LEG = bakeBird([
+    'g..g',
+    'g..g',
+    'og.go',
+    'go.og',
   ]);
-  const BEAK_S_OPEN = bake([
-    'oyyo.',
-    'oyYo.',
-    '.....',
-    'oyyo.',
-    '.oYo.',
+
+  const CREST1 = bakeBird([
+    '..t.',
+    '.tto',
+    'obo.',
   ]);
-  const BEAK_B = bake([
-    'oo.....',
-    'oyyyo..',
-    'oyyyYo.',
-    'oyYYYYo',
-    '.oYYo..',
+  const CREST2 = bakeBird([
+    '.t.t.',
+    'ottto',
+    '.obo.',
+    '..o..',
+  ]);
+  const CREST3 = bakeBird([
+    't.t.t',
+    'ttttt',
+    'ottto',
+    '.obo.',
+  ]);
+
+  // ============================================================
+  //  PREDATORS
+  // ============================================================
+  const SNAKE_COIL = bake([   // resting head, tongue tucked
+    '.ooo...',
+    'oJJJo..',
+    'oJjJJo.',
+    'oJpJJo.',
+    'oJJJJo.',
+    '.oJJo..',
     '..oo...',
   ]);
-  const BEAK_B_OPEN = bake([
-    'oyyyo..',
-    'oyyYYo.',
-    'oyYo...',
-    '.......',
-    'oyYYo..',
-    'oYYYYo.',
-    '.oYo...',
+  const SNAKE_REAR = bake([    // reared, hood up, eye bright, tongue flick
+    '..ooo..',
+    '.oJJJo.',
+    'oJjjJo.',
+    'oJpjJoj',
+    'oJJJJo.',
+    'oJJJo..',
+    '.oo....',
+  ]);
+  const SNAKE_STRIKE = bake([  // mouth agape lunging right
+    '.ooo...',
+    'oJJJoj.',
+    'oJjJo.j',
+    'oJpJCCo',
+    'oJJCzzo',
+    'oJJoCCo',
+    '.oo.oo.',
   ]);
 
-  const TAIL_S = bake([
-    'oo...',
-    'oRqo.',
-    'oRqro',
-    'oRro.',
-    'oo...',
+  const SNAPPER_LURK = bake([  // eyes/snout above the waterline
+    '.o.....o.',
+    'ohjo..ohjo'.slice(0, 9),
+    'ohhho.ohho'.slice(0, 9),
+    'ooooo.oooo'.slice(0, 9),
   ]);
-  const TAIL_BIG = bake([
-    'oo.....',
-    'ottTo..',
-    'okKKto.',
-    'okKrrto',
-    'okKro..',
-    'ottTo..',
-    'oo.....',
-  ]);
-
-  const CREST1 = bake([
-    '.o.',
-    'oro',
-    '.o.',
-  ]);
-  const CREST2 = bake([
-    '.o.o',
-    'oror',
-    '.oro',
-    '..o.',
-  ]);
-  const CREST3 = bake([
-    '.o.o.o',
-    'ototot',
-    '.otot.',
-    '..oo..',
+  const SNAPPER_GAPE = bake([  // rising open maw
+    '.o.......o.',
+    'ohjo...ohjo',
+    'ohhhohhhhho',
+    'ohhhhhhhhho',
+    'ohhCCCCChho',
+    'ozCCCCCCzho',
+    'oCzCCCzCCho',
+    'ohoCCCoChho',
+    '.ohhhhhho..',
+    '..ooooo....',
   ]);
 
-  const EYE = bake([
-    'ee',
-    'ep',
+  const HAWK_MID = bake([      // wings spread, seen from below
+    'a...........a',
+    'aa.........aa',
+    '.aaa..a..aaa.',
+    '..aaaaHaaaaa.',
+    '.aaPPaaaPPaa.',
+    '...aa.a.aa...',
+    '......o......',
   ]);
-  const EYE_BLINK = bake([
-    '..',
-    'oo',
+  const HAWK_UP = bake([       // wings raised
+    '..aa.....aa..',
+    '.aaaa...aaaa.',
+    '..aaa.a.aaa..',
+    '...aaaHaaa...',
+    '....PPaPP....',
+    '......a......',
   ]);
 
-  // ---- foods ----
+  // ============================================================
+  //  FOODS
+  // ============================================================
   const BERRY = bake([
-    '...oG.',
     '..oGo.',
-    '.occo.',
-    'ocdcco',
-    'occcCo',
+    '.oGGo.',
+    'oAddAo',
+    'oAAdAo',
+    'oCAACo',
     '.oCCo.',
   ]);
   const SEED = bake([
@@ -203,46 +310,78 @@
     '.oo.',
   ]);
   const NUT = bake([
-    '..oBo..',
-    '.oBbBo.',
-    'oBbbbBo',
+    '..oNo..',
+    '.oNbNo.',
+    'oNbbbNo',
     'onnnnno',
-    'onwnnNo',
+    'onwfnNo',
     'onnnNNo',
     '.onNNo.',
     '..ooo..',
   ]);
+  const NECTAR = bake([        // dew-drop blossom
+    '.dod.',
+    'odMdo',
+    'oMwMo',
+    'odMdo',
+    '.ooo.',
+  ]);
+  const GRUB = bake([          // pale curled larva
+    '.oooo.',
+    'owWWfo',
+    'ofwWWo',
+    'owWWfo',
+    '.oooo.',
+  ]);
+  const FROG = bake([
+    'o.oo.o',
+    'ogegego'.slice(0, 6),
+    'ogggggo'.slice(0, 6),
+    'oGgggGo',
+    '.oGGo.',
+    'o.oo.o',
+  ]);
+  const MANGO = bake([         // ripe orange teardrop
+    '..oGo.',
+    '.onno.',
+    'onqfno',
+    'oqqfno',
+    'onqqNo',
+    '.onNo.',
+  ]);
   const BUG1 = bake([
     'p..o..p',
     '.p.uu.p',
-    '.okuuo.',
-    'okkkko.',
-    '.okko..',
+    '.oJuuo.',
+    'oJJJJo.',
+    '.oJJo..',
   ]);
   const BUG2 = bake([
     'p.....p',
     '.p.o..p',
-    '.okkuo.',
-    'okkkkuo',
-    '.okkoU.',
+    '.oJJuo.',
+    'oJJJJuo',
+    '.oJJoU.',
   ]);
-  const GOLD = bake([
+  const GOLD = bake([          // radiant golden fruit
     '...oG..',
     '..oo...',
-    '.offo..',
-    'offffo.',
-    'ofyffFo',
-    'oyyfFFo',
-    '.oFFo..',
+    '.offLo.',
+    'offLfo.',
+    'ofyLLYo',
+    'oyyLYYo',
+    '.oYYo..',
     '..oo...',
-  ]);
+  ], Object.assign({}, PAL, { L: '#fff3a8', f: '#ffe27a', y: '#ffd257', Y: '#e0a232' }));
 
-  // ---- HUD ----
+  // ============================================================
+  //  HUD ICONS
+  // ============================================================
   const HEART = bake([
     '.oo.oo.',
-    'ocdoddo',
-    'occccco',
-    '.occCo.',
+    'oAddAAo',
+    'oAAAAAo',
+    '.oAACo.',
     '..oCo..',
     '...o...',
   ]);
@@ -257,9 +396,9 @@
   const DNA = bake([
     't..t',
     '.tt.',
+    'T..T',
     't..t',
-    't..t',
-    '.tt.',
+    '.TT.',
     't..t',
   ]);
   const SKULL = bake([
@@ -270,70 +409,112 @@
     '.z.z.',
   ]);
   const FEATHER = bake([
-    '.or',
-    'orr',
-    'oro',
-    'o..',
+    '..oH',
+    '.oHb',
+    'oHbo',
+    'obo.',
+    'oo..',
+  ], BIRD_PAL);
+  const TUMMY = bake([
+    '.ooooo.',
+    'owwwwwo',
+    'owwwwWo',
+    'owwwWWo',
+    '.owWWo.',
+    '..ooo..',
   ]);
 
-  // ---- biome icons (for path cards), all 14x14 ----
-  function pad14(rows) {
-    return rows.map(function (r) { return (r + '..............').slice(0, 14); });
-  }
+  // ============================================================
+  //  BIOME ICONS (14x14) for path cards
+  // ============================================================
+  function pad14(rows) { return rows.map(function (r) { return (r + '..............').slice(0, 14); }); }
+
   const ICON_MEADOW = bake(pad14([
     '.....ooo......',
     '...oogggoo....',
-    '..oggglggggo..',
-    '.oggclgggggo..',
-    '.ogggggclggo..',
-    '..ogggggggo...',
+    '..oglgggmgo...',
+    '.ogAlgggggo...',
+    '.ogggglAggo...',
+    '..ogggggmo....',
     '...oogggoo....',
     '.....obo......',
     '.....obo......',
-    '.....obbo.....',
-    '....obbbo.....',
-    'ggggobbbogggg.',
-    'GgGgggggggGgG.',
+    '....obbo......',
+    'llloobboolll..',
+    'GgGgggggGgGg..',
+    '..............',
+    '..............',
+  ]));
+  const ICON_FOREST = bake(pad14([
+    '......L.......',
+    '.....oLo......',
+    '....oGmGo.....',
+    '....oGmGo.....',
+    '...oGmmmGo....',
+    '...oGmmmGo....',
+    '..oGmmmmmGo...',
+    '..oDmmmmmGo...',
+    '.oDmmmmmmmGo..',
+    '.....oNo......',
+    '.....oNo......',
+    'WWWWWoNoWWWWW.',
+    'nWnWnWnWnWnW..',
     '..............',
   ]));
   const ICON_GROVE = bake(pad14([
-    '.....oooo.....',
-    '...ooBbbBoo...',
-    '..oBbbbbbbBo..',
-    '.oBbbbbbbbbBo.',
-    '.oooooooooooo.',
-    '..onnnnnnnno..',
-    '..onwnnnnnNo..',
-    '..onnnnnnNNo..',
-    '...onnnnNNo...',
-    '...onnnNNo....',
-    '....onnNo.....',
-    '.....oNo......',
-    '......o.......',
+    '....oooo......',
+    '..ooGmmGoo....',
+    '.oGmmmmmmGo...',
+    '.oGmmmLmmGo...',
+    '.oomlmmmmoo...',
+    '..onnnnno.....',
+    '..onwfnNo.....',
+    '..onnnNNo.....',
+    '...onNNo......',
+    '....obo.......',
+    '....obo.......',
+    'WWWWoboWWWWWW.',
+    'nWnWnWnWnWnW..',
     '..............',
   ]));
   const ICON_MARSH = bake(pad14([
-    '......o..p....',
-    '..o...o..p.p..',
-    '..o..oNo..uu..',
-    '.oNo.oNo.okko.',
-    '.oNo.oNo.okko.',
-    '.oNo..o...oo..',
-    '..o...o.......',
-    '..o...o...o...',
-    '..og..o..go...',
-    '.ogg..o..ggo..',
-    'gggggggggggg..',
-    'GgGgGggGgGgG..',
+    '..p...........',
+    '.p.uu....o....',
+    '..oJuo..oGo...',
+    '.oJJo..oGGGo..',
+    '..oo..oGGGGGo.',
+    'oNo....oGGGo..',
+    'oNo.oNo.oGo...',
+    'oNo.oNo..o....',
+    'oNo.oNo.oNo...',
+    'ogogGogoGGo...',
+    'GGGGGGGGGGGG..',
+    'DGDGDGDGDGDG..',
+    '..............',
+    '..............',
+  ]));
+  const ICON_SWAMP = bake(pad14([
+    '....oGo.......',
+    '..oGmGGo......',
+    '.oGGmmmGo.....',
+    '.oGmGmGmGo....',
+    '..hoGmGoh.....',
+    '..h.oGo.h.....',
+    '.oJo.o.oNo....',
+    'oJjJ...oNo....',
+    'oJpJ...oNo....',
+    '.oJo.h.oNo.h..',
+    'hhGhhGhhGhhh..',
+    'hDhDhDhDhDhD..',
     '..............',
     '..............',
   ]));
   const ICON_CRAGS = bake(pad14([
     '......oo......',
-    '.....ovso.....',
-    '....ovsso.....',
-    '....ossSo.....',
-    '...ossssSo....',
+    '.a...ovso...a.',
+    'aa..ovsso..aa.',
+    '.aa.ossSo.aa..',
+    '..aossssSo....',
     '...osssSSo....',
     '..osssssSSo...',
     '..osssSSSSo...',
@@ -344,8 +525,26 @@
     '......of......',
     '..............',
   ]));
+  const ICON_JUNGLE = bake(pad14([
+    '..L..oo...L...',
+    '.oGooGGooGo...',
+    'oGmGGmmGGmGo..',
+    'oGmmMmmMmmGo..',
+    '.oGmmmmmmGo...',
+    '..GoGmmGoG....',
+    '..G.oNNo.G....',
+    '.G.oNbbNo.G...',
+    '...oNbbNo.....',
+    'M..oNbbNo..d..',
+    'GGGGoNNoGGGG..',
+    'DGDGDGDGDGDG..',
+    '..............',
+    '..............',
+  ]));
 
-  // ---- clouds (3 sizes) ----
+  // ============================================================
+  //  CLOUDS
+  // ============================================================
   const CLOUD1 = bake([
     '....zzzz......',
     '..zzzzzzzz....',
@@ -365,70 +564,91 @@
     'uzzzzzzzu.',
   ], { z: '#ffffff', u: '#d8ecf7' });
 
-  // Compose the bird from its parts. cfg:
-  //  frame 0..2 (wing up/mid/down), open (beak open), bigBeak, bigWings,
-  //  crest 0..3, bigTail, stuffed, blink, shield
+  // ============================================================
+  //  BIRD COMPOSITOR
+  // ============================================================
+  // cfg: frame(0..2), open, bigBeak, bigWings, bigTail, crest(0..3),
+  //      stuffed, blink, shield, time, sx, sy, glidePose, legsDown
   function drawBird(ctx, x, y, rot, cfg) {
     ctx.save();
     ctx.translate(Math.round(x), Math.round(y));
-    ctx.rotate(rot);
-    // origin at body center (roughly col 8, row 6 of BODY)
-    const ox = -9, oy = -7;
+    if (rot) ctx.rotate(rot);
+    if (cfg.sx || cfg.sy) ctx.scale(cfg.sx || 1, cfg.sy || 1);
 
     if (cfg.shield) {
-      ctx.globalAlpha = 0.35 + 0.15 * Math.sin(cfg.time * 8);
+      ctx.globalAlpha = 0.3 + 0.14 * Math.sin((cfg.time || 0) * 8);
       ctx.fillStyle = PAL.u;
       ctx.beginPath();
-      ctx.arc(1, 0, 12, 0, Math.PI * 2);
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
 
-    if (cfg.bigTail) ctx.drawImage(TAIL_BIG, ox - 5, oy + 4);
-    else ctx.drawImage(TAIL_S, ox - 3, oy + 5);
+    // body-space origin roughly at torso centre
+    const ox = -8, oy = -6;
 
-    if (cfg.stuffed) ctx.drawImage(TUMMY, ox + 4, oy + 6);
+    // tail (attaches at back-left)
+    const tail = cfg.bigTail ? TAIL_BIG : TAIL_S;
+    ctx.drawImage(tail, ox - tail.width + 2, oy + 2);
+
+    // legs (behind body when tucked, extended when landing)
+    if (cfg.legsDown) ctx.drawImage(LEG, ox + 4, oy + 11);
+    else ctx.drawImage(LEG, ox + 5, oy + 10);
+
+    // body
+    if (cfg.stuffed) { ctx.save(); ctx.scale(1.08, 1.06); }
     ctx.drawImage(BODY, ox, oy);
+    if (cfg.stuffed) ctx.restore();
 
-    // crest
-    if (cfg.crest === 1) ctx.drawImage(CREST1, ox + 12, oy - 2);
-    else if (cfg.crest === 2) ctx.drawImage(CREST2, ox + 11, oy - 3);
-    else if (cfg.crest >= 3) ctx.drawImage(CREST3, ox + 10, oy - 3);
+    // head (upper-right)
+    const hx = ox + 8, hy = oy - 3;
+    ctx.drawImage(HEAD, hx, hy);
+
+    // crest on the crown
+    if (cfg.crest === 1) ctx.drawImage(CREST1, hx + 1, hy - 2);
+    else if (cfg.crest === 2) ctx.drawImage(CREST2, hx, hy - 3);
+    else if (cfg.crest >= 3) ctx.drawImage(CREST3, hx - 1, hy - 3);
 
     // eye
-    ctx.drawImage(cfg.blink ? EYE_BLINK : EYE, ox + 13, oy + 2);
+    ctx.drawImage(cfg.blink ? EYE_BLINK : EYE, hx + 5, hy + 2);
 
-    // beak
-    if (cfg.bigBeak) {
-      ctx.drawImage(cfg.open ? BEAK_B_OPEN : BEAK_B, ox + 17, oy + (cfg.open ? 1 : 2));
-    } else {
-      ctx.drawImage(cfg.open ? BEAK_S_OPEN : BEAK_S, ox + 17, oy + (cfg.open ? 2 : 3));
-    }
+    // beak (projects from the head front)
+    const beak = cfg.bigBeak
+      ? (cfg.open ? BEAK_B_OPEN : BEAK_B)
+      : (cfg.open ? BEAK_S_OPEN : BEAK_S);
+    ctx.drawImage(beak, hx + 8, hy + (cfg.open ? 2 : 3));
 
-    // wing (layered twice when evolved for a broader silhouette)
-    const wing = cfg.frame === 0 ? WING_UP : (cfg.frame === 1 ? WING_MID : WING_DOWN);
-    const wx = ox + 3, wy = cfg.frame === 0 ? oy - 3 : (cfg.frame === 1 ? oy + 4 : oy + 5);
+    // near wing over the flank
+    let wing, wx, wy;
+    if (cfg.glidePose) { wing = WING_MID; wx = ox + 2; wy = oy - 1; }
+    else if (cfg.frame === 0) { wing = WING_UP; wx = ox + 2; wy = oy - 6; }
+    else if (cfg.frame === 2) { wing = WING_DOWN; wx = ox + 3; wy = oy + 3; }
+    else { wing = WING_MID; wx = ox + 2; wy = oy + 1; }
     if (cfg.bigWings) ctx.drawImage(wing, wx - 2, wy + 1);
     ctx.drawImage(wing, wx, wy);
 
     ctx.restore();
   }
 
-  // beak tip offset from bird center, pre-rotation
+  // beak tip offset from bird centre, pre-rotation
   function beakTip(cfg) {
-    return { x: cfg.bigBeak ? 14 : 12, y: -1 };
+    return { x: cfg.bigBeak ? 12 : 10, y: -3 };
   }
 
   window.SPR = {
-    PAL: PAL, bake: bake,
-    BODY: BODY, TUMMY: TUMMY,
+    PAL: PAL, BIRD_PAL: BIRD_PAL, bake: bake, bakeBird: bakeBird,
+    BODY: BODY, HEAD: HEAD, TUMMY: TUMMY,
     WING_UP: WING_UP, WING_MID: WING_MID, WING_DOWN: WING_DOWN,
-    BEAK_S: BEAK_S, BEAK_B: BEAK_B,
-    TAIL_S: TAIL_S, TAIL_BIG: TAIL_BIG,
-    CREST1: CREST1, CREST2: CREST2, CREST3: CREST3,
-    BERRY: BERRY, SEED: SEED, NUT: NUT, BUG1: BUG1, BUG2: BUG2, GOLD: GOLD,
+    BEAK_S: BEAK_S, BEAK_B: BEAK_B, TAIL_S: TAIL_S, TAIL_BIG: TAIL_BIG,
+    CREST1: CREST1, CREST2: CREST2, CREST3: CREST3, LEG: LEG,
+    SNAKE_COIL: SNAKE_COIL, SNAKE_REAR: SNAKE_REAR, SNAKE_STRIKE: SNAKE_STRIKE,
+    SNAPPER_LURK: SNAPPER_LURK, SNAPPER_GAPE: SNAPPER_GAPE,
+    HAWK_MID: HAWK_MID, HAWK_UP: HAWK_UP,
+    BERRY: BERRY, SEED: SEED, NUT: NUT, NECTAR: NECTAR, GRUB: GRUB,
+    FROG: FROG, MANGO: MANGO, BUG1: BUG1, BUG2: BUG2, GOLD: GOLD,
     HEART: HEART, HEART_EMPTY: HEART_EMPTY, DNA: DNA, SKULL: SKULL, FEATHER: FEATHER,
-    ICON_MEADOW: ICON_MEADOW, ICON_GROVE: ICON_GROVE, ICON_MARSH: ICON_MARSH, ICON_CRAGS: ICON_CRAGS,
+    ICON_MEADOW: ICON_MEADOW, ICON_FOREST: ICON_FOREST, ICON_GROVE: ICON_GROVE,
+    ICON_MARSH: ICON_MARSH, ICON_SWAMP: ICON_SWAMP, ICON_CRAGS: ICON_CRAGS, ICON_JUNGLE: ICON_JUNGLE,
     CLOUD1: CLOUD1, CLOUD2: CLOUD2, CLOUD3: CLOUD3,
     drawBird: drawBird, beakTip: beakTip,
   };

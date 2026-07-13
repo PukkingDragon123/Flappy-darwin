@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>sprite preview</title>
+<style>body{margin:0;background:#3a4a5a;}canvas{image-rendering:pixelated;display:block;}</style>
+</head><body>
+<canvas id="c" width="720" height="620"></canvas>
+<script src="../js/font.js"></script>
+<script src="../js/sprites.js"></script>
+<script>
+const ctx = document.getElementById('c').getContext('2d');
+ctx.imageSmoothingEnabled = false;
+let t = 0;
+function label(s, x, y){ FONT.drawText(ctx, s, x, y, '#dfe', 1); }
+function cell(spr, x, y, s){ ctx.drawImage(spr, x, y, spr.width*s, spr.height*s); }
+function frame(){
+  t += 0.016;
+  ctx.clearRect(0,0,720,620);
+  // background swatch
+  ctx.fillStyle = '#8fb9d6'; ctx.fillRect(0,0,720,120);
+  ctx.fillStyle = '#2e6f8e'; ctx.fillRect(0,120,720,30);
+
+  // --- bird animation strip ---
+  let x = 20;
+  const configs = [
+    {frame:0, label:'UP'}, {frame:1, label:'MID'}, {frame:2, label:'DOWN'},
+    {frame:1, open:true, label:'EAT'}, {frame:1, glidePose:true, label:'GLIDE'},
+    {frame:1, legsDown:true, label:'PERCH'},
+  ];
+  for (const cf of configs){
+    ctx.save();
+    ctx.translate(x+30, 60);
+    ctx.scale(4,4);
+    SPR.drawBird(ctx, 0, 0, 0, Object.assign({time:t, crest:0}, cf));
+    ctx.restore();
+    label(cf.label, x+14, 100);
+    x += 78;
+  }
+
+  // --- evolved bird ---
+  x = 20;
+  const evo = [
+    {frame:1, bigWings:true, label:'WINGS'},
+    {frame:1, bigBeak:true, open:false, label:'BEAK'},
+    {frame:1, bigTail:true, label:'TAIL'},
+    {frame:1, crest:1, label:'CREST1'},
+    {frame:1, crest:2, label:'CREST2'},
+    {frame:1, crest:3, bigWings:true, bigBeak:true, bigTail:true, label:'FULL'},
+    {frame:1, stuffed:true, label:'STUFFED'},
+    {frame:1, shield:true, label:'SHIELD'},
+  ];
+  for (const cf of evo){
+    ctx.save();
+    ctx.translate(x+24, 190);
+    ctx.scale(3,3);
+    SPR.drawBird(ctx, 0, 0, 0, Object.assign({time:t}, cf));
+    ctx.restore();
+    label(cf.label, x, 230);
+    x += 86;
+  }
+
+  // --- foods ---
+  x = 20;
+  const foods = ['BERRY','SEED','NUT','NECTAR','GRUB','FROG','MANGO','BUG1','GOLD'];
+  for (const f of foods){ cell(SPR[f], x, 250, 4); label(f, x, 300); x += 74; }
+
+  // --- predators ---
+  x = 20;
+  const preds = ['SNAKE_COIL','SNAKE_REAR','SNAKE_STRIKE','SNAPPER_LURK','SNAPPER_GAPE','HAWK_MID','HAWK_UP'];
+  for (const p of preds){ cell(SPR[p], x, 330, 5); label(p.slice(0,7), x, 400); x += 100; }
+
+  // --- icons ---
+  x = 20;
+  const icons = ['ICON_MEADOW','ICON_FOREST','ICON_GROVE','ICON_MARSH','ICON_SWAMP','ICON_CRAGS','ICON_JUNGLE'];
+  for (const i of icons){ cell(SPR[i], x, 420, 4); label(i.slice(5), x, 480); x += 96; }
+
+  // --- hud ---
+  x = 20;
+  const hud = ['HEART','HEART_EMPTY','DNA','SKULL','FEATHER','TUMMY'];
+  for (const h of hud){ cell(SPR[h], x, 500, 5); label(h.slice(0,7), x, 560); x += 90; }
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body></html>
