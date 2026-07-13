@@ -565,6 +565,140 @@
   ], { z: '#ffffff', u: '#d8ecf7' });
 
   // ============================================================
+  //  FOREST PROPS, HAZARDS & META
+  // ============================================================
+  const DURIAN = bake([
+    '...y.y.y....',
+    '..yGyGyGy...',
+    '.yGgGgGgGy..',
+    'yGgllllgGy..',
+    'oGllLLllGGo.',
+    'yGgllllgGGy.',
+    '.yGgGgGgGGy.',
+    '..yGyGyGGy..',
+    '...y.y.yo...',
+    '.....o......',
+  ], Object.assign({}, PAL, { y: '#6f5a1e', G: '#4f7a24', g: '#6ea233', l: '#93c94a', L: '#c7e88a' }));
+
+  const EGG = bake([
+    '.ooo.',
+    'oewwo',
+    'owcwo',
+    'owwWo',
+    'owWco',
+    'oWWWo',
+    '.ooo.',
+  ]);
+  const EGG_CRACK = bake([
+    '.ooo.',
+    'oewwo',
+    'oowoo',
+    'owoWo',
+    'ooooW'.slice(0, 5),
+    'oWWWo',
+    '.ooo.',
+  ]);
+  const NEST = bake([
+    '.ooooooooooo.',
+    'obNbNbNbNbNbo',
+    'oNbHbNbHbNbNo',
+    'oHbNbHbNbHbHo',
+    '.oNbNbNbNbNo.',
+    '..oNbbbbbNo..',
+    '...ooooooo...',
+  ]);
+  const HATCHLING = bake([
+    '..oo...',
+    '.oHbo..',
+    'oHbbyo.',
+    'owwwwo.',
+    '.owWo..',
+    '.o..o..',
+  ], BIRD_PAL);
+
+  const MUSHROOM = bake([
+    '.oAAAo.',
+    'oAzAzAo',
+    'oAAzAAo',
+    '.owwwo.',
+    '.owwWo.',
+    '.oowoo.',
+  ]);
+  const MUSHROOM2 = bake([
+    '.ooo.',
+    'oyqyo',
+    'oyyqo',
+    '.owo.',
+    '.owo.',
+    '.ooo.',
+  ], Object.assign({}, PAL, { y: '#d98a3d', q: '#e8b060' }));
+  const FERN = bake([
+    '..l...l..',
+    '.lGl.lGl.',
+    'l.oGoGo.l',
+    '..lGGGl..',
+    '...oGo...',
+    '...oGo...',
+  ]);
+  const BUSH = bake([
+    '...ooooo....',
+    '..oGmmmGo...',
+    '.oGmlllmGo..',
+    'oGmllLllmGo.',
+    'oGmmlllmmGo.',
+    '.oGmmmmmGo..',
+    '..ooooooo...',
+  ]);
+  const LOG = bake([
+    '.ooooooooooo.',
+    'oNbbbbbbbbNo',
+    'oHNbnbnbnbNo',
+    'oNbnbnbnbbNo',
+    '.oooooooooo.',
+  ]);
+  const GRASSB = bake([
+    'l...l..l.',
+    'lGl.lGllGl'.slice(0, 9),
+    'oGloGloGlo'.slice(0, 9),
+  ]);
+
+  // carnivorous pitcher / snap-vine (forest ground ambush)
+  const PITCHER_LURK = bake([
+    '.o...o.',
+    'oGo.oGo',
+    'oGgGgGo',
+    'oGGGGGo',
+    '.ooooo.',
+  ]);
+  const PITCHER_GAPE = bake([
+    '.o.....o.',
+    'oGo...oGo',
+    'oGgo.ogGo',
+    'oGCCCCCGo',
+    'oCzCzCzCo',
+    'oCCCCCCCo',
+    'oGCCCCCGo',
+    '.oGGGGGo.',
+    '..ooooo..',
+  ]);
+
+  // glowing chase-bug (firefly beetle)
+  const CHASE_BUG = bake([
+    'p..o..p',
+    '.LLfLL.',
+    'LfFyFfL',
+    '.LLfLL.',
+    'p..o..p',
+  ], Object.assign({}, PAL, { L: '#fff3a8', f: '#ffe27a', F: '#ffd257', y: '#fffbe0', p: '#3a3320' }));
+  const CHASE_BUG2 = bake([
+    'p.....p',
+    '.LLfLL.',
+    'LfFyFfL',
+    '.LLfLL.',
+    'p.o.o.p',
+  ], Object.assign({}, PAL, { L: '#fff3a8', f: '#ffe27a', F: '#ffd257', y: '#fffbe0', p: '#3a3320' }));
+
+  // ============================================================
   //  BIRD COMPOSITOR
   // ============================================================
   // cfg: frame(0..2), open, bigBeak, bigWings, bigTail, crest(0..3),
@@ -650,6 +784,10 @@
     ICON_MEADOW: ICON_MEADOW, ICON_FOREST: ICON_FOREST, ICON_GROVE: ICON_GROVE,
     ICON_MARSH: ICON_MARSH, ICON_SWAMP: ICON_SWAMP, ICON_CRAGS: ICON_CRAGS, ICON_JUNGLE: ICON_JUNGLE,
     CLOUD1: CLOUD1, CLOUD2: CLOUD2, CLOUD3: CLOUD3,
+    DURIAN: DURIAN, EGG: EGG, EGG_CRACK: EGG_CRACK, NEST: NEST, HATCHLING: HATCHLING,
+    MUSHROOM: MUSHROOM, MUSHROOM2: MUSHROOM2, FERN: FERN, BUSH: BUSH, LOG: LOG, GRASSB: GRASSB,
+    PITCHER_LURK: PITCHER_LURK, PITCHER_GAPE: PITCHER_GAPE,
+    CHASE_BUG: CHASE_BUG, CHASE_BUG2: CHASE_BUG2,
     drawBird: drawBird, beakTip: beakTip,
   };
 })();
