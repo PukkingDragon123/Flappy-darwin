@@ -698,6 +698,33 @@
     'p.o.o.p',
   ], Object.assign({}, PAL, { L: '#fff3a8', f: '#ffe27a', F: '#ffd257', y: '#fffbe0', p: '#3a3320' }));
 
+  // ---- Charles Darwin (interactive-tutorial guide portrait) ----
+  const DARWIN = bake([
+    '......oooooo......',
+    '....oobbbbbboo....',
+    '...obbwwwwwwbbo...',
+    '..obwwwwwwwwwwbo..',
+    '..obwwwwwwwwwwbo..',
+    '..obwbwwwwwwbwbo..',
+    '..obwpwwwwwwpwbo..',
+    '..obwwwwwwwwwwbo..',
+    '..oobwwwwwwwwboo..',
+    '...ozzwwwwwwzzo...',
+    '..ozzzzwwwwzzzzo..',
+    '..ozzzzzzzzzzzzo..',
+    '..ovzzzzzzzzzzvo..',
+    '..ovvzzzzzzzzvvo..',
+    '...ovvzzzzzzvvo...',
+    '....ovvzzzzvvo....',
+    '..PPPPovvvvoPPPP..',
+    '.PPSSPPPPPPPPSSPP.',
+    'PPSSSSPPPPPPSSSSPP',
+    'PPPPPPPPPPPPPPPPPP',
+  ], Object.assign({}, PAL, {
+    o: '#241a1c', b: '#6a5548', w: '#f0cfa0', p: '#241a1c',
+    z: '#eceef2', v: '#b9bcc4', P: '#39323f', S: '#514859',
+  }));
+
   // ============================================================
   //  BIRD COMPOSITOR
   // ============================================================
@@ -787,7 +814,7 @@
     DURIAN: DURIAN, EGG: EGG, EGG_CRACK: EGG_CRACK, NEST: NEST, HATCHLING: HATCHLING,
     MUSHROOM: MUSHROOM, MUSHROOM2: MUSHROOM2, FERN: FERN, BUSH: BUSH, LOG: LOG, GRASSB: GRASSB,
     PITCHER_LURK: PITCHER_LURK, PITCHER_GAPE: PITCHER_GAPE,
-    CHASE_BUG: CHASE_BUG, CHASE_BUG2: CHASE_BUG2,
+    CHASE_BUG: CHASE_BUG, CHASE_BUG2: CHASE_BUG2, DARWIN: DARWIN,
     drawBird: drawBird, beakTip: beakTip,
   };
 })();

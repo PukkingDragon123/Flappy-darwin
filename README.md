@@ -1,13 +1,22 @@
 # 🐦 Flappy Darwin
 
 A pixel-art **roguelike flappy game** about flying through a living forest,
-eating, digesting and evolving. Flap between the great trees, manage your wing
-energy, catch food on your beak, graze safely along the treetops, dodge snakes,
-hawks, carnivorous pitchers and falling durians, chase glowing bugs — then rest
-at **the nest**, where each new **generation** of finches hatches with a fresh
-mutation. Or go extinct trying.
+eating, digesting and evolving. Flap between the great branching trees, manage
+your wing energy, catch food on your beak, graze safely along the treetops,
+dodge snakes, hawks, carnivorous pitchers and falling durians, chase glowing
+bugs — then rest at **the nest**, where each new **generation** of finches
+hatches with a fresh mutation. Bank **DNA** across runs and, when you fall,
+hatch again from your last checkpoint. Charles Darwin himself guides you in.
 
-![Title screen](docs/title.png)
+![Main menu](docs/menu.png)
+
+## Meet your guide
+
+On your first flight (or any time via the **TUTORIAL** menu), **Charles Darwin**
+walks you through the basics with an interactive, step-by-step tutorial that
+waits for you to actually flap, eat, digest and graze before moving on.
+
+![Darwin's interactive tutorial](docs/tutorial.png)
 
 ## How to play
 
@@ -57,6 +66,27 @@ the undergrowth and you'll get hurt.
 
 ![The nest — hatch a new generation](docs/nest.png)
 
+## Generations, traits & DNA
+
+Digested food fills your **hatch meter**. At the nest a new generation hatches
+and inherits one of three traits, drawn by **rarity** — <span>COMMON</span>,
+**RARE** or **EPIC** — and weighted by what your flock has been eating. Spend
+banked **DNA** to **reroll** the offered traits.
+
+![Hatching a new generation — rarity traits + DNA reroll](docs/hatch.png)
+
+**DNA is permanent.** You earn it every run and it is saved between runs. Each
+leg you reach becomes a **checkpoint**, so when a finch dies you can **hatch
+again from your last nest** — for a cost in DNA — keeping your build and depth,
+or start a fresh **new lineage**.
+
+![Extinction — hatch from your checkpoint or begin anew](docs/checkpoint.png)
+
+Traits: Mighty Wings · Hollow Bones · Tail Rudder · Glider Wing · Wide Beak ·
+Rapid Gut · Crop Pouch · Iron Gizzard · Downy Plume · Sweet Tooth · Bug Snatcher ·
+Feather Shield · Second Stomach · Big Lungs · Light Frame · Sun Feathers ·
+Keen Forager · Nimble Frame · Iron Beak · **Aerial Master** · **Apex Instinct**.
+
 ## Biomes
 
 Seven biomes, each with its own trees, light, food and dangers. Paths branch and
@@ -74,24 +104,11 @@ difficulty ramps the deeper you migrate.
 
 ![A golden jungle, evolved](docs/jungle.png)
 
-## Generations & traits
+Traits stack across generations and **visibly change the bird** — bigger wings,
+wider beak, a fanned tail, a growing crest. Every run is procedural: layouts,
+food, paths and dangers differ each time.
 
-Digested food fills your **hatch meter**. At the nest a new generation hatches
-and inherits one of three traits, weighted by what your flock ate. Traits stack
-across generations and **visibly change the bird** — bigger wings, wider beak,
-a fanned tail, a growing crest.
-
-![Choosing a hatchling's trait](docs/hatch.png)
-
-Mighty Wings · Hollow Bones · Tail Rudder · Glider Wing · Wide Beak · Rapid Gut ·
-Crop Pouch · Iron Gizzard · Downy Plume · Sweet Tooth · Bug Snatcher ·
-Feather Shield · Second Stomach · **Big Lungs** · **Light Frame** · **Sun Feathers**
-(the last three tune your wing energy).
-
-Every run is procedural — layouts, food, paths and dangers differ, death is
-permanent, and only your best score survives (stored locally).
-
-![Grove in golden light, with a falling durian](docs/forest.png)
+![Branchy trees in golden light](docs/forest.png)
 
 ## Tech
 

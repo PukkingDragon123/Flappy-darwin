@@ -99,23 +99,29 @@
   };
 
   const MUTATIONS = [
-    { id: 'wings',   name: 'MIGHTY WINGS',   desc: 'FLAP 25% STRONGER',            diet: 'berry', icon: SPR.WING_UP },
-    { id: 'hollow',  name: 'HOLLOW BONES',   desc: 'FALL 18% SLOWER',              diet: 'berry', icon: SPR.FEATHER },
-    { id: 'rudder',  name: 'TAIL RUDDER',    desc: 'DIVE SPEED CAPPED',            diet: 'berry', icon: SPR.TAIL_BIG },
-    { id: 'glide',   name: 'GLIDER WING',    desc: 'HOLD FLAP TO GLIDE',           diet: 'berry', icon: SPR.CLOUD3 },
-    { id: 'beak',    name: 'WIDE BEAK',      desc: 'BIGGER CATCH RANGE',           diet: 'nut',   icon: SPR.BEAK_B },
-    { id: 'gut',     name: 'RAPID GUT',      desc: 'DIGEST 35% FASTER',            diet: 'bug',   icon: SPR.GRUB },
-    { id: 'crop',    name: 'CROP POUCH',     desc: 'STASH A SECOND FOOD',          diet: 'nut',   icon: SPR.NUT },
-    { id: 'gizzard', name: 'IRON GIZZARD',   desc: 'NUTS DIGEST FAST +VALUE',      diet: 'nut',   icon: SPR.NUT },
-    { id: 'downy',   name: 'DOWNY PLUME',    desc: '+1 HEART, FULLY MENDED',       diet: 'any',   icon: SPR.HEART, repeat: true },
-    { id: 'sweet',   name: 'SWEET TOOTH',    desc: 'FRUIT +50% VALUE',             diet: 'berry', icon: SPR.MANGO },
-    { id: 'snatch',  name: 'BUG SNATCHER',   desc: 'BUGS DRIFT TO BEAK',           diet: 'bug',   icon: SPR.BUG1 },
-    { id: 'shield',  name: 'FEATHER SHIELD', desc: 'BLOCK FIRST HIT / LEG',        diet: 'any',   icon: SPR.HEART_EMPTY },
-    { id: 'stomach', name: 'SECOND STOMACH', desc: 'OVERFULL LIMIT +40%',          diet: 'nut',   icon: SPR.TUMMY },
-    { id: 'lungs',   name: 'BIG LUNGS',      desc: '+45 MAX WING ENERGY',          diet: 'seed',  icon: SPR.FEATHER },
-    { id: 'light',   name: 'LIGHT FRAME',    desc: 'FLAPS COST 32% LESS',          diet: 'seed',  icon: SPR.WING_MID },
-    { id: 'photo',   name: 'SUN FEATHERS',   desc: 'WING ENERGY REGENS FASTER',    diet: 'seed',  icon: SPR.GOLD },
+    { id: 'wings',   name: 'MIGHTY WINGS',   desc: 'FLAP 25% STRONGER',       diet: 'berry', rarity: 'common', icon: SPR.WING_UP },
+    { id: 'hollow',  name: 'HOLLOW BONES',   desc: 'FALL 18% SLOWER',         diet: 'berry', rarity: 'common', icon: SPR.FEATHER },
+    { id: 'rudder',  name: 'TAIL RUDDER',    desc: 'DIVE SPEED CAPPED',       diet: 'berry', rarity: 'common', icon: SPR.TAIL_BIG },
+    { id: 'glide',   name: 'GLIDER WING',    desc: 'HOLD FLAP TO GLIDE',      diet: 'berry', rarity: 'rare',   icon: SPR.CLOUD3 },
+    { id: 'beak',    name: 'WIDE BEAK',      desc: 'BIGGER CATCH RANGE',      diet: 'nut',   rarity: 'common', icon: SPR.BEAK_B },
+    { id: 'gut',     name: 'RAPID GUT',      desc: 'DIGEST 35% FASTER',       diet: 'bug',   rarity: 'common', icon: SPR.GRUB },
+    { id: 'crop',    name: 'CROP POUCH',     desc: 'STASH A SECOND FOOD',     diet: 'nut',   rarity: 'rare',   icon: SPR.NUT },
+    { id: 'gizzard', name: 'IRON GIZZARD',   desc: 'NUTS DIGEST FAST+VALUE',  diet: 'nut',   rarity: 'rare',   icon: SPR.NUT },
+    { id: 'downy',   name: 'DOWNY PLUME',    desc: '+1 HEART, MENDED',        diet: 'any',   rarity: 'rare',   icon: SPR.HEART, repeat: true },
+    { id: 'sweet',   name: 'SWEET TOOTH',    desc: 'FRUIT +50% VALUE',        diet: 'berry', rarity: 'common', icon: SPR.MANGO },
+    { id: 'snatch',  name: 'BUG SNATCHER',   desc: 'BUGS DRIFT TO BEAK',      diet: 'bug',   rarity: 'common', icon: SPR.BUG1 },
+    { id: 'shield',  name: 'FEATHER SHIELD', desc: 'BLOCK 1 HIT PER LEG',     diet: 'any',   rarity: 'rare',   icon: SPR.HEART_EMPTY },
+    { id: 'stomach', name: 'SECOND STOMACH', desc: 'OVERFULL LIMIT +40%',     diet: 'nut',   rarity: 'common', icon: SPR.TUMMY },
+    { id: 'lungs',   name: 'BIG LUNGS',      desc: '+45 MAX WING ENERGY',     diet: 'seed',  rarity: 'common', icon: SPR.FEATHER },
+    { id: 'light',   name: 'LIGHT FRAME',    desc: 'FLAPS COST 32% LESS',     diet: 'seed',  rarity: 'rare',   icon: SPR.WING_MID },
+    { id: 'photo',   name: 'SUN FEATHERS',   desc: 'ENERGY REGENS FASTER',    diet: 'seed',  rarity: 'common', icon: SPR.GOLD },
+    { id: 'forager', name: 'KEEN FORAGER',   desc: 'ALL FOOD +25% VALUE',     diet: 'any',   rarity: 'common', icon: SPR.BERRY },
+    { id: 'nimble',  name: 'NIMBLE FRAME',   desc: 'SMALLER HITBOX',          diet: 'bug',   rarity: 'rare',   icon: SPR.SEED },
+    { id: 'ironbeak',name: 'IRON BEAK',      desc: 'DURIANS BOUNCE OFF',      diet: 'nut',   rarity: 'rare',   icon: SPR.DURIAN },
+    { id: 'aerial',  name: 'AERIAL MASTER',  desc: 'GLIDE FAR, FALL SLOW',    diet: 'berry', rarity: 'epic',   icon: SPR.CLOUD3 },
+    { id: 'apex',    name: 'APEX INSTINCT',  desc: 'PREDATORS STRIKE SLOWER', diet: 'any',   rarity: 'epic',   icon: SPR.SNAKE_REAR },
   ];
+  const RARITY = { common: { w: 1.0, col: '#c9d2e0', label: 'COMMON' }, rare: { w: 0.5, col: '#6db6d8', label: 'RARE' }, epic: { w: 0.22, col: '#f6c945', label: 'EPIC' } };
 
   const DEATHS = {
     tree: 'SPLINTERED ON AN ANCIENT TREE', pine: 'IMPALED ON A PINE SPIRE',
@@ -126,13 +132,19 @@
     durian: 'FLATTENED BY A FALLING DURIAN',
   };
 
-  // ---------- persistent best ----------
-  function loadBest() {
-    try { return JSON.parse(localStorage.getItem('flappyDarwinBest')) || { score: 0, depth: 0, evos: 0 }; }
-    catch (e) { return { score: 0, depth: 0, evos: 0 }; }
+  // ---------- persistent save: DNA (meta currency) + best + tutorial flag ----------
+  const SAVE_KEY = 'flappyDarwinSave';
+  function loadSave() {
+    try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.best) { if (s.dna == null) s.dna = 0; return s; } } catch (e) { /* ignore */ }
+    let b = { score: 0, depth: 0, evos: 0 };
+    try { const old = JSON.parse(localStorage.getItem('flappyDarwinBest')); if (old) b = old; } catch (e) { /* ignore */ }
+    return { dna: 0, best: b, tutorialDone: false };
   }
-  function saveBest(b) { try { localStorage.setItem('flappyDarwinBest', JSON.stringify(b)); } catch (e) { /* private */ } }
-  let best = loadBest();
+  function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* private mode */ } }
+  let save = loadSave();
+  let best = save.best;
+  function addDNA(n) { if (run) run.dnaEarned = (run.dnaEarned || 0) + n; }
+  function hatchCost() { return run.checkpoint ? 8 + run.checkpoint.depth * 3 : 999; }
 
   // ---------- game state ----------
   let STATE = 'title'; // title | fly | island | over
@@ -151,12 +163,15 @@
   function slowmo(d) { slowT = Math.max(slowT, d); }
   function shakeIt(mag, dur) { shake.mag = Math.max(shake.mag, mag); shake.t = Math.max(shake.t, dur); }
 
-  function newRun() {
+  function newRun(tutorialMode) {
     run = {
       depth: 0, score: 0, scorePop: 0,
       evo: 0, evoNeed: 60, evolutions: 0,
       taken: [], diet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       foodEaten: 0, obstaclesPassed: 0, evoReadyPinged: false, bugsChased: 0,
+      dnaEarned: 0, checkpoint: null,
+      tutorialMode: !!tutorialMode || !save.tutorialDone,
+      darwin: null,
       tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true },
     };
     bird = {
@@ -189,10 +204,11 @@
     if (has('lungs')) maxEnergy += 45;
     if (has('light')) flapCost *= 0.68;
     if (has('photo')) regen += 9;
+    if (has('aerial')) maxFall *= 0.8;
     if (bird.stuffed) { flap *= 0.88; grav *= 1.18; flapCost *= 1.2; }
     return {
       flap: flap, grav: grav, maxFall: maxFall, catchR: catchR, digestMul: digestMul,
-      cap: cap, glide: has('glide'), cropSlots: has('crop') ? 1 : 0,
+      cap: cap, glide: has('glide') || has('aerial'), cropSlots: has('crop') ? 1 : 0,
       flapCost: flapCost, maxEnergy: maxEnergy, regen: regen,
     };
   }
@@ -202,6 +218,11 @@
     const d = run.depth;
     const biome = BIOMES[biomeKey];
     const hasPred = biome.hazards.length > 0;
+    if (d > 1) addDNA(2); // reaching a new leg earns DNA
+    // checkpoint = snapshot at the start of this leg, so death can hatch you back here
+    run.checkpoint = { depth: d, biomeKey: biomeKey, taken: run.taken.slice(), maxHearts: bird ? bird.maxHearts : 3, evolutions: run.evolutions, evoNeed: run.evoNeed, score: run.score, dnaEarned: run.dnaEarned };
+    // Darwin's interactive tutorial runs on the first leg
+    if (d === 1 && run.tutorialMode) run.darwin = { step: 0, t: 0, done: false, flapped: false, ate: false, digested: false, grazed: false };
     world = {
       biomeKey: biomeKey, biome: biome,
       dist: 0,
@@ -227,29 +248,56 @@
 
   // ---------- input ----------
   let flapQueued = false, actionQueued = false;
+  const REROLL_COST = 5;
+
+  function menuItems() { return ['PLAY', 'TUTORIAL', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
+  function gotoTitle() { STATE = 'title'; ui = { demoY: 84, menuSel: 0 }; }
+  function activateMenu() {
+    const sel = ui.menuSel || 0;
+    if (sel === 2) { AUDIO.toggleMute(); return; }
+    AUDIO.play('confirm'); newRun(sel === 1);
+  }
+  function activateOver() {
+    const opt = (ui.options || ['new'])[ui.sel || 0];
+    if (opt === 'hatch') hatchFromCheckpoint();
+    else { AUDIO.play('confirm'); gotoTitle(); }
+  }
+  function rerollCards() {
+    if (STATE !== 'island' || ui.phase !== 'mutate') return;
+    if (save.dna < REROLL_COST) { AUDIO.play('denied'); return; }
+    save.dna -= REROLL_COST; persist();
+    ui.cards = makeMutationCards(); ui.sel = 0; AUDIO.play('select');
+  }
 
   function press() {
     AUDIO.unlock();
-    if (STATE === 'title') { AUDIO.play('confirm'); newRun(); return; }
-    if (STATE === 'over') { if (ui.overT > 0.7) { AUDIO.play('confirm'); STATE = 'title'; } return; }
+    if (STATE === 'title') { activateMenu(); return; }
+    if (STATE === 'over') { if (ui.overT > 0.7) activateOver(); return; }
     if (paused) { paused = false; return; }
-    if (STATE === 'fly') {
-      if (world.phase === 'fly') flapQueued = true;
-      else if (world.phase === 'cine') skipCine();
-      return;
-    }
+    if (STATE === 'fly') { if (world.phase === 'fly') flapQueued = true; else if (world.phase === 'cine') skipCine(); return; }
     if (STATE === 'island') actionQueued = true;
   }
 
   window.addEventListener('keydown', function (e) {
-    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
-      e.preventDefault();
-      if (!e.repeat) { press(); bird && (bird.glideHeld = true); }
-      return;
+    const up = e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW';
+    if (STATE === 'title') {
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); ui.menuSel = (ui.menuSel + 2) % 3; AUDIO.play('select'); return; }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); ui.menuSel = (ui.menuSel + 1) % 3; AUDIO.play('select'); return; }
+      if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat) activateMenu(); return; }
     }
+    if (STATE === 'over') {
+      const opts = ui.options || ['new'];
+      if ((e.code === 'ArrowLeft' || e.code === 'KeyA') && opts.length > 1) { ui.sel = (ui.sel + opts.length - 1) % opts.length; AUDIO.play('select'); return; }
+      if ((e.code === 'ArrowRight' || e.code === 'KeyD') && opts.length > 1) { ui.sel = (ui.sel + 1) % opts.length; AUDIO.play('select'); return; }
+      if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat && ui.overT > 0.7) activateOver(); return; }
+    }
+    if (up) { e.preventDefault(); if (!e.repeat) { press(); bird && (bird.glideHeld = true); } return; }
     if (e.code === 'KeyM') { AUDIO.toggleMute(); return; }
     if (e.code === 'KeyP' && (STATE === 'fly' || STATE === 'island')) { paused = !paused; return; }
-    if (e.code === 'KeyR' && (STATE === 'over' || STATE === 'fly' || STATE === 'island')) { AUDIO.play('confirm'); STATE = 'title'; return; }
+    if (e.code === 'KeyR') {
+      if (STATE === 'island' && ui.phase === 'mutate') { rerollCards(); return; }
+      if (STATE === 'fly' || STATE === 'island') { AUDIO.play('confirm'); gotoTitle(); return; }
+    }
     if (STATE === 'island' && ui.cards) {
       if (e.code === 'ArrowLeft' || e.code === 'KeyA') { ui.sel = (ui.sel + ui.cards.length - 1) % ui.cards.length; AUDIO.play('select'); }
       if (e.code === 'ArrowRight' || e.code === 'KeyD') { ui.sel = (ui.sel + 1) % ui.cards.length; AUDIO.play('select'); }
@@ -266,12 +314,24 @@
     const gx = (e.clientX - r.left) / r.width * W;
     const gy = (e.clientY - r.top) / r.height * H;
     AUDIO.unlock();
+    if (STATE === 'title' && ui.menuRects) {
+      for (let i = 0; i < ui.menuRects.length; i++) { const c = ui.menuRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.menuSel === i) activateMenu(); else { ui.menuSel = i; AUDIO.play('select'); } return; } }
+      activateMenu(); return;
+    }
+    if (STATE === 'over' && ui.overRects) {
+      for (let i = 0; i < ui.overRects.length; i++) { const c = ui.overRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.sel === i) { if (ui.overT > 0.7) activateOver(); } else { ui.sel = i; AUDIO.play('select'); } return; } }
+      if (ui.overT > 0.7) activateOver();
+      return;
+    }
+    if (STATE === 'island' && ui.phase === 'mutate' && ui.rerollRect) {
+      const c = ui.rerollRect;
+      if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { rerollCards(); return; }
+    }
     if (STATE === 'island' && ui.cards && ui.cardRects) {
       for (let i = 0; i < ui.cardRects.length; i++) {
         const c = ui.cardRects[i];
         if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) {
-          if (ui.sel === i) actionQueued = true;
-          else { ui.sel = i; AUDIO.play('select'); }
+          if (ui.sel === i) actionQueued = true; else { ui.sel = i; AUDIO.play('select'); }
           return;
         }
       }
@@ -333,6 +393,7 @@
       if (run.tut.digest) { run.tut.digest = false; addFloat(bird.x, bird.y - 22, 'DIGESTING... WAIT!', '#a8e4f2'); }
     }
     AUDIO.play('catch'); AUDIO.play('pop');
+    if (run.darwin) run.darwin.ate = true;
     bird.openT = 0.18; bird.catchPop = 0.18; freezeT = Math.max(freezeT, 0.05);
     spawnParts(8, function (i) { const a = i / 8 * 6.28; return { type: 'sparkle', x: f.x + Math.cos(a) * 4, y: f.y + Math.sin(a) * 4, vx: Math.cos(a) * 30, vy: Math.sin(a) * 30, g: 0, t: 0, life: 0.4, color: '#ffffff' }; });
     return true;
@@ -353,11 +414,13 @@
     let nutr = def.nutr;
     if (def.bucket === 'berry' && has('sweet')) nutr = Math.round(nutr * 1.5);
     if (kind === 'nut' && has('gizzard')) nutr = Math.round(nutr * 1.25);
+    if (has('forager')) nutr = Math.round(nutr * 1.25);
     bird.carried = null;
     run.diet[def.bucket]++; world.legDiet[def.bucket]++;
     run.foodEaten++; run.score += nutr; run.scorePop = 0.25;
     run.evo += nutr; bird.fullness += nutr;
     bird.energy = Math.min(st.maxEnergy, bird.energy + Math.round(nutr * 0.8)); // eating refuels the wings
+    addDNA(1); if (run.darwin) run.darwin.digested = true;
     AUDIO.play('gulp');
     addFloat(beakPos().x + 4, bird.y - 12, '+' + nutr, kind === 'gold' ? '#fff3a8' : '#96d454', nutr >= 24);
     const col = def.bucket === 'berry' ? '#e0525c' : (kind === 'gold' ? '#f6c945' : (def.bucket === 'bug' ? '#3e7a2e' : '#a76f3e'));
@@ -381,6 +444,7 @@
   let _grazeSfx = 0;
   function grazeSoft(surfaceY, dir) {
     DBG.graze++;
+    if (run.darwin) run.darwin.grazed = true;
     if (dir > 0) { bird.y = surfaceY - 4; bird.vy = bird.vy > 0 ? -GRAZE_NUDGE : Math.max(bird.vy, -GRAZE_NUDGE); }
     else { bird.y = surfaceY + 4; bird.vy = bird.vy < 0 ? GRAZE_NUDGE * 0.6 : Math.min(bird.vy, GRAZE_NUDGE * 0.6); }
     bird.grazeActive = 0.06;
@@ -422,10 +486,30 @@
 
   function gameOver() {
     if (run.score > best.score) newBestFlag = true;
-    best = { score: Math.max(best.score, run.score), depth: Math.max(best.depth, run.depth), evos: Math.max(best.evos, run.evolutions) };
-    saveBest(best);
-    ui = { overT: 0 };
+    best.score = Math.max(best.score, run.score);
+    best.depth = Math.max(best.depth, run.depth);
+    best.evos = Math.max(best.evos, run.evolutions);
+    save.best = best;
+    save.dna += (run.dnaEarned || 0); run.dnaEarned = 0; // bank this life's DNA
+    persist();
+    const canHatch = !!run.checkpoint && save.dna >= hatchCost();
+    ui = { overT: 0, sel: 0, canHatch: canHatch, options: canHatch ? ['hatch', 'new'] : ['new'] };
     STATE = 'over';
+  }
+
+  function hatchFromCheckpoint() {
+    const cp = run.checkpoint; if (!cp) { newRun(); return; }
+    const cost = hatchCost();
+    if (save.dna < cost) { return; }
+    save.dna -= cost; persist();
+    run.taken = cp.taken.slice(); run.evolutions = cp.evolutions; run.evoNeed = cp.evoNeed;
+    run.evo = 0; run.evoReadyPinged = false; run.score = cp.score; run.dnaEarned = cp.dnaEarned || 0;
+    run.depth = cp.depth - 1;
+    bird.maxHearts = cp.maxHearts; bird.hearts = cp.maxHearts; bird.dead = false;
+    bird.carried = null; bird.crop = null; bird.fullness = 0; bird.stuffed = false; bird.energy = 100;
+    parts = []; floats = [];
+    AUDIO.play('evolve');
+    newLeg(cp.biomeKey);
   }
 
   // threat budget — never arm two predators / a gust at once
@@ -444,12 +528,13 @@
     const bag = pool.slice();
     while (cards.length < 3 && bag.length) {
       const entries = bag.map(function (m) {
-        const dietBonus = m.diet === 'any' ? 1 : run.diet[m.diet] * 0.25;
-        return { v: m, w: 1 + dietBonus };
+        const dietBonus = m.diet === 'any' ? 0.6 : run.diet[m.diet] * 0.3;
+        const rw = RARITY[m.rarity] ? RARITY[m.rarity].w : 1;
+        return { v: m, w: rw * (1 + dietBonus) };
       });
       const m = pickWeighted(entries);
       bag.splice(bag.indexOf(m), 1);
-      cards.push({ kind: 'mut', mut: m, title: m.name, lines: wrap(m.desc, 13), icon: m.icon });
+      cards.push({ kind: 'mut', mut: m, title: m.name, lines: wrap(m.desc, 13), icon: m.icon, rarity: m.rarity });
     }
     return cards;
   }
@@ -487,7 +572,7 @@
     run.evo = Math.max(0, run.evo - run.evoNeed);
     run.evoNeed += 30;
     run.evoReadyPinged = run.evo >= run.evoNeed;
-    run.score += 150;
+    run.score += 150; addDNA(5);
     if (m.id === 'downy') { bird.maxHearts = Math.min(5, bird.maxHearts + 1); bird.hearts = bird.maxHearts; AUDIO.play('heart'); }
     AUDIO.play('evolve'); AUDIO.play('chirp');
     freezeT = 0.12; shakeIt(1.5, 0.30); ui.flash = 0.35;
@@ -570,13 +655,14 @@
           if (run.tut.energy) { run.tut.energy = false; addFloat(bird.x, bird.y - 22, 'TIRED! GLIDE + EAT', '#f6c945'); }
         }
         bird.flapT = 0.24;
+        if (run.darwin) run.darwin.flapped = true;
         AUDIO.play('flap');
         parts.push(puff(bird.x - 6, bird.y + 5));
         if (Math.random() < 0.3) parts.push(feather(bird.x - 4, bird.y + 3));
       }
       let grav = st.grav, maxFall = st.maxFall, regen = st.regen;
       bird.glidePose = false;
-      if (st.glide && bird.glideHeld && bird.vy > 0) { grav *= 0.35; maxFall *= 0.42; bird.glidePose = true; regen += 12; }
+      if (st.glide && bird.glideHeld && bird.vy > 0) { grav *= (has('aerial') ? 0.24 : 0.35); maxFall *= (has('aerial') ? 0.32 : 0.42); bird.glidePose = true; regen += 12; }
       bird.energy = Math.min(st.maxEnergy, bird.energy + regen * dt);
       bird.tired = Math.max(0, bird.tired - dt);
       bird.vy = Math.min(bird.vy + grav * dt, maxFall);
@@ -591,12 +677,13 @@
     }
 
     // obstacles: scroll, pass, soft/solid collide
-    const bx0 = bird.x - HX, bx1 = bird.x + HX, by0 = bird.y - HY, by1 = bird.y + HY;
+    const hx = has('nimble') ? 4 : HX, hy = has('nimble') ? 3 : HY;
+    const bx0 = bird.x - hx, bx1 = bird.x + hx, by0 = bird.y - hy, by1 = bird.y + hy;
     for (let i = world.obstacles.length - 1; i >= 0; i--) {
       const o = world.obstacles[i];
       const sx = o.x - world.dist;
       if (!o.passed && sx + o.w < bird.x - 8) {
-        o.passed = true; run.obstaclesPassed++; run.score += 10; run.scorePop = 0.25; AUDIO.play('point');
+        o.passed = true; run.obstaclesPassed++; run.score += 10; run.scorePop = 0.25; addDNA(1); AUDIO.play('point');
         const tH = o.gapY - o.gapH / 2, bY = o.gapY + o.gapH / 2;
         if (by0 - tH < 7 || bY - by1 < 7) { AUDIO.play('whoosh'); parts.push(streak(bird.y)); }
         const col = o.kind === 'rock' ? '#c9d2e0' : '#5cad3c';
@@ -677,6 +764,7 @@
     }
 
     bird.invuln = Math.max(0, bird.invuln - dt);
+    if (run.darwin) updateDarwin(dt);
     updateBirdCosmetics(dt);
   }
 
@@ -712,7 +800,7 @@
       const topH = o.gapY - o.gapH / 2, botY = o.gapY + o.gapH / 2;
       s.ax = ax; s.restY = topH + 4; s.topH = topH; s.botY = botY;
       if (s.state === 'dormant') {
-        const wu = WINDUP * (s.first ? 1.4 : 1);
+        const wu = WINDUP * (s.first ? 1.4 : 1) * (has('apex') ? 1.5 : 1);
         if (!s.spent && ax > BIRD_X && ax <= BIRD_X + 8 + world.speed * wu && threatFree()) {
           s.state = 'windup'; s.t = 0; s.wu = wu;
           s.lockY = clamp(bird.y, topH + 2, botY - 2);
@@ -777,7 +865,7 @@
       } else if (s.state === 'telegraph') {
         s.t += dt;
         if (Math.random() < 0.4) parts.push(bubble(s.sx + rnd(-4, 4), SEA_Y - 2));
-        if (s.t >= TELE * (s.first ? 1.4 : 1)) { s.state = 'lunge'; s.t = 0; AUDIO.play('chomp'); }
+        if (s.t >= TELE * (s.first ? 1.4 : 1) * (has('apex') ? 1.5 : 1)) { s.state = 'lunge'; s.t = 0; AUDIO.play('chomp'); }
       } else if (s.state === 'lunge') {
         s.t += dt;
         const k = easeOutCubic(s.t / LUNGE);
@@ -808,7 +896,7 @@
     }
     const h = world.hawk;
     if (!h) return;
-    const WARN = 1.0 * (h.first ? 1.4 : 1), SWOOP = 0.5;
+    const WARN = 1.0 * (h.first ? 1.4 : 1) * (has('apex') ? 1.5 : 1), SWOOP = 0.5;
     if (h.state === 'warn') {
       h.t += dt;
       if (h.t < 0.3) h.lockY = bird.y;
@@ -846,9 +934,12 @@
       } else if (d.state === 'fall') {
         d.vy += 520 * dt; d.y += d.vy * dt;
         if (!bird.dead && bird.invuln <= 0 && !d.first && Math.abs(sx - bird.x) < 7 && Math.abs(d.y - bird.y) < 7) {
-          hurt('durian', { sfx: 'chomp', shake: 3.5, shakeDur: 0.35, freeze: 0.10, flash: 0.12, feathers: 8, knockVy: 70 });
-          spawnParts(6, function () { return leaf(bird.x, bird.y, '#6ea233'); });
-          d.state = 'spent';
+          if (has('ironbeak')) { d.state = 'spent'; AUDIO.play('shield'); addFloat(bird.x, bird.y - 14, 'CLANG!', '#c9d2e0'); spawnParts(8, function () { return sparkle(bird.x + rnd(-4, 4), bird.y, '#c9d2e0'); }); }
+          else {
+            hurt('durian', { sfx: 'chomp', shake: 3.5, shakeDur: 0.35, freeze: 0.10, flash: 0.12, feathers: 8, knockVy: 70 });
+            spawnParts(6, function () { return leaf(bird.x, bird.y, '#6ea233'); });
+            d.state = 'spent';
+          }
         }
         if (d.y > SEA_Y - 2) { d.state = 'spent'; AUDIO.play('land'); spawnParts(6, function () { return dust(sx, SEA_Y, '#6ea233'); }); }
       }
@@ -867,7 +958,7 @@
       if (!bird.dead) {
         const bp = beakPos();
         if (Math.abs(c.x - bp.x) < 8 && Math.abs(c.y - bp.y) < 8) {
-          run.score += 60; run.evo += 30; run.scorePop = 0.25; run.bugsChased++;
+          run.score += 60; run.evo += 30; run.scorePop = 0.25; run.bugsChased++; addDNA(3);
           bird.energy = bird.maxEnergy || 100;
           AUDIO.play('heart'); AUDIO.play('confirm');
           addFloat(bird.x, bird.y - 18, 'CAUGHT! +60', '#fff3a8', true);
@@ -882,6 +973,32 @@
       c.x += 40 * dt; c.y -= 60 * dt;
       if (c.t >= c.life + 1) world.chaseBug = null;
     }
+  }
+
+  // ---------- Charles Darwin interactive tutorial ----------
+  const DARWIN_STEPS = [
+    { lines: ["I'M DARWIN!", 'TAP SPACE TO', 'FLAP YOUR WINGS'], cond: function (d) { return d.flapped; } },
+    { lines: ['MIND THE WING', 'ENERGY BAR -', 'GLIDE TO REST IT'], cond: function (d) { return d.t > 3.5; } },
+    { lines: ['SNAP FOOD ONTO', 'YOUR BEAK!'], cond: function (d) { return d.ate; } },
+    { lines: ['PATIENCE... LET', 'IT DIGEST FULLY'], cond: function (d) { return d.digested; } },
+    { lines: ['SKIM TREETOPS -', 'LEAVES ARE SAFE', 'TO SLIDE ALONG!'], cond: function (d) { return d.grazed; } },
+    { lines: ['ONWARD! REACH', 'THE NEST TO HATCH', 'A NEW GENERATION'], cond: function (d) { return d.t > 4; } },
+  ];
+  function updateDarwin(dt) {
+    const d = run.darwin; if (!d || d.done) return;
+    d.t += dt;
+    const step = DARWIN_STEPS[d.step];
+    if (step && d.t > 0.6 && step.cond(d)) {
+      d.step++; d.t = 0; AUDIO.play('chirp');
+      if (d.step >= DARWIN_STEPS.length) { d.done = true; run.darwin = null; }
+    }
+  }
+  function drawDarwin() {
+    const d = run.darwin; if (!d || d.done) return;
+    const step = DARWIN_STEPS[d.step]; if (!step) return;
+    const px = 4, py = H - 44;
+    ctx.drawImage(SPR.DARWIN, px, py);
+    drawSpeech(px + 22, py - 4, step.lines, 96);
   }
 
   // ---------- cutscene + island ----------
@@ -974,6 +1091,8 @@
 
   function islandArrive() {
     STATE = 'island';
+    save.dna += (run.dnaEarned || 0); run.dnaEarned = 0; persist(); // bank DNA at the nest
+    if (run.tutorialMode && run.depth >= 1) { save.tutorialDone = true; persist(); }
     world.cam.scale = 1; world.cam.kickX = 0; world.cam.kickY = 0;
     ui = { phase: 'summary', t: 0, cards: null, sel: 0, cardRects: null, flash: 0 };
   }
@@ -1251,33 +1370,69 @@
     for (let i = 0; i < 4; i++) ctx.fillRect(Math.round(cx - o.w / 2 + orand(o.seed, i * 5) * o.w), Math.round(edgeY + dir * (4 + orand(o.seed, i) * 20)), 1, 1);
   }
 
-  function drawLeafyHalf(cx, edgeY, dir, o, tv, fruitColor) {
-    const sway = Math.sin(time * (o.variant === 'broadleaf' || o.variant === 'mangrove' ? 1.9 : 1.3) + o.seed * 0.017) * (o.variant === 'broadleaf' ? 2 : 1);
-    const rx = o.w / 2 + (tv.soft - 3);
-    const ry = tv.ry;
-    if (o.variant === 'broadleaf') {
-      canopyMound(cx - 6, edgeY, dir, rx - 3, ry - 2, tv.canopy, o.seed + 1, sway);
-      canopyMound(cx + 7, edgeY + dir * 2, dir, rx - 4, ry - 3, tv.canopy, o.seed + 2, sway);
-      canopyMound(cx, edgeY, dir, rx, ry, tv.canopy, o.seed, sway);
-    } else if (o.variant === 'cypress') {
-      canopyMound(cx, edgeY, dir, rx - 2, ry, tv.canopy, o.seed, sway);
-      canopyMound(cx, edgeY + dir * (ry * 0.8), dir, rx - 5, ry - 3, tv.canopy, o.seed + 3, sway);
-    } else {
-      canopyMound(cx, edgeY, dir, rx, ry, tv.canopy, o.seed, sway);
+  // filled shaded ellipse of leaves (top-lit), ragged organic edge + dapples
+  function canopyEllipse(cx, cy, rx, ry, pal, seed, sway) {
+    if (rx < 1 || ry < 1) return;
+    for (let dy = -ry; dy <= ry; dy++) {
+      const yy = Math.round(cy + dy);
+      const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy / ry) * (dy / ry))));
+      if (hw <= 0) continue;
+      const lit = 0.5 - dy / ry * 0.5;
+      const col = lit > 0.8 ? pal.hi : lit > 0.58 ? pal.top : lit > 0.36 ? pal.mid : lit > 0.16 ? pal.base : pal.deep;
+      const jit = Math.round((orand(seed, dy + 40) - 0.5) * 2) + Math.round(sway * (0.3 + Math.abs(dy / ry) * 0.7));
+      ctx.fillStyle = col; ctx.fillRect(Math.round(cx - hw + jit), yy, hw * 2, 1);
     }
-    // crisp lit lip = readable soft edge
+    ctx.fillStyle = pal.hi;
+    for (let i = 0; i < 5; i++) { const a = orand(seed, i * 13) * 6.28, rr = orand(seed, i * 7) * 0.7; ctx.fillRect(Math.round(cx + Math.cos(a) * rx * rr + sway), Math.round(cy + Math.sin(a) * ry * rr), 1, 1); }
+  }
+
+  // a tapered woody limb from (x0,y0) to (x1,y1)
+  function drawLimb(x0, y0, x1, y1, w, bark) {
+    const steps = Math.max(2, Math.round(Math.hypot(x1 - x0, y1 - y0)));
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps, x = lerp(x0, x1, t), y = lerp(y0, y1, t), ww = Math.max(1, Math.round(w * (1 - t * 0.7)));
+      ctx.fillStyle = i > steps * 0.5 ? bark.dark : bark.mid;
+      ctx.fillRect(Math.round(x - ww / 2), Math.round(y - ww / 2), ww, ww);
+    }
+  }
+
+  function drawLeafyHalf(cx, edgeY, dir, o, tv, fruitColor) {
+    const organic = o.variant !== 'cypress';
+    const sway = Math.sin(time * (o.variant === 'broadleaf' || o.variant === 'mangrove' ? 1.9 : 1.3) + o.seed * 0.017) * (o.variant === 'broadleaf' ? 2 : 1);
+    const rx = o.w / 2 + (tv.soft - 3), ry = tv.ry;
+    const cy = edgeY + dir * ry;
+    // branches forking from the trunk core into and through the canopy
+    for (let i = 0; i < 3; i++) {
+      const side = (i % 2 ? 1 : -1);
+      const baseY = edgeY + dir * (ry * 0.95 + i * 3);
+      const ang = 0.5 + orand(o.seed, i * 7) * 0.55;
+      const blen = rx * (0.6 + orand(o.seed, i * 5) * 0.55);
+      const tipx = cx + side * Math.cos(ang) * blen, tipy = baseY - dir * Math.sin(ang) * blen;
+      drawLimb(cx, baseY, tipx, tipy, tv.coreHalf, tv.bark);
+      canopyEllipse(tipx + sway, tipy, 5, 4, tv.canopy, o.seed + i * 11, sway * 0.5);
+    }
+    // organic canopy: central mass + offset lobes for a lumpy natural silhouette
+    canopyEllipse(cx, cy, rx, ry, tv.canopy, o.seed, sway);
+    if (organic) {
+      canopyEllipse(cx - rx * 0.55, cy + dir * ry * 0.18, rx * 0.62, ry * 0.72, tv.canopy, o.seed + 3, sway);
+      canopyEllipse(cx + rx * 0.55, cy + dir * ry * 0.12, rx * 0.62, ry * 0.72, tv.canopy, o.seed + 5, sway);
+      canopyEllipse(cx, cy - dir * ry * 0.5, rx * 0.72, ry * 0.6, tv.canopy, o.seed + 7, sway);
+    } else {
+      canopyEllipse(cx, cy + dir * ry * 0.8, rx * 0.6, ry * 0.7, tv.canopy, o.seed + 3, sway);
+    }
+    // crisp lit lip = readable soft graze edge
     ctx.fillStyle = tv.canopy.hi;
-    ctx.fillRect(cx - Math.round(rx * 0.7) + Math.round(sway), edgeY - (dir > 0 ? 0 : 1), Math.round(rx * 1.4), 1);
+    ctx.fillRect(Math.round(cx - rx * 0.6 + sway), edgeY - (dir > 0 ? 0 : 1), Math.round(rx * 1.2), 1);
     // decorations
-    if (o.variant === 'nutoak') fruitDots(cx, edgeY + dir * ry, rx * 0.7, ry * 0.7, o.seed, '#7b4d26');
+    if (o.variant === 'nutoak') fruitDots(cx, cy, rx * 0.7, ry * 0.7, o.seed, '#7b4d26');
     else if (o.variant === 'broadleaf') {
-      fruitDots(cx, edgeY + dir * ry, rx * 0.7, ry * 0.6, o.seed, tv.flower);
+      fruitDots(cx, cy, rx * 0.7, ry * 0.6, o.seed, tv.flower);
       ctx.fillStyle = tv.vine;
-      for (let i = 0; i < 3; i++) { const vx = cx - 8 + Math.round(orand(o.seed, 200 + i * 9) * 16); const vl = 4 + Math.round(orand(o.seed, 230 + i) * 6); ctx.fillRect(vx, edgeY, 1, dir > 0 ? -vl : vl); }
+      for (let i = 0; i < 4; i++) { const vx = cx - 10 + Math.round(orand(o.seed, 200 + i * 9) * 20); const vl = 5 + Math.round(orand(o.seed, 230 + i) * 7); ctx.fillRect(vx, edgeY, 1, dir > 0 ? -vl : vl); ctx.fillStyle = tv.flower; if (i % 2) ctx.fillRect(vx, edgeY + (dir > 0 ? -vl : vl), 1, 1); ctx.fillStyle = tv.vine; }
     } else if (o.variant === 'cypress' && tv.moss) {
       ctx.fillStyle = tv.moss;
-      for (let i = 0; i < 4; i++) { const mx = cx - 10 + Math.round(orand(o.seed, 60 + i * 3) * 20); const ml = 3 + Math.round(orand(o.seed, 80 + i) * 5); ctx.fillRect(mx, edgeY, 1, dir > 0 ? -ml : ml); }
-    } else fruitDots(cx, edgeY + dir * ry, rx * 0.65, ry * 0.65, o.seed, fruitColor);
+      for (let i = 0; i < 5; i++) { const mx = cx - 11 + Math.round(orand(o.seed, 60 + i * 3) * 22); const ml = 3 + Math.round(orand(o.seed, 80 + i) * 6); ctx.fillRect(mx, edgeY, 1, dir > 0 ? -ml : ml); }
+    } else fruitDots(cx, cy, rx * 0.65, ry * 0.65, o.seed, fruitColor);
   }
 
   function drawTreeObstacle(sx, o, fruitColor) {
@@ -1496,6 +1651,13 @@
     ctx.fillRect(x, y + 1, 1, h2 - 2); ctx.fillRect(x + w2 - 1, y + 1, 1, h2 - 2);
   }
 
+  function drawSpeech(x, y, lines, w2) {
+    const h2 = lines.length * 8 + 6;
+    drawPanel(x, y, w2, h2);
+    for (let i = 0; i < lines.length; i++) drawText(ctx, lines[i], x + 4, y + 4 + i * 8, '#ffffff', 1);
+    ctx.fillStyle = 'rgba(18,12,30,0.92)'; ctx.fillRect(x + 2, y + h2, 3, 2); ctx.fillRect(x, y + h2 + 2, 2, 2);
+  }
+
   function drawHUD() {
     const st = stats();
     for (let i = 0; i < bird.maxHearts; i++) ctx.drawImage(i < bird.hearts ? SPR.HEART : SPR.HEART_EMPTY, 4 + i * 9, 4);
@@ -1518,6 +1680,8 @@
     if (scoreScale === 2) drawTextShadow(ctx, String(run.score), W - 4, 3, '#fff3a8', 1, 'right');
     else drawTextShadow(ctx, String(run.score), W - 4, 4, '#ffffff', 1, 'right');
     drawTextShadow(ctx, 'DEPTH ' + run.depth, W - 4, 11, '#c9d2e0', 1, 'right');
+    drawTextShadow(ctx, 'DNA ' + (save.dna + (run.dnaEarned || 0)), W - 4, 18, '#3fc0b0', 1, 'right');
+    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1), ebx + 6, eby + 8, '#8fd6c8', 1);
     const tw = 30, tx2 = 4, ty = H - 9;
     drawTextShadow(ctx, 'TUMMY', tx2, ty - 7, '#e5c28c', 1);
     ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(tx2 - 1, ty, tw + 2, 5);
@@ -1596,23 +1760,38 @@
     ui.cardRects = [];
     for (let i = 0; i < cards.length; i++) {
       const c = cards[i], sel = i === ui.sel, cx = x0 + i * (cw + gap), cy = y0 + (sel ? -3 : 0);
+      const rc = (c.rarity && RARITY[c.rarity]) ? RARITY[c.rarity].col : '#f6c945';
       ui.cardRects.push({ x: cx, y: cy, w: cw, h: ch });
       drawPanel(cx, cy, cw, ch);
+      // rarity accent strip along the card top
+      if (c.kind === 'mut') { ctx.fillStyle = rc; ctx.fillRect(cx + 1, cy + 1, cw - 2, 2); }
       if (sel) {
-        ctx.fillStyle = '#f6c945';
+        const bc = c.kind === 'mut' ? rc : '#f6c945';
+        ctx.fillStyle = bc;
         ctx.fillRect(cx + 1, cy, cw - 2, 1); ctx.fillRect(cx + 1, cy + ch - 1, cw - 2, 1);
         ctx.fillRect(cx, cy + 1, 1, ch - 2); ctx.fillRect(cx + cw - 1, cy + 1, 1, ch - 2);
-        const bob = Math.floor(time * 4) % 2; drawText(ctx, '*', cx + cw / 2 - 1, cy - 9 - bob, '#f6c945', 1);
+        const bob = Math.floor(time * 4) % 2; drawText(ctx, '*', cx + cw / 2 - 1, cy - 9 - bob, bc, 1);
       }
-      const icon = c.icon, isc = 2, iy = cy + 7 + Math.max(0, Math.round((28 - icon.height * isc) / 2));
+      const icon = c.icon, isc = 2, iy = cy + 9 + Math.max(0, Math.round((26 - icon.height * isc) / 2));
       ctx.drawImage(icon, Math.round(cx + cw / 2 - icon.width * isc / 2), iy, icon.width * isc, icon.height * isc);
       const tl = wrap(c.title, 12); let ty = cy + 40;
-      for (const line of tl) { drawTextShadow(ctx, line, cx + cw / 2, ty, sel ? '#f6c945' : '#ffffff', 1, 'center'); ty += 7; }
+      for (const line of tl) { drawTextShadow(ctx, line, cx + cw / 2, ty, sel ? rc : '#ffffff', 1, 'center'); ty += 7; }
       ty += 2;
       for (const line of c.lines) { drawText(ctx, line, cx + cw / 2, ty, '#c9d2e0', 1, 'center'); ty += 7; }
+      if (c.kind === 'mut' && c.rarity) drawTextShadow(ctx, RARITY[c.rarity].label, cx + cw / 2, cy + ch - 9, rc, 1, 'center');
       if (c.kind === 'path') { const n = c.danger, sx0 = cx + cw / 2 - (n * 7 - 2) / 2; for (let s = 0; s < n; s++) ctx.drawImage(SPR.SKULL, Math.round(sx0 + s * 7), cy + ch - 10); }
     }
-    drawTextShadow(ctx, '< > CHOOSE   SPACE/TAP CONFIRM', W / 2, y0 + ch + 10, '#8f86a8', 1, 'center');
+    let hy = y0 + ch + 9;
+    ui.rerollRect = null;
+    if (cards[0].kind === 'mut') {
+      const afford = save.dna >= REROLL_COST;
+      const bw = 96, bx = W / 2 - bw / 2, by = hy;
+      drawPanel(bx, by, bw, 12);
+      drawTextShadow(ctx, 'REROLL -' + REROLL_COST + ' DNA', W / 2, by + 3, afford ? '#3fc0b0' : '#6a5a6a', 1, 'center');
+      ui.rerollRect = { x: bx, y: by, w: bw, h: 12 };
+      hy += 16;
+    }
+    drawTextShadow(ctx, '< > CHOOSE   SPACE/TAP CONFIRM', W / 2, hy, '#8f86a8', 1, 'center');
   }
 
   // ---------- render: states ----------
@@ -1642,6 +1821,7 @@
     ctx.restore();
     drawHUD();
     drawBanner();
+    if (!cine && run.darwin) drawDarwin();
     if (cine) drawCineTitle();
     if (world.fade > 0) { ctx.fillStyle = 'rgba(10,6,18,' + clamp(world.fade, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
@@ -1678,24 +1858,34 @@
   function renderTitle() {
     drawBackground(time * 12);
     drawSea();
-    const ly = 32 + Math.round(Math.sin(time * 1.2) * 2);
+    const ly = 18 + Math.round(Math.sin(time * 1.2) * 2);
     FONT.drawTextOutline(ctx, 'FLAPPY', W / 2, ly, '#f6c945', 3, 'center');
-    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 22, '#3fc0b0', 3, 'center');
-    ctx.drawImage(SPR.DNA, W / 2 - 62, ly + 24); ctx.drawImage(SPR.DNA, W / 2 + 58, ly + 24);
-    drawTextShadow(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 46, '#ffffff', 1, 'center');
-    const dy = ui.demoY || 84;
-    SPR.drawBird(ctx, 70, dy, Math.sin(time * 1.6 + 1) * 0.1, {
-      frame: Math.floor(time * 9) % 3, open: false, bigBeak: false, bigWings: false, bigTail: false,
-      crest: 0, stuffed: false, blink: Math.sin(time * 0.7) > 0.97, shield: false, time: time, sx: 1, sy: 1,
+    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 20, '#3fc0b0', 3, 'center');
+    drawTextShadow(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 42, '#ffffff', 1, 'center');
+    // an evolved demo bird glides across
+    const dbx = 40 + ((time * 26) % (W + 40)), dby = 66 + Math.sin(time * 1.6) * 6;
+    SPR.drawBird(ctx, dbx, dby, Math.sin(time * 1.6 + 1) * 0.1, {
+      frame: Math.floor(time * 9) % 3, open: false, bigWings: true, bigTail: true, crest: 3,
+      blink: Math.sin(time * 0.7) > 0.97, time: time, sx: 1, sy: 1,
     });
-    if (Math.random() < 0.06) parts.push(feather(62, dy + 4));
-    ctx.drawImage(SPR.BERRY, 100, Math.round(dy - 6 + Math.sin(time * 2.2) * 3));
+    if (Math.random() < 0.05) parts.push(feather(dbx - 6, dby + 4));
     drawParts();
-    if (Math.floor(time * 2) % 2) drawTextShadow(ctx, 'PRESS SPACE OR TAP TO MIGRATE', W / 2, 122, '#ffffff', 1, 'center');
-    drawTextShadow(ctx, 'EAT + GRAZE TREETOPS TO REFUEL YOUR WINGS', W / 2, 138, '#a8e4f2', 1, 'center');
-    drawTextShadow(ctx, 'DODGE SNAKES HAWKS DURIANS - HATCH AT THE NEST', W / 2, 146, '#a8e4f2', 1, 'center');
-    if (best.score > 0) drawTextShadow(ctx, 'BEST ' + best.score + '  DEPTH ' + best.depth + '  EVOS ' + best.evos, W / 2, 162, '#f6c945', 1, 'center');
-    drawText(ctx, 'M MUTE  P PAUSE  R RESTART', W / 2, 171, '#8f86a8', 1, 'center');
+    // menu
+    const items = menuItems(); ui.menuRects = [];
+    const my0 = 94;
+    for (let i = 0; i < items.length; i++) {
+      const yy = my0 + i * 13, sel = (ui.menuSel || 0) === i, w2 = 92, x = W / 2 - w2 / 2;
+      ui.menuRects.push({ x: x, y: yy - 3, w: w2, h: 12 });
+      if (sel) drawPanel(x, yy - 3, w2, 12);
+      drawTextShadow(ctx, (sel ? '> ' : '') + items[i] + (sel ? ' <' : ''), W / 2, yy, sel ? '#f6c945' : '#c9d2e0', 1, 'center');
+    }
+    // Darwin welcome
+    ctx.drawImage(SPR.DARWIN, 5, H - 46);
+    drawSpeech(28, H - 46, ["I'M DARWIN.", 'TRY TUTORIAL', 'IF NEW HERE!'], 70);
+    // footer stats
+    drawTextShadow(ctx, 'DNA ' + save.dna, W - 6, H - 42, '#3fc0b0', 1, 'right');
+    if (best.score > 0) drawTextShadow(ctx, 'BEST ' + best.score + ' D' + best.depth, W - 6, H - 33, '#f6c945', 1, 'right');
+    drawText(ctx, 'ARROWS+ENTER / TAP', W - 6, H - 8, '#8f86a8', 1, 'right');
   }
 
   function renderOver() {
@@ -1709,15 +1899,30 @@
     drawText(ctx, DEATHS[bird.deathBy] || 'NATURAL SELECTION WINS', W / 2, py + 24, '#c9d2e0', 1, 'center');
     drawTextShadow(ctx, 'SCORE ' + run.score, W / 2, py + 38, '#ffffff', 2, 'center');
     if (newBestFlag && Math.floor(time * 4) % 2) drawTextShadow(ctx, 'NEW BEST!', W / 2, py + 52, '#f6c945', 1, 'center');
-    drawText(ctx, 'DEPTH ' + run.depth + '   FOOD ' + run.foodEaten + '   PASSED ' + run.obstaclesPassed, W / 2, py + 64, '#c9d2e0', 1, 'center');
-    drawText(ctx, 'EVOLVED TRAITS:', W / 2, py + 76, '#3fc0b0', 1, 'center');
-    if (run.taken.length === 0) drawText(ctx, 'NONE... A HUMBLE FINCH', W / 2, py + 86, '#8f86a8', 1, 'center');
+    drawText(ctx, 'DEPTH ' + run.depth + '   FOOD ' + run.foodEaten + '   PASSED ' + run.obstaclesPassed, W / 2, py + 62, '#c9d2e0', 1, 'center');
+    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1) + '   DNA BANKED: ' + save.dna, W / 2, py + 72, '#3fc0b0', 1, 'center');
+    // evolved traits
+    if (run.taken.length === 0) drawText(ctx, 'NO TRAITS - A HUMBLE FINCH', W / 2, py + 84, '#8f86a8', 1, 'center');
     else {
       const names = run.taken.map(function (id) { const m = MUTATIONS.filter(function (x) { return x.id === id; })[0]; return m ? m.name : id; });
-      let yy = py + 86;
-      for (let i = 0; i < Math.min(4, names.length); i++) { let line = names[i]; if (i === 3 && names.length > 4) line += ' +' + (names.length - 4) + ' MORE'; drawText(ctx, line, W / 2, yy, '#ffffff', 1, 'center'); yy += 8; }
+      let line = names.slice(0, 3).join(' - ');
+      if (names.length > 3) line += ' +' + (names.length - 3);
+      drawText(ctx, line, W / 2, py + 84, '#ffffff', 1, 'center');
     }
-    if (ui.overT > 0.7 && Math.floor(time * 2) % 2) drawTextShadow(ctx, 'SPACE/TAP: TRY AGAIN', W / 2, py + 122, '#f6c945', 1, 'center');
+    // options
+    ui.overRects = [];
+    if (ui.overT > 0.7) {
+      const opts = ui.options || ['new'];
+      const labels = { hatch: 'HATCH FROM NEST  -' + hatchCost() + ' DNA', new: 'NEW LINEAGE' };
+      const oy = py + 100;
+      for (let i = 0; i < opts.length; i++) {
+        const bw = opts.length > 1 ? 176 : 130, bx = W / 2 - bw / 2, byy = oy + i * 15, sel = (ui.sel || 0) === i;
+        ui.overRects.push({ x: bx, y: byy, w: bw, h: 13 });
+        if (sel) drawPanel(bx, byy, bw, 13);
+        const col = (opts[i] === 'hatch') ? '#3fc0b0' : '#f6c945';
+        drawTextShadow(ctx, (sel ? '> ' : '') + labels[opts[i]] + (sel ? ' <' : ''), W / 2, byy + 4, sel ? col : '#c9d2e0', 1, 'center');
+      }
+    }
   }
 
   function render() {
@@ -1776,6 +1981,9 @@
     dbg: function () { return Object.assign({}, DBG); },
     dbgReset: function () { DBG.graze = 0; DBG.hurtTree = 0; DBG.hurtWater = 0; DBG.hurtPred = 0; },
     energy: function () { return bird ? Math.round(bird.energy) : 0; },
+    dna: function () { return save.dna + (run ? (run.dnaEarned || 0) : 0); },
+    giveDna: function (n) { save.dna += n; persist(); },
+    kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
     forceDurian: function () { if (!world) return; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 16 && sx < bird.x + 90) { o.durian = { state: 'wobble', t: 0, wob: 0.7, vy: 0, worldX: o.x + o.w / 2, y: (o.gapY - o.gapH / 2) + 5, first: false }; return 'ok'; } } return 'none'; },
     // place the bird relative to the nearest on-screen tree's bottom canopy top (botY):
@@ -1794,8 +2002,7 @@
 
   // ---------- main loop ----------
   newRun();
-  STATE = 'title';
-  ui = { demoY: 84 };
+  gotoTitle();
 
   let last = 0;
   function frame(t) {

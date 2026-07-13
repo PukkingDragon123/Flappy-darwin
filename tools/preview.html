@@ -79,8 +79,9 @@ function frame(){
 
   // --- forest props / hazards / meta ---
   x = 20;
-  const props = ['DURIAN','PITCHER_GAPE','PITCHER_LURK','NEST','EGG','EGG_CRACK','HATCHLING','CHASE_BUG','MUSHROOM','FERN','BUSH','LOG'];
-  for (const pr of props){ cell(SPR[pr], x, 575, 4); label(pr.slice(0,8), x, 625); x += 60; }
+  const props = ['DURIAN','PITCHER_GAPE','NEST','EGG','EGG_CRACK','HATCHLING','CHASE_BUG','MUSHROOM','FERN','BUSH','LOG'];
+  for (const pr of props){ cell(SPR[pr], x, 575, 4); label(pr.slice(0,8), x, 625); x += 56; }
+  cell(SPR.DARWIN, 640, 560, 4); label('DARWIN', 640, 640);
 
   requestAnimationFrame(frame);
 }
