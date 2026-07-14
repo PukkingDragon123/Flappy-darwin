@@ -54,11 +54,17 @@ the undergrowth and you'll get hurt.
    over-gulping leaves you **STUFFED**: heavy and weak-winged.
 4. **Chase the bug.** Now and then a glowing beetle darts ahead — pursue it and
    snatch it for a big burst of score, evolution and full energy.
-5. **Dodge the dangers.** Every threat is **telegraphed and fair**:
-   - 🐍 **Canopy snakes** rear up in the trees (watch the aim-dots) then strike.
+5. **Boost to escape.** Double-tap (double-click / double-press) to **dash** — a
+   burst of speed that costs wing energy. Use it to outrun what's chasing you.
+6. **Dodge the dangers.** Every threat is **telegraphed and fair**:
+   - 🐍 **Canopy snakes** rear up and strike — and if one hits, it **latches on**;
+     **tap fast (swipe 5×) to shake it off** before it drains you.
+   - 🦅 **Falcons** chase you down from behind — **boost away** or juke them.
    - 🌿 **Pitcher plants** bubble in the undergrowth, then lunge — stay high.
    - 🦅 **Hawks** cast a warning shadow, then dive — drop low.
    - 🥭 **Durians** hang from branches and *drop* when you near them — move!
+
+![A canopy snake latches on — swipe to shake it off](docs/snake-latch.png)
 6. **Rest at the nest.** Arriving at a grove triggers a landing cutscene with a
    sweeping **overview pan** across the clearing. When enough food is banked, an
    egg in the nest **hatches a new generation** — you pick the trait it
@@ -87,20 +93,28 @@ Rapid Gut · Crop Pouch · Iron Gizzard · Downy Plume · Sweet Tooth · Bug Sna
 Feather Shield · Second Stomach · Big Lungs · Light Frame · Sun Feathers ·
 Keen Forager · Nimble Frame · Iron Beak · **Aerial Master** · **Apex Instinct**.
 
-## Biomes
+## Biomes & environments
 
-Seven biomes, each with its own trees, light, food and dangers. Paths branch and
+Ten biomes across four environments — forest, ocean, tundra and desert — each
+with its own trees/obstacles, light, food and dangers. Paths branch and
 difficulty ramps the deeper you migrate.
 
-| Biome | Look | Food | Hazards |
+| Biome | Env | Obstacles | Hazards |
 |---|---|---|---|
-| 🌼 **Meadow Isles** | bright leafy oaks | berries, seeds | — |
-| 🌲 **Pinewood Reach** | misty conifers | seeds, nuts | durians |
-| 🌰 **Oaknut Grove** | golden oaks | nuts | pitchers, durians |
-| 🐛 **Buzzing Marsh** | mangroves + reeds | bugs | — |
-| 🐍 **Mire Swamp** | mossy cypress | grubs, frogs | snakes, pitchers |
-| ⛰️ **Storm Crags** | rock spires | golden fruit | hawks, wind |
-| 🌴 **Lush Jungle** | broadleaf + vines | mango, gold | everything |
+| 🌼 **Meadow Isles** | forest | leafy oaks | — |
+| 🌲 **Pinewood Reach** | forest | conifers | durians |
+| 🌰 **Oaknut Grove** | forest | golden oaks | pitchers, durians |
+| 🐛 **Buzzing Marsh** | forest | mangroves | — |
+| 🐍 **Mire Swamp** | forest | cypress | snakes, pitchers |
+| ⛰️ **Storm Crags** | forest | rock spires | hawks, falcons |
+| 🌴 **Lush Jungle** | forest | broadleaf + vines | everything |
+| 🌊 **Coral Coast** | ocean | swaying palms | falcons |
+| ❄️ **Frost Reach** | tundra | snow-laden pines | falcons, hawks, gusts |
+| 🏜️ **Dune Sea** | desert | saguaro cacti | snakes, falcons |
+
+![Dune Sea — desert environment with cacti](docs/desert.png)
+
+![Frost Reach — tundra with snowfall](docs/tundra.png)
 
 ![A golden jungle, evolved](docs/jungle.png)
 

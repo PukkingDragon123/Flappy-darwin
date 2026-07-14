@@ -291,6 +291,35 @@
     '......a......',
   ]);
 
+  // falcon (sleeker, swept pointed wings, slate-blue) — a pursuit predator
+  const FALCON_PAL = Object.assign({}, PAL, { a: '#5b6474', H: '#8c96a8', P: '#343b4a', y: '#e0b24a' });
+  const FALCON_MID = bake([
+    'a...........a',
+    '.aa.......aa.',
+    '..aaa...aaa..',
+    '...aaaHaaa...',
+    '..aaPPyPPaa..',
+    '....a.y.a....',
+    '......P......',
+  ], FALCON_PAL);
+  const FALCON_UP = bake([
+    '.aa.......aa.',
+    '..aaa...aaa..',
+    '...aaa.aaa...',
+    '....aaHaa....',
+    '....PPyPP....',
+    '.....a.a.....',
+  ], FALCON_PAL);
+  const FALCON_DIVE = bake([   // folded, stooping toward prey
+    '.a.........a.',
+    '..aa.....aa..',
+    '...aaaHaaa...',
+    '....aayaa....',
+    '.....PyP.....',
+    '.....a.a.....',
+    '......P......',
+  ], FALCON_PAL);
+
   // ============================================================
   //  FOODS
   // ============================================================
@@ -804,7 +833,7 @@
     CREST1: CREST1, CREST2: CREST2, CREST3: CREST3, LEG: LEG,
     SNAKE_COIL: SNAKE_COIL, SNAKE_REAR: SNAKE_REAR, SNAKE_STRIKE: SNAKE_STRIKE,
     SNAPPER_LURK: SNAPPER_LURK, SNAPPER_GAPE: SNAPPER_GAPE,
-    HAWK_MID: HAWK_MID, HAWK_UP: HAWK_UP,
+    HAWK_MID: HAWK_MID, HAWK_UP: HAWK_UP, FALCON_MID: FALCON_MID, FALCON_UP: FALCON_UP, FALCON_DIVE: FALCON_DIVE,
     BERRY: BERRY, SEED: SEED, NUT: NUT, NECTAR: NECTAR, GRUB: GRUB,
     FROG: FROG, MANGO: MANGO, BUG1: BUG1, BUG2: BUG2, GOLD: GOLD,
     HEART: HEART, HEART_EMPTY: HEART_EMPTY, DNA: DNA, SKULL: SKULL, FEATHER: FEATHER,

@@ -80,12 +80,23 @@
       hazards: ['snake', 'snapper'], foods: { bug: 4, grub: 3, frog: 2, berry: 1, gold: 0.3 },
       hint: ['LURKING JAWS', 'GRUBS + FROGS'], foodIcons: ['grub', 'frog'], icon: SPR.ICON_SWAMP },
     crags: { name: 'STORM CRAGS', danger: 3, obst: 'rock', tree: null, gapBase: 54, wind: true, sky: 'stormy', deco: '#9aa2b5',
-      hazards: ['hawk'], foods: { seed: 2, nut: 2, berry: 2, gold: 0.7 },
-      hint: ['DIVING HAWKS', 'WILD GUSTS'], foodIcons: ['gold', 'nut'], icon: SPR.ICON_CRAGS },
+      hazards: ['hawk', 'falcon'], foods: { seed: 2, nut: 2, berry: 2, gold: 0.7 },
+      hint: ['HAWKS + FALCONS', 'WILD GUSTS'], foodIcons: ['gold', 'nut'], icon: SPR.ICON_CRAGS },
     jungle: { name: 'LUSH JUNGLE', danger: 3, obst: 'tree', tree: 'broadleaf', gapBase: 52, dense: true, sky: 'golden', deco: '#ff5f9e',
       hazards: ['snake', 'hawk', 'snapper'], durian: true, foods: { mango: 4, nectar: 3, nut: 2, berry: 2, bug: 2, frog: 1.5, gold: 0.8 },
       hint: ['EVERY DANGER', 'RICH FRUIT'], foodIcons: ['mango', 'gold'], icon: SPR.ICON_JUNGLE },
   };
+  // new environments beyond the forest
+  BIOMES.coast = { name: 'CORAL COAST', danger: 2, obst: 'tree', tree: 'palm', gapBase: 58, env: 'ocean', sky: 'day', deco: '#ff9f4d',
+    hazards: ['falcon'], foods: { nectar: 3, berry: 2, bug: 2, mango: 1, gold: 0.4 },
+    hint: ['DIVING FALCONS', 'SWAYING PALMS'], foodIcons: ['nectar', 'gold'], icon: SPR.ICON_MEADOW };
+  BIOMES.tundra = { name: 'FROST REACH', danger: 3, obst: 'tree', tree: 'snowpine', gapBase: 55, env: 'tundra', sky: 'misty', wind: true, deco: '#a8e4f2',
+    hazards: ['falcon', 'hawk'], foods: { seed: 4, nut: 2, berry: 1, gold: 0.4 },
+    hint: ['ICY GUSTS', 'RAPTORS HUNT'], foodIcons: ['seed', 'gold'], icon: SPR.ICON_FOREST };
+  BIOMES.desert = { name: 'DUNE SEA', danger: 3, obst: 'cactus', tree: 'cactus', gapBase: 56, env: 'desert', sky: 'golden', deco: '#ff7a4d',
+    hazards: ['snake', 'falcon'], foods: { seed: 3, bug: 2, frog: 1, gold: 0.6 },
+    hint: ['SPINY CACTI', 'CANOPY SNAKES'], foodIcons: ['gold', 'seed'], icon: SPR.ICON_CRAGS };
+  for (var _bk in BIOMES) if (!BIOMES[_bk].env) BIOMES[_bk].env = 'forest';
   const BIOME_KEYS = Object.keys(BIOMES);
 
   // per-variant tree palettes + soft/solid geometry
@@ -96,6 +107,8 @@
     cypress:   { soft: 6, coreHalf: 3, ry: 12, canopy: { deep: '#2a4420', base: '#35502a', mid: '#5c7d3a', top: '#8aa74e', hi: '#b0b06a' }, bark: { light: '#8a6a54', mid: '#5a4030', dark: '#3a2a1f' }, moss: '#9fb488' },
     pine:      { soft: 4, coreHalf: 3, ry: 12, canopy: { deep: '#123a20', base: '#1f4a2b', mid: '#2f6b3a', top: '#55915a', hi: '#9ecf8e' }, bark: { light: '#7a5236', mid: '#5a3a24', dark: '#3a2416' } },
     broadleaf: { soft: 7, coreHalf: 4, ry: 12, canopy: { deep: '#123a17', base: '#1f5322', mid: '#3d8a36', top: '#63b544', hi: '#9be05a' }, bark: { light: '#8a6a42', mid: '#63482c', dark: '#3a2a1a' }, vine: '#3d7f2a', flower: '#ff5f9e' },
+    palm: { soft: 5, coreHalf: 3, ry: 9, canopy: { deep: '#1f5a2a', base: '#2f7a34', mid: '#4fa03e', top: '#79c24a', hi: '#a8e05e' }, bark: { light: '#b08a52', mid: '#8a6636', dark: '#5a4020' } },
+    snowpine: { soft: 4, coreHalf: 3, ry: 12, canopy: { deep: '#2a5648', base: '#356b57', mid: '#4c8a72', top: '#84b8a2', hi: '#e2f2ec' }, bark: { light: '#6a5240', mid: '#4d3a2c', dark: '#332619' }, snow: '#eef6ff' },
   };
 
   const MUTATIONS = [
@@ -127,10 +140,15 @@
     tree: 'SPLINTERED ON AN ANCIENT TREE', pine: 'IMPALED ON A PINE SPIRE',
     mangrove: 'TANGLED IN THE MARSH ROOTS', cypress: 'SWALLOWED BY THE MIRE',
     broadleaf: 'LOST IN THE JUNGLE CANOPY', rock: 'DASHED AGAINST THE STORM CRAGS',
-    water: 'CRASHED INTO THE UNDERGROWTH', snake: 'SWALLOWED BY A CANOPY SERPENT',
-    snapper: 'DEVOURED BY A PITCHER MAW', hawk: 'SNATCHED FROM THE SKY BY A HAWK',
+    palm: 'SPEARED ON A PALM TRUNK', snowpine: 'IMPALED ON A FROZEN PINE', cactus: 'SKEWERED ON A CACTUS',
+    water: 'SWALLOWED BY THE HUNGRY SEA', ground: 'CRASHED INTO THE UNDERGROWTH',
+    ice: 'LOST BENEATH THE ICE', sand: 'BURIED IN THE DUNES',
+    snake: 'SWALLOWED BY A CANOPY SERPENT', snapper: 'DEVOURED BY A PITCHER MAW',
+    hawk: 'SNATCHED FROM THE SKY BY A HAWK', falcon: 'RUN DOWN BY A HUNTING FALCON',
     durian: 'FLATTENED BY A FALLING DURIAN',
   };
+  const FLOORKEY = { forest: 'ground', ocean: 'water', tundra: 'ice', desert: 'sand' };
+  const FLOORDUST = { forest: ['#5cad3c', '#6b4a2a'], ocean: ['#68b7cf', '#a8e4f2', '#ffffff'], tundra: ['#eef6ff', '#c9dce8'], desert: ['#e8c98a', '#c9a86a'] };
 
   // ---------- persistent save: DNA (meta currency) + best + tutorial flag ----------
   const SAVE_KEY = 'flappyDarwinSave';
@@ -172,13 +190,13 @@
       dnaEarned: 0, checkpoint: null,
       tutorialMode: !!tutorialMode || !save.tutorialDone,
       darwin: null,
-      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true },
+      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true },
     };
     bird = {
       x: BIRD_X, y: 84, vy: 0, rot: 0,
       hearts: 3, maxHearts: 3, invuln: 0,
       carried: null, crop: null, digestT: 0, digestNeed: 0,
-      fullness: 0, stuffed: false,
+      fullness: 0, stuffed: false, boost: 0, latched: null,
       energy: 100, maxEnergy: 100, tired: 0,
       flapT: 0, animT: 0, blinkT: rnd(1.5, 4), blinking: 0, openT: 0,
       catchPop: 0, grazeActive: 0, grazeCd: 0,
@@ -237,6 +255,7 @@
       gust: null, gustTimer: biome.wind ? rnd(2.5, 4.5) : -1,
       snapperTimer: biome.hazards.indexOf('snapper') >= 0 ? rnd(3.5, 6) : -1,
       hawkTimer: biome.hazards.indexOf('hawk') >= 0 ? rnd(4, 7) : -1,
+      falconTimer: biome.hazards.indexOf('falcon') >= 0 ? rnd(5, 9) : -1, falcon: null,
       chaseTimer: rnd(4.5, 9), chaseBug: null,
       legDiet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       cam: { scale: 1, focusX: W / 2, focusY: H / 2, kickX: 0, kickY: 0 },
@@ -247,8 +266,8 @@
   }
 
   // ---------- input ----------
-  let flapQueued = false, actionQueued = false;
-  const REROLL_COST = 5;
+  let flapQueued = false, actionQueued = false, boostQueued = false, swipeQueued = false, lastFlapPress = -1;
+  const REROLL_COST = 5, BOOST_COST = 22;
 
   function menuItems() { return ['PLAY', 'TUTORIAL', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
   function gotoTitle() { STATE = 'title'; ui = { demoY: 84, menuSel: 0 }; }
@@ -274,7 +293,15 @@
     if (STATE === 'title') { activateMenu(); return; }
     if (STATE === 'over') { if (ui.overT > 0.7) activateOver(); return; }
     if (paused) { paused = false; return; }
-    if (STATE === 'fly') { if (world.phase === 'fly') flapQueued = true; else if (world.phase === 'cine') skipCine(); return; }
+    if (STATE === 'fly') {
+      if (world.phase === 'fly') {
+        if (bird.latched) { swipeQueued = true; return; }
+        if (time - lastFlapPress < 0.30) boostQueued = true;
+        lastFlapPress = time;
+        flapQueued = true;
+      } else if (world.phase === 'cine') skipCine();
+      return;
+    }
     if (STATE === 'island') actionQueued = true;
   }
 
@@ -518,6 +545,7 @@
     for (const o of world.obstacles) if (o.snake && (o.snake.state === 'windup' || o.snake.state === 'strike')) return false;
     for (const s of world.snappers) if (s.state === 'telegraph' || s.state === 'lunge') return false;
     if (world.hawk && (world.hawk.state === 'warn' || world.hawk.state === 'swoop')) return false;
+    if (world.falcon && (world.falcon.state === 'warn' || world.falcon.state === 'chase')) return false;
     return true;
   }
 
@@ -576,15 +604,17 @@
     if (m.id === 'downy') { bird.maxHearts = Math.min(5, bird.maxHearts + 1); bird.hearts = bird.maxHearts; AUDIO.play('heart'); }
     AUDIO.play('evolve'); AUDIO.play('chirp');
     freezeT = 0.12; shakeIt(1.5, 0.30); ui.flash = 0.35;
+    if (STATE === 'island') { ui.hatched = true; ui.hatchAnim = 0; } // egg cracks -> baby born
     addFloat(bird.x, bird.y - 24, 'GEN ' + (run.evolutions + 1) + ' HATCHED!', '#3fc0b0', true);
     spawnParts(28, function () { return sparkle(bird.x + rnd(-16, 16), bird.y + rnd(-16, 10), '#3fc0b0'); });
-    spawnParts(10, function () { return crumb(bird.x + rnd(-4, 4), bird.y - 2, '#fbe7bb'); }); // eggshell
+    spawnParts(14, function () { return crumb(bird.x + rnd(-5, 5), bird.y - 2, pick(['#fbe7bb', '#e5c28c', '#ffffff'])); }); // eggshell
   }
 
   // ---------- update: flying ----------
   function updateFly(dt) {
     const st = stats();
-    world.dist += world.speed * dt;
+    if (bird.boost > 0) bird.boost = Math.max(0, bird.boost - dt);
+    world.dist += world.speed * (bird.boost > 0 ? 1.9 : 1) * dt;
     if (world.banner > 0) world.banner -= dt;
     if (world.fade > 0) world.fade -= dt * 2.2;
 
@@ -643,8 +673,12 @@
     }
 
     // bird physics
-    if (!bird.dead && world.phase === 'fly') {
+    if (bird.latched && !bird.dead) {
       bird.maxEnergy = st.maxEnergy;
+      updateLatch(dt);
+    } else if (!bird.dead && world.phase === 'fly') {
+      bird.maxEnergy = st.maxEnergy;
+      if (boostQueued) { boostQueued = false; tryBoost(st); }
       if (flapQueued) {
         flapQueued = false;
         const cost = st.flapCost;
@@ -690,10 +724,10 @@
         spawnParts(2, function () { return leaf(sx + o.w, o.gapY, col); });
       }
       if (sx + o.w < -40) { world.obstacles.splice(i, 1); continue; }
-      if (bird.dead) continue;
+      if (bird.dead || bird.latched) continue;
       if (bx1 <= sx || bx0 >= sx + o.w) continue;
       const topH = o.gapY - o.gapH / 2, botY = o.gapY + o.gapH / 2, cx = sx + o.w / 2;
-      if (o.kind === 'rock') { if (bird.invuln <= 0 && (by0 < topH || by1 > botY)) hurt('rock'); continue; }
+      if (o.kind === 'rock' || o.kind === 'cactus') { if (bird.invuln <= 0 && (by0 < topH || by1 > botY)) hurt(o.kind); continue; }
       const overCore = bx1 > cx - o.coreHalf && bx0 < cx + o.coreHalf;
       if (by1 > botY) {
         if (overCore && (by1 - botY) > o.soft) { if (bird.invuln <= 0) hurt(o.kind); }
@@ -709,6 +743,14 @@
     updateSnakes(dt);
     updateSnappers(dt);
     updateHawk(dt);
+    if (world.falconTimer > 0 && world.phase === 'fly' && !world.falcon) {
+      world.falconTimer -= dt;
+      if (world.falconTimer <= 0) {
+        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON! BOOST TO ESCAPE', '#a8b4c4'); } }
+        else world.falconTimer = 0.5;
+      }
+    }
+    updateFalcon(dt);
     updateDurians(dt);
     // chase-bug event
     if (world.chaseTimer > 0 && world.phase === 'fly') {
@@ -721,12 +763,14 @@
     }
     updateChase(dt);
 
-    // forest-floor contact (the undergrowth)
+    // floor contact — varies by environment
     if (!bird.dead && bird.y + 5 > SEA_Y && world.phase === 'fly') {
-      spawnParts(10, function () { return dust(bird.x, SEA_Y, pick(['#5cad3c', '#6b4a2a'])); });
-      AUDIO.play('land');
-      if (bird.hearts > 1 || bird.shieldUp) { hurt('water'); bird.y = SEA_Y - 6; bird.vy = -200; }
-      else { bird.hearts = 0; bird.dead = true; bird.deathBy = 'water'; gameOver(); return; }
+      const fk = FLOORKEY[world.biome.env] || 'ground';
+      const fd = FLOORDUST[world.biome.env] || FLOORDUST.forest;
+      spawnParts(10, function () { return dust(bird.x, SEA_Y, pick(fd)); });
+      AUDIO.play(world.biome.env === 'ocean' ? 'splash' : 'land');
+      if (bird.hearts > 1 || bird.shieldUp) { hurt(fk); bird.y = SEA_Y - 6; bird.vy = -200; }
+      else { bird.hearts = 0; bird.dead = true; bird.deathBy = fk; gameOver(); return; }
     }
 
     // foods
@@ -752,7 +796,7 @@
       f.y = f.baseY + Math.sin(time * 3 + f.phase) * 4;
       if (f.def.sparkle && Math.random() < 0.12) parts.push(sparkle(f.x + rnd(-4, 4), f.y + rnd(-5, 3)));
       if (f.x < -12) { world.foods.splice(i, 1); continue; }
-      if (!bird.dead && tryCatch(f, st)) world.foods.splice(i, 1);
+      if (!bird.dead && !bird.latched && tryCatch(f, st)) world.foods.splice(i, 1);
     }
 
     // digestion
@@ -791,6 +835,68 @@
     }
   }
 
+  function tryBoost(st) {
+    if (bird.latched || bird.dead || bird.boost > 0.4) return;
+    if (bird.energy < BOOST_COST) { AUDIO.play('denied'); return; }
+    bird.energy -= BOOST_COST; bird.boost = 0.85;
+    AUDIO.play('whoosh'); shakeIt(1, 0.12);
+    spawnParts(6, function () { return { type: 'streak', x: bird.x + rnd(-2, 6), y: bird.y + rnd(-6, 6), vx: -rnd(220, 340), vy: 0, g: 0, t: 0, life: 0.5, color: 'rgba(255,255,255,0.6)' }; });
+    if (world.falcon && world.falcon.state === 'chase') world.falcon.x -= 42;
+    addFloat(bird.x, bird.y - 16, 'BOOST!', '#a8e4f2');
+  }
+  function startLatch(o, s) {
+    if (bird.latched) return;
+    s.state = 'latched'; s.headX = bird.x - 5; s.headY = bird.y - 3;
+    bird.latched = { o: o, s: s, swipes: 0, t: 0, cd: 0 };
+    AUDIO.play('chomp'); shakeIt(2.5, 0.25); freezeT = Math.max(freezeT, 0.1);
+    addFloat(bird.x, bird.y - 22, 'SNAKE! SWIPE FREE!', '#c7d94a');
+  }
+  function updateLatch(dt) {
+    const L = bird.latched; if (!L) return;
+    L.t += dt; L.cd = Math.max(0, L.cd - dt);
+    bird.energy = Math.max(0, bird.energy - 20 * dt);
+    bird.vy = Math.min(bird.vy + 260 * dt, 110);
+    bird.y = clamp(bird.y + bird.vy * dt * 0.5, 6, SEA_Y - 4);
+    bird.rot = Math.sin(time * 40) * 0.12;
+    if (Math.random() < 0.18) parts.push(feather(bird.x, bird.y));
+    if (swipeQueued) {
+      swipeQueued = false;
+      if (L.cd <= 0) {
+        L.swipes++; L.cd = 0.1; AUDIO.play('flap'); shakeIt(1.6, 0.08);
+        spawnParts(2, function () { return feather(bird.x, bird.y); });
+        if (L.swipes >= 5) freeLatch(true);
+      }
+    }
+    if (bird.latched && L.swipes < 5 && L.t > 4.0) freeLatch(false);
+  }
+  function freeLatch(escaped) {
+    const L = bird.latched; if (!L) return;
+    if (L.s) { L.s.state = 'recoil'; L.s.t = 0; L.s.spent = true; }
+    bird.latched = null; bird.x = BIRD_X;
+    if (escaped) { bird.invuln = 1.0; bird.vy = -160; AUDIO.play('whoosh'); addFloat(bird.x, bird.y - 16, 'SHOOK IT OFF!', '#96f0e4'); run.score += 20; addDNA(2); spawnParts(10, function () { return scaleP(bird.x, bird.y, '#3e7a2e'); }); }
+    else { hurt('snake', { sfx: 'chomp', shake: 3.5, shakeDur: 0.4, freeze: 0.12, flash: 0.14, feathers: 10, knockVy: -120 }); }
+  }
+  function updateFalcon(dt) {
+    const f = world.falcon; if (!f) return;
+    const WARN = 1.0 * (f.first ? 1.4 : 1);
+    if (f.state === 'warn') {
+      f.t += dt; f.x = lerp(-20, 34, clamp(f.t / WARN, 0, 1)); f.y += (bird.y - f.y) * Math.min(1, dt * 3);
+      if (f.t >= WARN) { f.state = 'chase'; f.t = 0; AUDIO.play('hawkWhoosh'); }
+    } else if (f.state === 'chase') {
+      f.t += dt; f.snapCd = Math.max(0, f.snapCd - dt);
+      f.x += ((bird.x - 12) - f.x) * Math.min(1, dt * 1.4);
+      f.y += (bird.y - f.y) * Math.min(1, dt * 3.2);
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && !f.first && f.snapCd <= 0 && Math.abs(f.x - bird.x) < 12 && Math.abs(f.y - bird.y) < 8) {
+        hurt('falcon', { sfx: 'chomp', shake: 4, shakeDur: 0.4, freeze: 0.12, flash: 0.14, feathers: 10, knockVy: 120 });
+        f.snapCd = 1.3; spawnParts(3, function () { return scaleP(bird.x, bird.y, '#5b6474'); });
+      }
+      if (f.t > 6.5 || f.x < -34) f.state = 'gone';
+    } else if (f.state === 'gone') {
+      f.x -= 150 * dt; f.y -= 24 * dt;
+      if (f.x < -40) world.falcon = null;
+    }
+  }
+
   function updateSnakes(dt) {
     const WINDUP = 0.75, STRIKE = 0.14, RECOIL = 0.30, REACH = 26;
     for (const o of world.obstacles) {
@@ -816,10 +922,10 @@
         const apexX = clamp(BIRD_X, ax - REACH, ax + 4);
         s.headX = lerp(ax, apexX, k);
         s.headY = lerp(s.restY, s.lockY, k);
-        if (!bird.dead && bird.invuln <= 0 && s.t > 0.03 && s.t < 0.13 && !s.first) {
+        if (!bird.dead && !bird.latched && bird.invuln <= 0 && s.t > 0.03 && s.t < 0.13 && !s.first) {
           if (Math.abs(s.headX - bird.x) < 9 && Math.abs(s.headY - bird.y) < 8) {
-            hurt('snake', { sfx: 'chomp', shake: 4, shakeDur: 0.40, freeze: 0.12, flash: 0.14, feathers: 10, knockVy: 110 });
-            spawnParts(3, function () { return scaleP(bird.x, bird.y, '#3e7a2e'); });
+            if (bird.shieldUp) hurt('snake', { sfx: 'chomp', shake: 4, feathers: 8 });
+            else startLatch(o, s);
             s.hit = true;
           }
         }
@@ -838,6 +944,9 @@
         s.headX = lerp(apexX, ax, k);
         s.headY = lerp(s.lockY, s.restY, k);
         if (s.t >= RECOIL) { s.state = 'spent'; s.spent = true; }
+      } else if (s.state === 'latched') {
+        s.headX = bird.x - 5; s.headY = bird.y - 3;
+        if (bird.latched && ax < -30) freeLatch(false);
       }
     }
   }
@@ -1101,6 +1210,7 @@
   function updateIsland(dt) {
     ui.t += dt;
     if (ui.flash > 0) ui.flash -= dt;
+    if (ui.hatched) ui.hatchAnim = (ui.hatchAnim || 0) + dt;
     updateBirdCosmetics(dt);
     ui.bobT = (ui.bobT || 0) + dt;
     bird.y = landY() + Math.sin(ui.bobT * 2) * 1.2;
@@ -1120,6 +1230,10 @@
       if (bird.x > W + 24) newLeg(ui.nextBiome);
       return;
     }
+    if (ui.phase === 'hatching') { // the egg cracks and the baby is born, then paths appear
+      if (ui.t >= 1.7) { ui.phase = 'path'; ui.cards = makePathCards(); ui.sel = 0; ui.t = 0; }
+      return;
+    }
 
     if (!actionQueued) return;
     actionQueued = false;
@@ -1132,7 +1246,7 @@
     if (ui.phase === 'mutate') {
       if (ui.t < 0.3) return;
       applyMutation(ui.cards[ui.sel].mut);
-      ui.phase = 'path'; ui.cards = makePathCards(); ui.sel = 0; ui.t = 0;
+      ui.phase = 'hatching'; ui.cards = null; ui.t = 0;
       return;
     }
     if (ui.phase === 'path') {
@@ -1222,6 +1336,8 @@
   }
   const FARFOR = buildForestBand(560, 74, { trunk: '#5c6f6a', deep: '#486850', mid: '#5f8064', hi: '#789670' }, [10, 24], [8, 13]);
   const MIDFOR = buildForestBand(600, 100, { trunk: '#3f5240', deep: '#26472c', mid: '#356b39', hi: '#4c8a49' }, [14, 30], [11, 18]);
+  const TUNDRA_FAR = buildForestBand(560, 58, { trunk: '#8a97a6', deep: '#7f95a2', mid: '#a7bcc4', hi: '#cfe0e6' }, [12, 26], [6, 11]);
+  const TUNDRA_MID = buildForestBand(600, 82, { trunk: '#5f7480', deep: '#5f8078', mid: '#8fb0a2', hi: '#d2ece0' }, [16, 32], [9, 15]);
   const pollen = [];
   for (let i = 0; i < 28; i++) pollen.push({ x: Math.random() * W, y: Math.random() * (SEA_Y - 10), s: rnd(0.05, 0.22), r: rnd(0, 6.28) });
 
@@ -1240,8 +1356,55 @@
     return SKY[key] || SKY.day;
   }
 
+  function skyGrad(topC, botC) { for (let i = 0; i < 9; i++) { ctx.fillStyle = mixColor(topC, botC, i / 8); ctx.fillRect(0, i * 20, W, 20); } }
+  function drawSunDisc(tier, x, y, r) { ctx.globalAlpha = 0.45; ctx.fillStyle = tier.sun; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1; }
+  function drawBand(cvv, scrollX, mul, alpha, yoff) { let mx = Math.floor((scrollX * mul) % cvv.width); if (mx < 0) mx += cvv.width; ctx.globalAlpha = alpha; const yy = SEA_Y - cvv.height + (yoff || 0); ctx.drawImage(cvv, -mx, yy); ctx.drawImage(cvv, -mx + cvv.width, yy); ctx.globalAlpha = 1; }
+  function drawPollenLayer(scrollX, col) { ctx.fillStyle = col; for (const m of pollen) { let px = (m.x - scrollX * m.s) % W; if (px < 0) px += W; ctx.fillRect(Math.round(px), Math.round(m.y + Math.sin(time * 0.6 + m.r) * 5), 1, 1); } }
+  function drawCloudsLayer(scrollX) { for (const cl of clouds) { let x = cl.x - scrollX * cl.mul; x = ((x % (W + 80)) + (W + 80)) % (W + 80) - 40; ctx.globalAlpha = 0.85; ctx.drawImage(cl.spr, Math.round(x), Math.round(cl.y)); ctx.globalAlpha = 1; } }
+  function drawSnowfall(scrollX) {
+    ctx.fillStyle = '#eef6ff';
+    for (const m of pollen) { let px = (m.x - scrollX * m.s * 0.5) % W; if (px < 0) px += W; const py = (m.y + time * (16 + m.s * 40)) % (SEA_Y - 4); ctx.fillRect(Math.round(px + Math.sin(time + m.r) * 3), Math.round(py), 1, 1); }
+  }
+  function drawDunes(scrollX) {
+    for (let layer = 0; layer < 2; layer++) {
+      ctx.fillStyle = layer === 0 ? '#d3ac6e' : '#c39a56';
+      const amp = 9 + layer * 7, base = SEA_Y - 18 + layer * 8, freq = 0.018 + layer * 0.006, off = scrollX * (0.1 + layer * 0.16);
+      for (let x = 0; x < W; x++) { const y = Math.round(base - amp * (0.5 + 0.5 * Math.sin((x + off) * freq))); ctx.fillRect(x, y, 1, SEA_Y - y); }
+    }
+  }
+
   function drawBackground(scrollX) {
+    const env = world ? (world.biome.env || 'forest') : 'forest';
     const tier = skyOf();
+    if (env === 'ocean') {
+      skyGrad(tier.top, mixColor(tier.bot, '#bfe6f2', 0.4));
+      drawSunDisc(tier, 250, 26, 14);
+      drawCloudsLayer(scrollX);
+      drawBand(FARFOR, scrollX, 0.08, 0.32, 4);
+      drawPollenLayer(scrollX, 'rgba(255,255,255,0.5)');
+      return;
+    }
+    if (env === 'tundra') {
+      skyGrad(mixColor(tier.top, '#aebfd0', 0.45), mixColor(tier.bot, '#e8f0f8', 0.55));
+      drawSunDisc(tier, 250, 24, 15);
+      drawBand(TUNDRA_FAR, scrollX, 0.13, 0.5);
+      drawBand(TUNDRA_MID, scrollX, 0.3, 0.85);
+      drawSnowfall(scrollX);
+      ctx.fillStyle = 'rgba(220,235,245,0.12)'; ctx.fillRect(0, 24, W, SEA_Y - 24);
+      return;
+    }
+    if (env === 'desert') {
+      skyGrad(mixColor(tier.top, '#e6a45e', 0.4), mixColor(tier.bot, '#f6dca0', 0.5));
+      drawSunDisc(tier, 252, 26, 18);
+      drawDunes(scrollX);
+      drawPollenLayer(scrollX, 'rgba(240,220,170,0.55)');
+      ctx.fillStyle = 'rgba(255,220,150,0.05)'; ctx.fillRect(0, SEA_Y - 42, W, 42);
+      return;
+    }
+    forestBG(scrollX, tier);
+  }
+
+  function forestBG(scrollX, tier) {
     // canopy-filtered light: sky at the top fading into deep-forest haze below
     const haze = mixColor(tier.bot, '#2c5436', 0.6);
     for (let i = 0; i < 9; i++) { ctx.fillStyle = mixColor(tier.top, haze, i / 8); ctx.fillRect(0, i * 20, W, 20); }
@@ -1274,7 +1437,39 @@
     if (world && world.biome.sky === 'stormy' && Math.random() < 0.01) { ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.fillRect(0, 0, W, H); }
   }
 
-  function drawSea() { drawForestFloor(world ? world.dist : time * 30); }
+  function drawSea() {
+    const env = world ? (world.biome.env || 'forest') : 'forest';
+    const scroll = world ? world.dist : time * 30;
+    if (env === 'ocean') drawWaterFloor(scroll);
+    else if (env === 'tundra') drawSnowFloor(scroll);
+    else if (env === 'desert') drawSandFloor(scroll);
+    else drawForestFloor(scroll);
+  }
+
+  function drawWaterFloor(scroll) {
+    ctx.fillStyle = '#2e6f8e'; ctx.fillRect(0, SEA_Y, W, H - SEA_Y);
+    ctx.fillStyle = '#3d8aa8'; ctx.fillRect(0, SEA_Y, W, 3);
+    ctx.fillStyle = '#8fd4e8';
+    for (let x = 0; x < W; x += 4) { if (Math.sin(x * 0.11 + time * 2.4) > 0.55) ctx.fillRect(x, SEA_Y + Math.round(Math.sin(x * 0.31 + time * 3.1)), 3, 1); }
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    for (let x = 0; x < W; x += 7) { if (Math.sin(x * 1.7 + time * 1.3) > 0.8) ctx.fillRect(x, SEA_Y + 5 + (x % 5), 2, 1); }
+  }
+  function drawSnowFloor(scroll) {
+    ctx.fillStyle = '#e6eef6'; ctx.fillRect(0, SEA_Y, W, H - SEA_Y);
+    ctx.fillStyle = '#f6fbff'; ctx.fillRect(0, SEA_Y, W, 3);
+    ctx.fillStyle = '#cddbe8';
+    for (let x = 0; x < W; x += 5) { const o = (x + Math.floor(scroll)) % 11; if (o < 3) ctx.fillRect(x, SEA_Y + 5 + (x % 5), 2, 1); }
+    ctx.fillStyle = '#ffffff';
+    for (let x = 0; x < W; x += 9) { if ((x + Math.floor(scroll)) % 17 < 2) ctx.fillRect(x, SEA_Y + 2 + (x % 6), 1, 1); }
+  }
+  function drawSandFloor(scroll) {
+    ctx.fillStyle = '#d3ac6e'; ctx.fillRect(0, SEA_Y, W, H - SEA_Y);
+    ctx.fillStyle = '#e8c98a'; ctx.fillRect(0, SEA_Y, W, 3);
+    ctx.fillStyle = '#c39a56';
+    for (let x = 0; x < W; x += 4) { const y = SEA_Y + 5 + Math.round(2 * Math.sin((x + scroll) * 0.14)); ctx.fillRect(x, y, 3, 1); }
+    ctx.fillStyle = '#b4894c';
+    for (let x = 0; x < W; x += 13) { if ((x + Math.floor(scroll)) % 20 < 3) ctx.fillRect(x, SEA_Y + 9 + (x % 5), 2, 1); }
+  }
 
   function drawFloorProps(scroll) {
     const spacing = 44;
@@ -1368,6 +1563,43 @@
     }
     ctx.fillStyle = pal.hi;
     for (let i = 0; i < 4; i++) ctx.fillRect(Math.round(cx - o.w / 2 + orand(o.seed, i * 5) * o.w), Math.round(edgeY + dir * (4 + orand(o.seed, i) * 20)), 1, 1);
+    if (tv.snow) { ctx.fillStyle = tv.snow; for (let i = 0; i < 6; i++) ctx.fillRect(Math.round(cx - o.w / 2 + orand(o.seed, i * 3 + 1) * o.w), Math.round(edgeY + dir * (2 + orand(o.seed, i * 2) * 22)), 2, 1); }
+  }
+
+  function drawPalmHalf(cx, edgeY, dir, o, tv) {
+    const crownY = edgeY + dir * 2, nf = 6;
+    const sway = Math.sin(time * 1.6 + o.seed * 0.02) * 2;
+    for (let i = 0; i < nf; i++) {
+      const ang = (i / (nf - 1) - 0.5) * 2.3, len = 12 + orand(o.seed, i * 5) * 6;
+      const ex = cx + Math.sin(ang) * len + sway, ey = crownY + dir * (Math.abs(Math.cos(ang)) * len * 0.55 + 2);
+      drawLimb(cx, crownY, ex, ey, 2, tv.bark);
+      ctx.fillStyle = i % 2 ? tv.canopy.mid : tv.canopy.top;
+      for (let t = 0.35; t <= 1; t += 0.22) { const px = lerp(cx, ex, t), py = lerp(crownY, ey, t); ctx.fillRect(Math.round(px), Math.round(py), 2, 2); }
+      ctx.fillStyle = tv.canopy.hi; ctx.fillRect(Math.round(ex), Math.round(ey), 1, 1);
+    }
+    ctx.fillStyle = tv.bark.dark; ctx.fillRect(cx - 2, Math.round(crownY - 1), 4, 3);
+    ctx.fillStyle = '#5a3a20'; ctx.fillRect(cx - 3, Math.round(crownY + dir * 3), 2, 2); ctx.fillRect(cx + 1, Math.round(crownY + dir * 3), 2, 2);
+  }
+
+  function drawCactusObstacle(sx, o) {
+    const topH = o.gapY - o.gapH / 2, botY = o.gapY + o.gapH / 2, cx = sx + o.w / 2, half = 5;
+    function column(y0, y1) {
+      if (y1 <= y0) return;
+      ctx.fillStyle = '#3f8f4e'; ctx.fillRect(cx - half, y0, half * 2, y1 - y0);
+      ctx.fillStyle = '#5bb56a'; ctx.fillRect(cx - half, y0, 2, y1 - y0);
+      ctx.fillStyle = '#2f6b3a'; ctx.fillRect(cx + half - 2, y0, 2, y1 - y0);
+      ctx.fillStyle = '#2f6b3a'; for (let x = cx - half + 2; x < cx + half - 2; x += 3) ctx.fillRect(x, y0, 1, y1 - y0);
+      ctx.fillStyle = '#e8e0c0'; for (let y = y0 + 1; y < y1; y += 4) { ctx.fillRect(cx - half - 1, y, 1, 1); ctx.fillRect(cx + half, y, 1, 1); }
+    }
+    column(botY, SEA_Y);
+    ctx.fillStyle = '#3f8f4e'; ctx.fillRect(cx + 3, botY + 10, 7, 4); ctx.fillRect(cx + 7, botY + 2, 4, 12);
+    ctx.fillStyle = '#5bb56a'; ctx.fillRect(cx + 7, botY + 2, 2, 12);
+    ctx.fillStyle = '#e0525c'; ctx.fillRect(cx - 1, botY - 2, 2, 2);
+    if (topH > 2) {
+      column(0, topH);
+      ctx.fillStyle = '#3f8f4e'; ctx.fillRect(cx - 10, topH - 12, 7, 4); ctx.fillRect(cx - 11, topH - 14, 4, 12);
+      ctx.fillStyle = '#e8c94a'; ctx.fillRect(cx - 1, topH, 2, 2);
+    }
   }
 
   // filled shaded ellipse of leaves (top-lit), ragged organic edge + dapples
@@ -1384,6 +1616,14 @@
     }
     ctx.fillStyle = pal.hi;
     for (let i = 0; i < 5; i++) { const a = orand(seed, i * 13) * 6.28, rr = orand(seed, i * 7) * 0.7; ctx.fillRect(Math.round(cx + Math.cos(a) * rx * rr + sway), Math.round(cy + Math.sin(a) * ry * rr), 1, 1); }
+    // scattered leaf detail on the perimeter for a fuller, leafier canopy
+    for (let i = 0; i < 12; i++) {
+      const a = orand(seed, 200 + i * 9) * 6.28;
+      const px = cx + Math.cos(a) * rx * (0.82 + orand(seed, 210 + i) * 0.32) + sway;
+      const py = cy + Math.sin(a) * ry * (0.82 + orand(seed, 220 + i) * 0.32);
+      ctx.fillStyle = i % 3 === 0 ? pal.hi : (i % 3 === 1 ? pal.top : pal.mid);
+      ctx.fillRect(Math.round(px), Math.round(py), 1, 1);
+    }
   }
 
   // a tapered woody limb from (x0,y0) to (x1,y1)
@@ -1437,20 +1677,24 @@
 
   function drawTreeObstacle(sx, o, fruitColor) {
     const topH = o.gapY - o.gapH / 2, botY = o.gapY + o.gapH / 2, cx = sx + o.w / 2, tv = TREES[o.variant] || TREES.oak;
-    const isPine = o.variant === 'pine';
+    const isPine = o.variant === 'pine' || o.variant === 'snowpine', isPalm = o.variant === 'palm';
+    const trunkGap = (isPine || isPalm) ? 6 : 3;
+    function half(edgeY, dir) {
+      if (isPalm) drawPalmHalf(cx, edgeY, dir, o, tv);
+      else if (isPine) drawPineHalf(cx, edgeY, dir, o, tv);
+      else drawLeafyHalf(cx, edgeY, dir, o, tv, fruitColor);
+    }
     // bottom piece: trunk from ground up, canopy top at botY
-    barkColumn(cx, botY + (isPine ? 6 : 3), SEA_Y, tv.coreHalf + 1, tv.bark, o.seed);
+    barkColumn(cx, botY + trunkGap, SEA_Y, tv.coreHalf + 1, tv.bark, o.seed);
     if (o.variant === 'mangrove') { // prop roots
       ctx.fillStyle = tv.bark.dark;
       for (let i = -1; i <= 1; i += 2) { for (let r = 0; r < 8; r++) ctx.fillRect(cx + i * (2 + r), SEA_Y - 8 + r, 1, 2); }
     }
-    if (isPine) drawPineHalf(cx, botY, +1, o, tv);
-    else drawLeafyHalf(cx, botY, +1, o, tv, fruitColor);
+    half(botY, +1);
     // top piece: trunk from ceiling down, canopy bottom at topH
     if (topH > 2) {
-      barkColumn(cx, 0, topH - (isPine ? 6 : 3), tv.coreHalf + 1, tv.bark, o.seed + 5);
-      if (isPine) drawPineHalf(cx, topH, -1, o, tv);
-      else drawLeafyHalf(cx, topH, -1, o, tv, fruitColor);
+      barkColumn(cx, 0, topH - trunkGap, tv.coreHalf + 1, tv.bark, o.seed + 5);
+      half(topH, -1);
     }
     // re-stamp hard core faintly so the hazard reads under leaves
     ctx.fillStyle = 'rgba(30,20,15,0.28)';
@@ -1485,6 +1729,7 @@
       const sx = Math.round(o.x - world.dist);
       if (sx > W + 4 || sx + o.w < -8) continue;
       if (o.kind === 'rock') drawRockObstacle(sx, o);
+      else if (o.kind === 'cactus') drawCactusObstacle(sx, o);
       else drawTreeObstacle(sx, o, fruitColor);
     }
   }
@@ -1501,7 +1746,7 @@
       ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(hx, hy); ctx.stroke();
       ctx.strokeStyle = '#2c5c1e'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(hx, hy); ctx.stroke();
-      const spr = s.state === 'strike' ? SPR.SNAKE_STRIKE : (s.state === 'windup' ? SPR.SNAKE_REAR : SPR.SNAKE_COIL);
+      const spr = (s.state === 'strike' || s.state === 'latched') ? SPR.SNAKE_STRIKE : (s.state === 'windup' ? SPR.SNAKE_REAR : SPR.SNAKE_COIL);
       ctx.drawImage(spr, Math.round(hx - spr.width / 2), Math.round(hy - spr.height / 2));
       if (s.state === 'windup') drawAim(hx, hy, clamp(BIRD_X, ax - 26, ax + 4), s.lockY, '#c7d94a', time * 6);
     }
@@ -1543,6 +1788,13 @@
     ctx.beginPath(); ctx.arc(c.x, c.y, 6, 0, 6.28); ctx.fill(); ctx.globalAlpha = 1;
     const spr = Math.floor(time * 14) % 2 ? SPR.CHASE_BUG : SPR.CHASE_BUG2;
     ctx.drawImage(spr, Math.round(c.x - spr.width / 2), Math.round(c.y - spr.height / 2));
+  }
+
+  function drawFalcon() {
+    const f = world.falcon; if (!f) return;
+    const spr = (f.state === 'chase' && Math.abs(f.x - bird.x) < 22) ? SPR.FALCON_DIVE : (Math.floor(time * 12) % 2 ? SPR.FALCON_MID : SPR.FALCON_UP);
+    ctx.globalAlpha = 0.25; ctx.drawImage(spr, Math.round(f.x - spr.width / 2 - 6), Math.round(f.y - spr.height / 2)); ctx.globalAlpha = 1;
+    ctx.drawImage(spr, Math.round(f.x - spr.width / 2), Math.round(f.y - spr.height / 2));
   }
 
   function drawHawk() {
@@ -1591,8 +1843,13 @@
     const nx = ix + isl.nestDX;
     barkColumn(nx, isl.perchY + 2, topY, 3, tv.bark, isl.seed + 2);
     ctx.drawImage(SPR.NEST, Math.round(nx - SPR.NEST.width / 2), Math.round(isl.perchY - 2));
-    // an egg waits in the nest when a new generation is ready to hatch
-    if (run.evo >= run.evoNeed) {
+    // egg waiting -> cracking -> a baby hatchling once a new generation is born
+    if (STATE === 'island' && ui.hatched) {
+      const t = ui.hatchAnim || 0, pop = Math.min(1, t / 0.4);
+      const by = isl.perchY - 6 - Math.round(pop * 3) + Math.round(Math.sin(time * 6) * 0.6);
+      ctx.drawImage(SPR.HATCHLING, Math.round(nx - SPR.HATCHLING.width / 2 - 9), by);
+      if (t < 0.6 && Math.floor(time * 8) % 2) drawText(ctx, '!', nx - 4, by - 6, '#fff3a8', 1);
+    } else if (run.evo >= run.evoNeed) {
       const hatching = (STATE === 'island' && ui.phase === 'mutate');
       const wob = hatching ? Math.round(Math.sin(time * 16)) : 0;
       const es = (hatching && Math.floor(time * 3) % 2) ? SPR.EGG_CRACK : SPR.EGG;
@@ -1627,8 +1884,11 @@
     if (bird.invuln > 0 && Math.floor(time * 14) % 2 === 0 && !bird.dead) return;
     const cfg = birdCfg();
     // motion trail
-    if (!bird.dead && Math.abs(bird.vy) > 200) {
-      ctx.globalAlpha = 0.18; SPR.drawBird(ctx, bird.x - bird.vy * 0.012, bird.y - bird.vy * 0.02, bird.rot, cfg); ctx.globalAlpha = 1;
+    if (!bird.dead && (Math.abs(bird.vy) > 200 || bird.boost > 0)) {
+      const tdx = bird.boost > 0 ? 9 : bird.vy * 0.012;
+      ctx.globalAlpha = bird.boost > 0 ? 0.3 : 0.18; SPR.drawBird(ctx, bird.x - tdx, bird.y - bird.vy * 0.02, bird.rot, cfg);
+      if (bird.boost > 0) { ctx.globalAlpha = 0.16; SPR.drawBird(ctx, bird.x - tdx * 2, bird.y - bird.vy * 0.02, bird.rot, cfg); }
+      ctx.globalAlpha = 1;
     }
     SPR.drawBird(ctx, bird.x, bird.y, bird.rot, cfg);
     if (bird.carried) {
@@ -1692,6 +1952,15 @@
     if (world && world.gust && world.gust.t < world.gust.warn && Math.floor(time * 8) % 2) {
       drawTextShadow(ctx, '! GUST ' + (world.gust.dir < 0 ? 'RISING' : 'FALLING') + ' !', W / 2, 40, '#f6c945', 1, 'center');
     }
+    if (bird.latched) {
+      const n = bird.latched.swipes;
+      drawTextShadow(ctx, 'SWIPE! ' + n + '/5', W / 2, 30, Math.floor(time * 12) % 2 ? '#f6c945' : '#e0525c', 2, 'center');
+      drawTextShadow(ctx, 'TAP FAST TO SHAKE IT OFF', W / 2, 48, '#ffffff', 1, 'center');
+      const bw = 60, bx = W / 2 - bw / 2;
+      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(bx - 1, 54, bw + 2, 5);
+      ctx.fillStyle = '#96f0e4'; ctx.fillRect(bx, 55, Math.round(bw * n / 5), 3);
+    }
+    if (bird.boost > 0) drawTextShadow(ctx, 'BOOST', bird.x - 22, bird.y - 2, '#a8e4f2', 1, 'right');
   }
 
   function drawBanner() {
@@ -1817,6 +2086,7 @@
     drawSea();
     drawBirdFull();
     drawHawk();
+    drawFalcon();
     drawParts();
     ctx.restore();
     drawHUD();
@@ -1851,6 +2121,11 @@
       else drawText(ctx, 'HATCH ' + Math.round(run.evo) + '/' + run.evoNeed, 85, yy, '#3fc0b0', 1, 'center');
       if (Math.floor(time * 2) % 2) drawText(ctx, 'SPACE/TAP TO CONTINUE', 85, 126, '#8f86a8', 1, 'center');
     } else if (ui.phase === 'mutate') drawCards('HATCH A NEW GENERATION');
+    else if (ui.phase === 'hatching') {
+      drawTextShadow(ctx, 'GENERATION ' + (run.evolutions + 1) + ' IS BORN!', W / 2, 30, Math.floor(time * 4) % 2 ? '#96f0e4' : '#3fc0b0', 1, 'center');
+      const m = MUTATIONS.filter(function (x) { return x.id === run.taken[run.taken.length - 1]; })[0];
+      if (m) drawTextShadow(ctx, 'INHERITS: ' + m.name, W / 2, 42, '#ffffff', 1, 'center');
+    }
     else if (ui.phase === 'path') drawCards('CHOOSE YOUR MIGRATION');
     if (ui.flash > 0) { ctx.fillStyle = 'rgba(63,192,176,' + (ui.flash * 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
@@ -1985,6 +2260,15 @@
     giveDna: function (n) { save.dna += n; persist(); },
     kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
+    forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false }; },
+    forceLatch: function () {
+      if (!world) return 'no world';
+      for (const o of world.obstacles) { if (o.snake && o.snake.state !== 'spent') { startLatch(o, o.snake); return 'ok'; } }
+      for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x - 10 && sx < W) { o.snake = { state: 'strike', t: 0, ax: sx + o.w * 0.7, topH: o.gapY - o.gapH / 2, botY: o.gapY + o.gapH / 2, restY: o.gapY - o.gapH / 2 + 4 }; startLatch(o, o.snake); return 'made'; } }
+      return 'none';
+    },
+    latched: function () { return bird && bird.latched ? bird.latched.swipes : -1; },
+    refill: function () { if (bird) bird.energy = 999; },
     forceDurian: function () { if (!world) return; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 16 && sx < bird.x + 90) { o.durian = { state: 'wobble', t: 0, wob: 0.7, vy: 0, worldX: o.x + o.w / 2, y: (o.gapY - o.gapH / 2) + 5, first: false }; return 'ok'; } } return 'none'; },
     // place the bird relative to the nearest on-screen tree's bottom canopy top (botY):
     //   overCore=false -> skim the leafy fringe; overCore=true -> over the trunk column
