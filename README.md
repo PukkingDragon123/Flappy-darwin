@@ -63,9 +63,20 @@ the undergrowth and you'll get hurt.
    - 🐍 **Canopy snakes** rear up and strike — and if one hits, it **latches on**;
      **tap fast (swipe 5×) to shake it off** before it drains you.
    - 🦅 **Falcons** chase you down from behind — **boost away** or juke them.
+   - 🕷️ **Spiders** drop on a silk thread into the gap — weave above or below.
+   - 🐝 **Wasp swarms** buzz in and home on you — keep moving to lose them.
    - 🌿 **Pitcher plants** bubble in the undergrowth, then lunge — stay high.
    - 🦅 **Hawks** cast a warning shadow, then dive — drop low.
    - 🥭 **Durians** hang from branches and *drop* when you near them — move!
+
+## Boss: The Great Eagle
+
+Every few migrations the path leads to **THE AERIE**, where a giant raptor
+boss attacks in telegraphed patterns — dive-bombs, talon sweeps and
+feather-storms. Outlast its stamina by dodging, and it's driven off for a big
+reward (and an extra heart).
+
+![The Great Eagle boss stage](docs/boss.png)
 
 ![A canopy snake latches on — swipe to shake it off](docs/snake-latch.png)
 6. **Rest at the nest.** Arriving at a grove triggers a landing cutscene with a

@@ -727,6 +727,36 @@
     'p.o.o.p',
   ], Object.assign({}, PAL, { L: '#fff3a8', f: '#ffe27a', F: '#ffd257', y: '#fffbe0', p: '#3a3320' }));
 
+  // ---- wasp swarm ----
+  const WASP_PAL = Object.assign({}, PAL, { y: '#f6c945', P: '#2b1d20', u: '#cfeaf5', o: '#241a12', p: '#241a12' });
+  const WASP1 = bake([
+    'u..o..u',
+    '.oyPyo.',
+    'oPyPyPo',
+    '.oyPyo.',
+    '..ooo..',
+    '...p...',
+  ], WASP_PAL);
+  const WASP2 = bake([
+    '.o...o.',
+    'uoyPyou',
+    'oPyPyPo',
+    '.oyPyo.',
+    '..ooo..',
+    '...p...',
+  ], WASP_PAL);
+
+  // ---- spider (drops on a thread) ----
+  const SPIDER = bake([
+    'p.......p',
+    '.o.....o.',
+    'o.oPPPo.o',
+    '.oPzPzPo.',
+    'o.oPKPo.o',
+    '.o.....o.',
+    'p.......p',
+  ], Object.assign({}, PAL, { P: '#2e2028', z: '#e8e0f0', K: '#8a3244', o: '#3a2b34', p: '#241a20' }));
+
   // ---- Charles Darwin (interactive-tutorial guide portrait) ----
   const DARWIN = bake([
     '......oooooo......',
@@ -844,6 +874,7 @@
     MUSHROOM: MUSHROOM, MUSHROOM2: MUSHROOM2, FERN: FERN, BUSH: BUSH, LOG: LOG, GRASSB: GRASSB,
     PITCHER_LURK: PITCHER_LURK, PITCHER_GAPE: PITCHER_GAPE,
     CHASE_BUG: CHASE_BUG, CHASE_BUG2: CHASE_BUG2, DARWIN: DARWIN,
+    WASP1: WASP1, WASP2: WASP2, SPIDER: SPIDER,
     drawBird: drawBird, beakTip: beakTip,
   };
 })();

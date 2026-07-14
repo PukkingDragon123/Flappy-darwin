@@ -96,6 +96,8 @@
   BIOMES.desert = { name: 'DUNE SEA', danger: 3, obst: 'cactus', tree: 'cactus', gapBase: 56, env: 'desert', sky: 'golden', deco: '#ff7a4d',
     hazards: ['snake', 'falcon'], foods: { seed: 3, bug: 2, frog: 1, gold: 0.6 },
     hint: ['SPINY CACTI', 'CANOPY SNAKES'], foodIcons: ['gold', 'seed'], icon: SPR.ICON_CRAGS };
+  // boss arena — the Great Eagle's aerie
+  BIOMES.aerie = { name: 'THE AERIE', danger: 5, obst: 'rock', tree: null, gapBase: 99, env: 'forest', sky: 'stormy', deco: '#c6cfe0', boss: true, hazards: [], foods: {}, hint: ['THE GREAT EAGLE'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_CRAGS };
   for (var _bk in BIOMES) if (!BIOMES[_bk].env) BIOMES[_bk].env = 'forest';
   const BIOME_KEYS = Object.keys(BIOMES);
 
@@ -145,7 +147,8 @@
     ice: 'LOST BENEATH THE ICE', sand: 'BURIED IN THE DUNES',
     snake: 'SWALLOWED BY A CANOPY SERPENT', snapper: 'DEVOURED BY A PITCHER MAW',
     hawk: 'SNATCHED FROM THE SKY BY A HAWK', falcon: 'RUN DOWN BY A HUNTING FALCON',
-    durian: 'FLATTENED BY A FALLING DURIAN',
+    durian: 'FLATTENED BY A FALLING DURIAN', eagle: 'SEIZED BY THE GREAT EAGLE',
+    wasp: 'STUNG DOWN BY THE SWARM', spider: 'ENSNARED BY A SPIDER',
   };
   const FLOORKEY = { forest: 'ground', ocean: 'water', tundra: 'ice', desert: 'sand' };
   const FLOORDUST = { forest: ['#5cad3c', '#6b4a2a'], ocean: ['#68b7cf', '#a8e4f2', '#ffffff'], tundra: ['#eef6ff', '#c9dce8'], desert: ['#e8c98a', '#c9a86a'] };
@@ -262,6 +265,11 @@
     };
     bird.x = BIRD_X; bird.y = 84; bird.vy = 0; bird.rot = 0; bird.dead = false;
     bird.shieldUp = has('shield'); bird.invuln = 0.8; bird.legsDown = false; bird.glidePose = false;
+    world.wasps = null; world.waspT = 0;
+    if (biome.boss) {
+      world.isBoss = true; world.legLen = 0; world.banner = 3.0;
+      world.boss = { hp: 100, maxHp: 100, state: 'enter', t: 0, x: W + 30, y: 34, wing: 0, pattern: null, attacks: 0, lockY: bird.y, feathers: [], first: true };
+    }
     STATE = 'fly';
   }
 
@@ -568,7 +576,10 @@
   }
 
   function makePathCards() {
-    let keys = BIOME_KEYS.filter(function (k) { return k !== world.biomeKey; });
+    if (run.depth > 0 && run.depth % 4 === 0) { // a boss stage looms
+      return [{ kind: 'path', biomeKey: 'aerie', title: BIOMES.aerie.name, lines: ['A BOSS AWAITS'], icon: SPR.ICON_CRAGS, danger: 5, boss: true }];
+    }
+    let keys = BIOME_KEYS.filter(function (k) { return k !== world.biomeKey && k !== 'aerie'; });
     if (run.depth < 3) keys = keys.filter(function (k) { return BIOMES[k].danger < 3; });
     for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = keys[i]; keys[i] = keys[j]; keys[j] = t; }
     // bias toward higher danger as depth climbs
@@ -619,7 +630,7 @@
     if (world.fade > 0) world.fade -= dt * 2.2;
 
     // spawn obstacles
-    if (world.phase === 'fly') {
+    if (world.phase === 'fly' && !world.isBoss) {
       while (world.spawned < world.legLen && world.nextSpawnX - world.dist < W + 60) {
         const margin = 26;
         let gh = world.gapH;
@@ -643,6 +654,10 @@
         // durian: spiky fruit that hangs from the canopy and drops when you near it
         if (!o.snake && world.biome.durian && world.spawned > 0 && Math.random() < 0.3) {
           o.durian = { state: 'hang', t: 0, vy: 0, worldX: o.x + o.w / 2, y: (gapY - gh / 2) + 5, first: run.tut.durian };
+        }
+        // spider: drops on a thread into the gap
+        if (!o.snake && !o.durian && world.biome.obst === 'tree' && ['jungle', 'swamp', 'marsh', 'grove'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.22) {
+          o.spider = { state: 'hidden', t: 0, y: 0 };
         }
         world.obstacles.push(o);
         const fp = (run.depth === 1) ? 1.0 : 0.85;
@@ -746,19 +761,23 @@
     if (world.falconTimer > 0 && world.phase === 'fly' && !world.falcon) {
       world.falconTimer -= dt;
       if (world.falconTimer <= 0) {
-        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON! BOOST TO ESCAPE', '#a8b4c4'); } }
+        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON!', '#a8b4c4'); } }
         else world.falconTimer = 0.5;
       }
     }
     updateFalcon(dt);
     updateDurians(dt);
+    updateSpiders(dt);
+    updateWasps(dt);
+    if (world.isBoss) updateBoss(dt);
     // random bonus mini-game event (chase / thermal ring / fruit rush)
     if (world.chaseTimer > 0 && world.phase === 'fly') {
       world.chaseTimer -= dt;
       if (world.chaseTimer <= 0 && world.spawned > 2 && !world.chaseBug && !world.thermal && !world.rush) {
-        const ev = pick(['chase', 'thermal', 'rush']);
-        if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE THE BUG!', '#fff3a8'); } AUDIO.play('evoReady'); }
+        const ev = pick(['chase', 'thermal', 'rush', 'wasps']);
+        if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE!', '#fff3a8'); } AUDIO.play('evoReady'); }
         else if (ev === 'thermal') startThermal();
+        else if (ev === 'wasps') startWasps();
         else startRush();
         world.chaseTimer = rnd(8, 14); // allow another event later this leg
       }
@@ -914,7 +933,7 @@
           s.state = 'windup'; s.t = 0; s.wu = wu;
           s.lockY = clamp(bird.y, topH + 2, botY - 2);
           AUDIO.play('snakeHiss');
-          if (s.first) { run.tut.snake = false; addFloat(ax, topH - 10, 'SNAKE! CLIMB OR DIP', '#c7d94a'); }
+          if (s.first) { run.tut.snake = false; addFloat(ax, topH - 10, 'SNAKE!', '#c7d94a'); }
         }
       } else if (s.state === 'windup') {
         s.t += dt;
@@ -972,7 +991,7 @@
         if (Math.random() < 0.04) parts.push(bubble(s.sx, SEA_Y - 2));
         if (s.sx <= BIRD_X + 40 && s.sx > BIRD_X - 2 && threatFree()) {
           s.state = 'telegraph'; s.t = 0; AUDIO.play('snapperRise');
-          if (s.first) { run.tut.snapper = false; addFloat(s.sx, SEA_Y - 22, 'PITCHER PLANT! STAY HIGH', '#96d454'); }
+          if (s.first) { run.tut.snapper = false; addFloat(s.sx, SEA_Y - 22, 'PITCHER!', '#96d454'); }
         }
       } else if (s.state === 'telegraph') {
         s.t += dt;
@@ -1002,7 +1021,7 @@
     if (world.hawkTimer > 0 && world.phase === 'fly' && !world.hawk) {
       world.hawkTimer -= dt;
       if (world.hawkTimer <= 0) {
-        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, 'HAWK! DIP LOW', '#7a5a3a'); } }
+        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, 'HAWK!', '#7a5a3a'); } }
         else world.hawkTimer = 0.5;
       }
     }
@@ -1038,7 +1057,7 @@
       if (d.state === 'hang') {
         if (sx < BIRD_X + 46 && sx > BIRD_X - 6) {
           d.state = 'wobble'; d.t = 0; d.wob = WOB * (d.first ? 1.5 : 1); AUDIO.play('rustle');
-          if (d.first) { run.tut.durian = false; addFloat(sx, d.y - 10, 'DURIAN! MOVE!', '#c7e88a'); }
+          if (d.first) { run.tut.durian = false; addFloat(sx, d.y - 10, 'DURIAN!', '#c7e88a'); }
         }
       } else if (d.state === 'wobble') {
         d.t += dt;
@@ -1116,7 +1135,7 @@
   // ---------- mini-game events ----------
   function startThermal() {
     world.thermal = { x: W + 24, y: rnd(48, SEA_Y - 48), t: 0, passed: false };
-    world.eventBanner = { text: 'THERMAL! FLY THROUGH THE RING', t: 0 };
+    world.eventBanner = { text: 'THERMAL RING', t: 0 };
     AUDIO.play('evoReady');
   }
   function updateThermal(dt) {
@@ -1143,7 +1162,7 @@
   }
   function startRush() {
     world.rush = { t: 0, dur: 4.5, cd: 0, startFood: run.foodEaten };
-    world.eventBanner = { text: 'FRUIT RUSH! FEAST!', t: 0 };
+    world.eventBanner = { text: 'FRUIT RUSH', t: 0 };
     AUDIO.play('evoReady');
   }
   function updateRush(dt) {
@@ -1159,6 +1178,136 @@
       if (eaten >= 3) { const bonus = eaten * 8; run.score += bonus; addDNA(eaten); addFloat(bird.x, bird.y - 20, 'FEAST! +' + bonus, '#f6c945', true); AUDIO.play('confirm'); }
       world.rush = null;
     }
+  }
+
+  // ---------- new enemies: wasp swarm + spider ----------
+  function startWasps() {
+    world.wasps = []; world.waspT = 0;
+    for (let i = 0; i < 6; i++) world.wasps.push({ x: W + 10 + i * 5, y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28) });
+    world.eventBanner = { text: 'WASP SWARM!', t: 0 }; AUDIO.play('snakeHiss');
+  }
+  function updateWasps(dt) {
+    if (!world.wasps || !world.wasps.length) return;
+    world.waspT += dt;
+    const flee = world.waspT > 4.4;
+    for (let i = world.wasps.length - 1; i >= 0; i--) {
+      const w = world.wasps[i]; w.ph += dt * 8;
+      if (flee) { w.x -= 130 * dt; w.y += Math.sin(w.ph) * 20 * dt; if (w.x < -12) world.wasps.splice(i, 1); continue; }
+      const dx = bird.x - w.x, dy = bird.y - w.y, d = Math.max(1, Math.hypot(dx, dy));
+      w.x += (dx / d * 34) * dt + Math.cos(w.ph) * 10 * dt - world.speed * 0.12 * dt;
+      w.y += (dy / d * 34) * dt + Math.sin(w.ph * 1.3) * 12 * dt;
+      w.y = clamp(w.y, 20, SEA_Y - 6);
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(w.x - bird.x) < 6 && Math.abs(w.y - bird.y) < 6) hurt('wasp', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -80 });
+    }
+    if (!world.wasps.length) world.wasps = null;
+  }
+  function drawWasps() {
+    if (!world.wasps) return;
+    for (const w of world.wasps) { const spr = Math.floor(time * 20 + w.ph) % 2 ? SPR.WASP1 : SPR.WASP2; ctx.drawImage(spr, Math.round(w.x - 3), Math.round(w.y - 3)); }
+  }
+
+  function updateSpiders(dt) {
+    for (const o of world.obstacles) {
+      const sp = o.spider; if (!sp || sp.state === 'spent') continue;
+      const sx = o.x - world.dist + o.w * 0.5, topH = o.gapY - o.gapH / 2;
+      sp.sx = sx; sp.topH = topH;
+      if (sp.state === 'hidden') { if (sx < BIRD_X + 58 && sx > BIRD_X - 6) { sp.state = 'drop'; sp.t = 0; sp.targetY = o.gapY + rnd(-6, 6); sp.y = topH; AUDIO.play('rustle'); } }
+      else if (sp.state === 'drop') { sp.t += dt; sp.y = lerp(topH, sp.targetY, Math.min(1, sp.t / 0.4)); if (sp.t >= 0.4) { sp.state = 'hang'; sp.t = 0; } }
+      else if (sp.state === 'hang') { sp.t += dt; sp.y = sp.targetY + Math.sin(time * 5) * 1.5; if (sp.t >= 1.3) { sp.state = 'climb'; sp.t = 0; } }
+      else if (sp.state === 'climb') { sp.t += dt; sp.y = lerp(sp.targetY, topH, Math.min(1, sp.t / 0.5)); if (sp.t >= 0.5) sp.state = 'spent'; }
+      if ((sp.state === 'drop' || sp.state === 'hang') && !bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(sx - bird.x) < 6 && Math.abs(sp.y - bird.y) < 6) hurt('spider', { sfx: 'hit', shake: 2.5, feathers: 5, knockVy: -90 });
+    }
+  }
+  function drawSpiders() {
+    for (const o of world.obstacles) {
+      const sp = o.spider; if (!sp || sp.state === 'spent' || sp.state === 'hidden') continue;
+      const sx = sp.sx; if (sx < -8 || sx > W + 8) continue;
+      ctx.strokeStyle = 'rgba(230,230,240,0.6)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sx, sp.topH); ctx.lineTo(sx, sp.y - 2); ctx.stroke();
+      ctx.drawImage(SPR.SPIDER, Math.round(sx - 4), Math.round(sp.y - 3));
+    }
+  }
+
+  // ---------- boss: THE GREAT EAGLE ----------
+  function ellipseFill(cx, cy, rx, ry, col) {
+    ctx.fillStyle = col;
+    for (let dy = -ry; dy <= ry; dy++) { const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy / ry) * (dy / ry)))); if (hw <= 0) continue; ctx.fillRect(Math.round(cx - hw), Math.round(cy + dy), hw * 2, 1); }
+  }
+  function drawEagle(cx, cy, flap) {
+    const P = '#3a2c18', a = '#6b4f2e', H = '#9a7a4a', z = '#efe6d2', y = '#e0b24a';
+    for (let s = -1; s <= 1; s += 2) {
+      for (let fI = 0; fI < 5; fI++) {
+        const wx = cx + s * (5 + fI * 5), wyy = cy - 1 + flap * (2 + fI * 2), len = Math.max(2, 7 - fI);
+        ctx.fillStyle = fI % 2 ? a : H; ctx.fillRect(Math.round(wx - 2), Math.round(wyy - len / 2), 4, len);
+        ctx.fillStyle = P; ctx.fillRect(Math.round(wx - 2), Math.round(wyy + len / 2 - 1), 4, 1);
+      }
+    }
+    ellipseFill(cx, cy + 3, 5, 9, a); ellipseFill(cx - 1, cy + 3, 2, 8, H);
+    ctx.fillStyle = H; ctx.fillRect(cx - 4, cy + 11, 8, 4); ctx.fillStyle = P; ctx.fillRect(cx - 4, cy + 14, 8, 1);
+    ellipseFill(cx, cy - 5, 4, 4, z);
+    ctx.fillStyle = y; ctx.fillRect(cx - 1, cy - 3, 2, 3); ctx.fillStyle = '#b8882e'; ctx.fillRect(cx - 1, cy - 1, 2, 1);
+    ctx.fillStyle = P; ctx.fillRect(cx - 2, cy - 6, 1, 1); ctx.fillRect(cx + 1, cy - 6, 1, 1);
+    ctx.fillStyle = y; ctx.fillRect(cx - 3, cy + 14, 1, 2); ctx.fillRect(cx + 2, cy + 14, 1, 2);
+  }
+  function endAttack(B) {
+    B.attacks++; B.hp = Math.max(0, B.hp - 20);
+    if (B.hp <= 0) { B.state = 'defeated'; B.t = 0; AUDIO.play('die'); bossReward(); }
+    else { B.state = 'recover'; B.t = 0; }
+  }
+  function bossReward() {
+    run.score += 300; addDNA(20);
+    bird.maxHearts = Math.min(6, bird.maxHearts + 1); bird.hearts = bird.maxHearts;
+    AUDIO.play('heart'); AUDIO.play('evolve');
+    addFloat(bird.x, bird.y - 22, 'EAGLE DRIVEN OFF!', '#96f0e4', true);
+    spawnParts(24, function () { return sparkle(bird.x + rnd(-20, 20), bird.y + rnd(-16, 10), pick(['#fff3a8', '#e0b24a', '#96f0e4'])); });
+  }
+  function updateBoss(dt) {
+    const B = world.boss; if (!B) return;
+    B.t += dt; B.wing += dt * 6;
+    for (let i = B.feathers.length - 1; i >= 0; i--) {
+      const f = B.feathers[i]; f.t += dt; f.vy += 240 * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+      if (!bird.dead && bird.invuln <= 0 && Math.abs(f.x - bird.x) < 6 && Math.abs(f.y - bird.y) < 6) { hurt('eagle', { sfx: 'chomp', shake: 3, feathers: 6, knockVy: 60 }); f.dead = true; }
+      if (f.dead || f.y > SEA_Y) B.feathers.splice(i, 1);
+    }
+    if (B.state === 'enter') {
+      B.x += ((W - 64) - B.x) * Math.min(1, dt * 1.5); B.y += (34 - B.y) * Math.min(1, dt * 2);
+      if (B.t > 1.6) { B.state = 'idle'; B.t = 0; if (B.first) { B.first = false; addFloat(W / 2, 62, 'THE GREAT EAGLE', '#e0b24a', true); } AUDIO.play('hawkScreech'); }
+    } else if (B.state === 'idle') {
+      B.x += ((W - 64) - B.x) * Math.min(1, dt * 2); B.y = 34 + Math.sin(B.t * 3) * 3;
+      if (B.t > 0.8) { B.pattern = pick(['dive', 'sweep', 'feathers']); B.state = 'telegraph'; B.t = 0; B.lockY = bird.y; AUDIO.play('hawkScreech'); }
+    } else if (B.state === 'telegraph') {
+      if (B.t < 0.3) B.lockY = bird.y;
+      if (B.t > 0.85) { B.state = 'attack'; B.t = 0; AUDIO.play('hawkWhoosh'); if (B.pattern === 'feathers') { for (let i = 0; i < 5; i++) B.feathers.push({ x: B.x - 10 + i * 8, y: B.y + 6, vx: rnd(-24, 24), vy: rnd(-10, 20), t: 0 }); } }
+    } else if (B.state === 'attack') {
+      if (B.pattern === 'dive') {
+        const k = Math.min(1, B.t / 0.6); B.x = lerp(W - 64, bird.x, Math.min(1, k * 1.25)); B.y = lerp(34, B.lockY, Math.sin(k * Math.PI));
+        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 12 && Math.abs(B.y - bird.y) < 11) hurt('eagle', { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
+        if (B.t > 0.7) endAttack(B);
+      } else if (B.pattern === 'sweep') {
+        B.y = B.lockY; B.x -= 250 * dt;
+        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 13 && Math.abs(B.y - bird.y) < 9) hurt('eagle', { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
+        if (B.x < -30) { B.x = W + 30; endAttack(B); }
+      } else {
+        B.x += ((W - 64) - B.x) * Math.min(1, dt * 2);
+        if ((B.t > 1.0 && B.feathers.length === 0) || B.t > 2.4) endAttack(B);
+      }
+    } else if (B.state === 'recover') {
+      B.x += ((W - 64) - B.x) * Math.min(1, dt * 2.5); B.y += (34 - B.y) * Math.min(1, dt * 3);
+      if (B.t > 0.6) { B.state = 'idle'; B.t = 0; }
+    } else if (B.state === 'defeated') {
+      B.x += 40 * dt; B.y -= 70 * dt; B.wing += dt * 4;
+      if (Math.random() < 0.3) parts.push(feather(B.x, B.y));
+      if (B.y < -30) { world.boss = null; enterCine(); }
+    }
+  }
+  function drawBoss() {
+    const B = world.boss; if (!B) return;
+    if (B.state === 'telegraph') {
+      if (B.pattern === 'dive' && Math.floor(time * 8) % 2) { ctx.fillStyle = 'rgba(224,178,74,0.4)'; ctx.fillRect(bird.x - 13, 0, 26, SEA_Y); }
+      else if (B.pattern === 'sweep' && Math.floor(time * 8) % 2) { ctx.fillStyle = 'rgba(224,178,74,0.5)'; ctx.fillRect(0, Math.round(B.lockY) - 1, W, 3); }
+    }
+    drawEagle(B.x, B.y, Math.sin(B.wing * 3));
+    ctx.fillStyle = '#6b4f2e'; for (const f of B.feathers) ctx.fillRect(Math.round(f.x), Math.round(f.y), 2, 3);
   }
 
   // ---------- cutscene + island ----------
@@ -2045,6 +2194,16 @@
       ctx.fillStyle = '#96f0e4'; ctx.fillRect(bx, 55, Math.round(bw * n / 5), 3);
     }
     if (bird.boost > 0) drawTextShadow(ctx, 'BOOST', bird.x - 22, bird.y - 2, '#a8e4f2', 1, 'right');
+    // boss stamina bar
+    if (world.isBoss && world.boss && world.boss.state !== 'defeated') {
+      const B = world.boss, bw = 96, bx = W / 2 - bw / 2, by = 20;
+      drawTextShadow(ctx, 'THE GREAT EAGLE', W / 2, by - 8, '#e0b24a', 1, 'center');
+      ctx.drawImage(SPR.FEATHER, bx - 8, by - 1);
+      ctx.fillStyle = 'rgba(20,12,28,0.85)'; ctx.fillRect(bx - 1, by, bw + 2, 6);
+      const t = clamp(B.hp / B.maxHp, 0, 1);
+      ctx.fillStyle = t > 0.5 ? '#e0525c' : (t > 0.25 ? '#f6c945' : '#96f0e4');
+      ctx.fillRect(bx, by + 1, Math.round(bw * t), 4);
+    }
   }
 
   function drawBanner() {
@@ -2163,6 +2322,7 @@
     drawObstacles();
     if (world.island) drawIsland(world.island);
     drawSnakes();
+    drawSpiders();
     drawDurians();
     drawFoods();
     drawChase();
@@ -2172,6 +2332,8 @@
     drawBirdFull();
     drawHawk();
     drawFalcon();
+    drawWasps();
+    if (world.isBoss) drawBoss();
     drawParts();
     ctx.restore();
     drawHUD();
@@ -2369,8 +2531,12 @@
     kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
     forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false }; },
-    forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL! FLY THROUGH THE RING', t: 0 }; } },
+    forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL RING', t: 0 }; } },
     forceRush: function () { if (world) startRush(); },
+    forceWasps: function () { if (world) startWasps(); },
+    forceSpider: function () { if (!world) return 'no world'; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 20 && sx < W) { o.spider = { state: 'drop', t: 0, targetY: bird.y, y: o.gapY - o.gapH / 2 }; return 'ok'; } } return 'none'; },
+    forceBoss: function () { if (run) { run.depth--; newLeg('aerie'); } },
+    bossHp: function () { return (world && world.boss) ? world.boss.hp : -1; },
     forceLatch: function () {
       if (!world) return 'no world';
       for (const o of world.obstacles) { if (o.snake && o.snake.state !== 'spent') { startLatch(o, o.snake); return 'ok'; } }
