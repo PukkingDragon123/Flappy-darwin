@@ -52,8 +52,11 @@ the undergrowth and you'll get hurt.
    frogs, mangoes and rare golden fruit. Catch it **on your beak** and it sits
    there while you **digest**. You can't grab more until it goes down — and
    over-gulping leaves you **STUFFED**: heavy and weak-winged.
-4. **Chase the bug.** Now and then a glowing beetle darts ahead — pursue it and
-   snatch it for a big burst of score, evolution and full energy.
+4. **Bonus mini-games.** Between obstacles a surprise event may appear:
+   - 🐛 **Bug chase** — a glowing beetle darts ahead; pursue and snatch it.
+   - 💨 **Thermal ring** — fly cleanly through the glowing hoop for a PERFECT
+     boost, full energy and bonus.
+   - 🍓 **Fruit rush** — a wave of fruit floods in; feast for a combo bonus.
 5. **Boost to escape.** Double-tap (double-click / double-press) to **dash** — a
    burst of speed that costs wing energy. Use it to outrun what's chasing you.
 6. **Dodge the dangers.** Every threat is **telegraphed and fair**:
@@ -123,6 +126,15 @@ wider beak, a fanned tail, a growing crest. Every run is procedural: layouts,
 food, paths and dangers differ each time.
 
 ![Branchy trees in golden light](docs/forest.png)
+
+## Look & feel
+
+- A **Slay-the-Spire-style** interactive main menu — a framed wooden title
+  banner, glowing wooden card buttons, Darwin's sign, and DNA/best plaques.
+- A cohesive **wooden, Stardew-Valley-style UI** across every panel, card and
+  sign — carved frames, dark boards and corner nails.
+- Layered, branchy **background forests** with lit organic canopies and depth,
+  god-rays, drifting pollen and per-biome light.
 
 ## Tech
 

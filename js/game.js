@@ -256,7 +256,7 @@
       snapperTimer: biome.hazards.indexOf('snapper') >= 0 ? rnd(3.5, 6) : -1,
       hawkTimer: biome.hazards.indexOf('hawk') >= 0 ? rnd(4, 7) : -1,
       falconTimer: biome.hazards.indexOf('falcon') >= 0 ? rnd(5, 9) : -1, falcon: null,
-      chaseTimer: rnd(4.5, 9), chaseBug: null,
+      chaseTimer: rnd(4.5, 9), chaseBug: null, thermal: null, rush: null, eventBanner: null,
       legDiet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       cam: { scale: 1, focusX: W / 2, focusY: H / 2, kickX: 0, kickY: 0 },
     };
@@ -752,16 +752,19 @@
     }
     updateFalcon(dt);
     updateDurians(dt);
-    // chase-bug event
+    // random bonus mini-game event (chase / thermal ring / fruit rush)
     if (world.chaseTimer > 0 && world.phase === 'fly') {
       world.chaseTimer -= dt;
-      if (world.chaseTimer <= 0 && !world.chaseBug && world.spawned > 2) {
-        world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 };
-        if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE THE BUG!', '#fff3a8'); }
-        AUDIO.play('evoReady');
+      if (world.chaseTimer <= 0 && world.spawned > 2 && !world.chaseBug && !world.thermal && !world.rush) {
+        const ev = pick(['chase', 'thermal', 'rush']);
+        if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE THE BUG!', '#fff3a8'); } AUDIO.play('evoReady'); }
+        else if (ev === 'thermal') startThermal();
+        else startRush();
+        world.chaseTimer = rnd(8, 14); // allow another event later this leg
       }
     }
-    updateChase(dt);
+    updateChase(dt); updateThermal(dt); updateRush(dt);
+    if (world.eventBanner) { world.eventBanner.t += dt; if (world.eventBanner.t > 2.2) world.eventBanner = null; }
 
     // floor contact — varies by environment
     if (!bird.dead && bird.y + 5 > SEA_Y && world.phase === 'fly') {
@@ -1110,6 +1113,54 @@
     drawSpeech(px + 22, py - 4, step.lines, 96);
   }
 
+  // ---------- mini-game events ----------
+  function startThermal() {
+    world.thermal = { x: W + 24, y: rnd(48, SEA_Y - 48), t: 0, passed: false };
+    world.eventBanner = { text: 'THERMAL! FLY THROUGH THE RING', t: 0 };
+    AUDIO.play('evoReady');
+  }
+  function updateThermal(dt) {
+    const th = world.thermal; if (!th) return;
+    th.t += dt; th.x -= world.speed * dt;
+    if (Math.random() < 0.4) parts.push({ type: 'puff', x: th.x + rnd(-9, 9), y: th.y + 12, vx: rnd(-6, 6), vy: -rnd(20, 44), g: -6, t: 0, life: 0.6, color: 'rgba(255,210,140,0.6)' });
+    if (!th.passed && !bird.dead && !bird.latched && Math.abs(th.x - bird.x) < 7 && Math.abs(th.y - bird.y) < 11) {
+      th.passed = true; th.fade = 0.5;
+      bird.boost = Math.max(bird.boost, 0.7); bird.energy = bird.maxEnergy || 100; bird.vy = -110;
+      run.score += 40; run.evo += 20; run.scorePop = 0.25; addDNA(2);
+      AUDIO.play('heart'); AUDIO.play('confirm'); slowmo(0.12);
+      addFloat(bird.x, bird.y - 18, 'PERFECT! +40', '#fff3a8', true);
+      spawnParts(16, function () { return sparkle(th.x + rnd(-10, 10), th.y + rnd(-10, 10), pick(['#fff3a8', '#ffd257', '#a8e4f2'])); });
+    }
+    if (th.x < -22) world.thermal = null;
+  }
+  function drawThermal() {
+    const th = world.thermal; if (!th) return;
+    const pulse = 11 + Math.sin(time * 6) * 1.5;
+    ctx.strokeStyle = th.passed ? 'rgba(150,240,180,0.9)' : 'rgba(255,210,120,' + (0.55 + 0.25 * Math.sin(time * 8)).toFixed(2) + ')';
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(th.x, th.y, 7, pulse, 0, 0, 6.28); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(th.x, th.y, 7, pulse, 0, 0, 6.28); ctx.stroke();
+  }
+  function startRush() {
+    world.rush = { t: 0, dur: 4.5, cd: 0, startFood: run.foodEaten };
+    world.eventBanner = { text: 'FRUIT RUSH! FEAST!', t: 0 };
+    AUDIO.play('evoReady');
+  }
+  function updateRush(dt) {
+    const r = world.rush; if (!r) return;
+    r.t += dt; r.cd -= dt;
+    if (r.cd <= 0 && r.t < r.dur) {
+      r.cd = 0.34;
+      const kind = pick(['berry', 'nectar', 'mango', 'berry', 'gold']), def = FOODS[kind];
+      world.foods.push({ kind: kind, def: def, x: W + 12, baseY: rnd(34, SEA_Y - 26), y: 0, phase: rnd(0, 6.28), wander: 0, hopT: 0, vy: 0 });
+    }
+    if (r.t >= r.dur) {
+      const eaten = run.foodEaten - r.startFood;
+      if (eaten >= 3) { const bonus = eaten * 8; run.score += bonus; addDNA(eaten); addFloat(bird.x, bird.y - 20, 'FEAST! +' + bonus, '#f6c945', true); AUDIO.play('confirm'); }
+      world.rush = null;
+    }
+  }
+
   // ---------- cutscene + island ----------
   const CINE = { reveal: 0, pan: 0.5, panEnd: 1.6, glide: 2.15, flare: 2.55, touch: 2.95, settle: 3.15, end: 3.95 };
   const ISLAND_REST = 176;
@@ -1319,17 +1370,33 @@
   function buildForestBand(w, h, pal, density, canR) {
     const cvv = document.createElement('canvas'); cvv.width = w; cvv.height = h;
     const c = cvv.getContext('2d');
-    let x = 6;
-    while (x < w - 6) {
-      const th = irnd(Math.floor(h * 0.55), h - 2), tw = irnd(2, 5);
-      c.fillStyle = pal.trunk; c.fillRect(x, h - th, tw, th);
-      const cr = irnd(canR[0], canR[1]), cyc = h - th + cr - 2;
-      for (let yy = -cr; yy <= cr; yy++) {
-        const hw = Math.round(cr * Math.sqrt(Math.max(0, 1 - (yy / cr) * (yy / cr))));
-        const lit = 0.5 - yy / cr * 0.5;
-        c.fillStyle = lit > 0.66 ? pal.hi : (lit > 0.33 ? pal.mid : pal.deep);
-        c.fillRect(x + Math.floor(tw / 2) - hw, cyc + yy, hw * 2, 1);
+    function lobe(cx, cy, rx, ry) {
+      for (let dy = -ry; dy <= ry; dy++) {
+        const yy = Math.round(cy + dy);
+        const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy / ry) * (dy / ry))));
+        if (hw <= 0) continue;
+        const lit = 0.5 - dy / ry * 0.5;
+        c.fillStyle = lit > 0.72 ? pal.hi : (lit > 0.46 ? pal.mid : (lit > 0.2 ? pal.mid : pal.deep));
+        c.fillRect(Math.round(cx - hw), yy, hw * 2, 1);
       }
+    }
+    let x = 8;
+    while (x < w - 6) {
+      const th = irnd(Math.floor(h * 0.5), h - 2), tw = irnd(2, 4), cx = x + Math.floor(tw / 2);
+      // tapered shaded trunk
+      c.fillStyle = pal.trunk; c.fillRect(cx - Math.floor(tw / 2), h - th, tw, th);
+      c.fillStyle = pal.deep; c.fillRect(cx + Math.floor(tw / 2) - 1, h - th, 1, th);
+      const cr = irnd(canR[0], canR[1]), cyc = h - th + cr - 1;
+      // a couple of branches poking toward the canopy
+      c.fillStyle = pal.trunk;
+      for (let bI = 0; bI < 2; bI++) { const side = bI ? 1 : -1; for (let l = 1; l < cr * 0.7; l++) c.fillRect(cx + side * l, Math.round(cyc + cr * 0.4 - l * 0.5), 1, 1); }
+      // layered organic canopy (3 lobes) with a lit crown
+      lobe(cx - cr * 0.5, cyc + cr * 0.18, cr * 0.6, cr * 0.66);
+      lobe(cx + cr * 0.5, cyc + cr * 0.12, cr * 0.6, cr * 0.66);
+      lobe(cx, cyc - cr * 0.22, cr, cr * 0.9);
+      // scattered rim leaves
+      c.fillStyle = pal.hi;
+      for (let i = 0; i < 7; i++) { const a = orand(x * 7 + i, i * 3) * 6.28; c.fillRect(Math.round(cx + Math.cos(a) * cr * 0.92), Math.round(cyc - cr * 0.2 + Math.sin(a) * cr * 0.82), 1, 1); }
       x += tw + irnd(density[0], density[1]);
     }
     return cvv;
@@ -1904,11 +1971,28 @@
   }
 
   // ---------- render: HUD ----------
+  // wooden Stardew-style sign panel: carved wood frame + dark inner board
   function drawPanel(x, y, w2, h2) {
-    ctx.fillStyle = 'rgba(18,12,30,0.92)'; ctx.fillRect(x + 1, y + 1, w2 - 2, h2 - 2);
-    ctx.fillStyle = '#6a5a8c';
-    ctx.fillRect(x + 1, y, w2 - 2, 1); ctx.fillRect(x + 1, y + h2 - 1, w2 - 2, 1);
-    ctx.fillRect(x, y + 1, 1, h2 - 2); ctx.fillRect(x + w2 - 1, y + 1, 1, h2 - 2);
+    x = Math.round(x); y = Math.round(y); w2 = Math.round(w2); h2 = Math.round(h2);
+    // wood frame body with plank grain
+    ctx.fillStyle = '#5c3a1e'; ctx.fillRect(x, y, w2, h2);
+    ctx.fillStyle = '#7c4f28'; ctx.fillRect(x + 1, y + 1, w2 - 2, h2 - 2);
+    ctx.fillStyle = '#8f5e34'; ctx.fillRect(x + 1, y + 1, w2 - 2, 1); ctx.fillRect(x + 1, y + 1, 1, h2 - 2);
+    ctx.fillStyle = '#3f2712'; ctx.fillRect(x + 1, y + h2 - 2, w2 - 2, 1); ctx.fillRect(x + w2 - 2, y + 1, 1, h2 - 2);
+    ctx.fillStyle = '#6a4526';
+    for (let gx = x + 4; gx < x + w2 - 3; gx += 7) ctx.fillRect(gx, y + 1, 1, h2 - 2);
+    // dark inner board
+    const b = 3;
+    if (w2 > 2 * b + 2 && h2 > 2 * b + 2) {
+      ctx.fillStyle = '#241611'; ctx.fillRect(x + b, y + b, w2 - 2 * b, h2 - 2 * b);
+      ctx.fillStyle = '#31201a'; ctx.fillRect(x + b, y + b, w2 - 2 * b, 1);
+      ctx.fillStyle = '#180f0a'; ctx.fillRect(x + b, y + h2 - b - 1, w2 - 2 * b, 1);
+    }
+    // corner nails
+    if (w2 >= 20 && h2 >= 16) {
+      const nn = [[x + 3, y + 3], [x + w2 - 5, y + 3], [x + 3, y + h2 - 5], [x + w2 - 5, y + h2 - 5]];
+      for (const c of nn) { ctx.fillStyle = '#d8b878'; ctx.fillRect(c[0], c[1], 2, 2); ctx.fillStyle = '#8a6a2e'; ctx.fillRect(c[0] + 1, c[1] + 1, 1, 1); }
+    }
   }
 
   function drawSpeech(x, y, lines, w2) {
@@ -2082,6 +2166,7 @@
     drawDurians();
     drawFoods();
     drawChase();
+    drawThermal();
     drawSnappers();
     drawSea();
     drawBirdFull();
@@ -2091,6 +2176,7 @@
     ctx.restore();
     drawHUD();
     drawBanner();
+    if (world.eventBanner && Math.floor(time * 6) % 2) drawTextShadow(ctx, world.eventBanner.text, W / 2, 58, '#fff3a8', 1, 'center');
     if (!cine && run.darwin) drawDarwin();
     if (cine) drawCineTitle();
     if (world.fade > 0) { ctx.fillStyle = 'rgba(10,6,18,' + clamp(world.fade, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
@@ -2130,37 +2216,59 @@
     if (ui.flash > 0) { ctx.fillStyle = 'rgba(63,192,176,' + (ui.flash * 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
 
+  // small wooden plaque with a label + value (for DNA / BEST)
+  function drawPlaque(x, y, w2, icon, label, col) {
+    drawPanel(x, y, w2, 15);
+    if (icon) ctx.drawImage(icon, x + 4, y + 4);
+    drawTextShadow(ctx, label, x + w2 - 4, y + 5, col, 1, 'right');
+  }
+
   function renderTitle() {
     drawBackground(time * 12);
     drawSea();
-    const ly = 18 + Math.round(Math.sin(time * 1.2) * 2);
+    // atmospheric dim + drifting embers for a Slay-the-Spire mood
+    ctx.fillStyle = 'rgba(12,8,20,0.32)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,196,110,0.5)';
+    for (let i = 0; i < 14; i++) { const ex = (i * 53 + time * (8 + i % 5)) % W; const ey = (H - 20 - ((time * (10 + i % 4) + i * 40) % (H - 30))); ctx.fillRect(Math.round(ex), Math.round(ey), 1, 1); }
+
+    // title banner (wooden sign) + logo
+    drawPanel(W / 2 - 78, 10, 156, 46);
+    const ly = 16 + Math.round(Math.sin(time * 1.2) * 1);
     FONT.drawTextOutline(ctx, 'FLAPPY', W / 2, ly, '#f6c945', 3, 'center');
-    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 20, '#3fc0b0', 3, 'center');
-    drawTextShadow(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 42, '#ffffff', 1, 'center');
-    // an evolved demo bird glides across
-    const dbx = 40 + ((time * 26) % (W + 40)), dby = 66 + Math.sin(time * 1.6) * 6;
-    SPR.drawBird(ctx, dbx, dby, Math.sin(time * 1.6 + 1) * 0.1, {
-      frame: Math.floor(time * 9) % 3, open: false, bigWings: true, bigTail: true, crest: 3,
-      blink: Math.sin(time * 0.7) > 0.97, time: time, sx: 1, sy: 1,
+    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 19, '#3fc0b0', 3, 'center');
+    drawText(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 38, '#c9b088', 1, 'center');
+
+    // a perched evolved "hero" bird beside the sign
+    const dby = 74 + Math.sin(time * 1.6) * 3;
+    SPR.drawBird(ctx, 46, dby, Math.sin(time * 1.6 + 1) * 0.08, {
+      frame: bird && bird.flapT > 0 ? Math.floor(time * 12) % 3 : 1, open: false, bigWings: true, bigTail: true, crest: 3,
+      legsDown: true, blink: Math.sin(time * 0.7) > 0.97, time: time, sx: 1, sy: 1,
     });
-    if (Math.random() < 0.05) parts.push(feather(dbx - 6, dby + 4));
+    if (Math.random() < 0.04) parts.push(feather(40, dby + 4));
     drawParts();
-    // menu
+
+    // menu as vertical wooden cards
     const items = menuItems(); ui.menuRects = [];
-    const my0 = 94;
+    const cw = 122, mx = W / 2 - cw / 2, my0 = 78;
     for (let i = 0; i < items.length; i++) {
-      const yy = my0 + i * 13, sel = (ui.menuSel || 0) === i, w2 = 92, x = W / 2 - w2 / 2;
-      ui.menuRects.push({ x: x, y: yy - 3, w: w2, h: 12 });
-      if (sel) drawPanel(x, yy - 3, w2, 12);
-      drawTextShadow(ctx, (sel ? '> ' : '') + items[i] + (sel ? ' <' : ''), W / 2, yy, sel ? '#f6c945' : '#c9d2e0', 1, 'center');
+      const sel = (ui.menuSel || 0) === i, yy = my0 + i * 22 + (sel ? -1 : 0), ch = 18;
+      ui.menuRects.push({ x: mx, y: my0 + i * 22, w: cw, h: 20 });
+      drawPanel(mx, yy, cw, ch);
+      if (sel) {
+        ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257';
+        ctx.fillRect(mx, yy, cw, 1); ctx.fillRect(mx, yy + ch - 1, cw, 1); ctx.fillRect(mx, yy, 1, ch); ctx.fillRect(mx + cw - 1, yy, 1, ch);
+        drawText(ctx, '>', mx + 8, yy + 7, '#ffd257', 1); drawText(ctx, '<', mx + cw - 12, yy + 7, '#ffd257', 1);
+      }
+      drawTextShadow(ctx, items[i], W / 2, yy + 6, sel ? '#ffe27a' : '#b79666', 1, 'center');
     }
-    // Darwin welcome
-    ctx.drawImage(SPR.DARWIN, 5, H - 46);
-    drawSpeech(28, H - 46, ["I'M DARWIN.", 'TRY TUTORIAL', 'IF NEW HERE!'], 70);
-    // footer stats
-    drawTextShadow(ctx, 'DNA ' + save.dna, W - 6, H - 42, '#3fc0b0', 1, 'right');
-    if (best.score > 0) drawTextShadow(ctx, 'BEST ' + best.score + ' D' + best.depth, W - 6, H - 33, '#f6c945', 1, 'right');
-    drawText(ctx, 'ARROWS+ENTER / TAP', W - 6, H - 8, '#8f86a8', 1, 'right');
+
+    // Darwin welcome sign
+    ctx.drawImage(SPR.DARWIN, 4, H - 44);
+    drawSpeech(26, H - 45, ["I'M DARWIN.", 'PICK TUTORIAL', 'IF NEW HERE!'], 74);
+    // stat plaques
+    drawPlaque(W - 74, H - 46, 70, SPR.DNA, 'DNA ' + save.dna, '#8fd6c8');
+    drawPlaque(W - 74, H - 29, 70, SPR.SKULL, best.score > 0 ? (best.score + ' D' + best.depth) : 'NO RUNS', '#f6c945');
+    drawText(ctx, 'ARROWS + ENTER / TAP', W / 2, H - 6, '#8f7a5a', 1, 'center');
   }
 
   function renderOver() {
@@ -2261,6 +2369,8 @@
     kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
     forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false }; },
+    forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL! FLY THROUGH THE RING', t: 0 }; } },
+    forceRush: function () { if (world) startRush(); },
     forceLatch: function () {
       if (!world) return 'no world';
       for (const o of world.obstacles) { if (o.snake && o.snake.state !== 'spent') { startLatch(o, o.snake); return 'ok'; } }
