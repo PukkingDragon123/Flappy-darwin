@@ -90,6 +90,32 @@
       tone(400, 0.5, 'sawtooth', 0.2, 60);
       noise(0.5, 0.2, 900, 0.05);
     },
+    // ---- Canopy Rangers ----
+    dart: function () { noise(0.05, 0.14, 3000); tone(900, 0.05, 'square', 0.08, 1600); },
+    dartHit: function () { tone(520, 0.06, 'triangle', 0.14, 260); noise(0.05, 0.08, 1200); },
+    reload: function () { tone(300, 0.05, 'square', 0.1, 500); tone(700, 0.05, 'square', 0.1, null, 0.09); },
+    empty: function () { tone(220, 0.05, 'square', 0.08, 170); tone(180, 0.05, 'square', 0.07, null, 0.06); },
+    grapple: function () { noise(0.08, 0.12, 2200); tone(400, 0.16, 'sine', 0.06, 900); },
+    latch: function () { tone(600, 0.06, 'triangle', 0.16, 900); },
+    swing: function () { noise(0.14, 0.06, 1400); },
+    thud: function () { noise(0.1, 0.18, 500); tone(150, 0.1, 'triangle', 0.12, 90); },
+    sedate: function () { [660, 560, 440, 330].forEach(function (f, i) { tone(f, 0.12, 'sine', 0.12, null, i * 0.07); }); },
+    net: function () { noise(0.16, 0.14, 1800); tone(300, 0.1, 'square', 0.08, 200); },
+    stow: function () { tone(500, 0.06, 'triangle', 0.14, 720); tone(880, 0.08, 'triangle', 0.12, null, 0.06); },
+    coin: function () { tone(880, 0.05, 'square', 0.12, 1320); tone(1320, 0.07, 'square', 0.1, null, 0.05); },
+    coins: function () { [1046, 1318, 1568].forEach(function (f, i) { tone(f, 0.07, 'square', 0.1, null, i * 0.05); }); },
+    cheer: function () { noise(0.4, 0.1, 2000); [523, 659, 784].forEach(function (f, i) { tone(f, 0.14, 'triangle', 0.08, null, i * 0.05); }); },
+    feed: function () { tone(420, 0.09, 'sine', 0.16, 620); },
+    play: function () { tone(700, 0.06, 'triangle', 0.12, 1050); },
+    happy: function () { tone(700, 0.09, 'triangle', 0.14, 950); tone(1180, 0.12, 'triangle', 0.12, null, 0.08); },
+    growl: function () { tone(120, 0.3, 'sawtooth', 0.2, 70); noise(0.28, 0.1, 400); },
+    charge: function () { noise(0.3, 0.14, 700); tone(160, 0.3, 'sawtooth', 0.14, 240); },
+    monkey: function () { tone(900, 0.05, 'square', 0.12, 1500); tone(700, 0.05, 'square', 0.1, 1100, 0.05); },
+    bird: function () { tone(1800, 0.05, 'sine', 0.1, 2400); tone(2200, 0.04, 'sine', 0.08, null, 0.05); },
+    dayStart: function () { [392, 523, 659, 784].forEach(function (f, i) { tone(f, 0.14, 'triangle', 0.12, null, i * 0.1); }); },
+    nightStart: function () { [523, 440, 349].forEach(function (f, i) { tone(f, 0.18, 'sine', 0.12, null, i * 0.12); }); },
+    levelup: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.12, 'square', 0.12, null, i * 0.08); }); },
+    buy: function () { tone(660, 0.06, 'square', 0.12, 990); tone(1320, 0.08, 'square', 0.1, null, 0.06); },
   };
 
   window.AUDIO = {

@@ -1,137 +1,100 @@
-# 🐦 Flappy Darwin
+# 🌿 Canopy Rangers — Amazon Wildlife Hunter
 
-A pixel-art **roguelike flappy game** about flying through a living forest,
-eating, digesting and evolving. Flap between the great branching trees, manage
-your wing energy, catch food on your beak, graze safely along the treetops,
-dodge snakes, hawks, carnivorous pitchers and falling durians, chase glowing
-bugs — then rest at **the nest**, where each new **generation** of finches
-hatches with a fresh mutation. Bank **DNA** across runs and, when you fall,
-hatch again from your last checkpoint. Charles Darwin himself guides you in.
+A pixel-art **wildlife-hunter take on the _Dave the Diver_ loop**. Instead of
+diving **down** into the ocean, you climb **up** into the Amazon rainforest:
+swing on vines, fire a **grappling hook**, and **tranquilize** wild animals with
+a dart gun — then carry them back to your truck for transport to your **wildlife
+sanctuary**. By night you run the sanctuary: feed and play with your animals,
+welcome paying visitors, and spend the takings on better gear and new
+enclosures. Then you head back up the trees and do it all again.
 
 ![Main menu](docs/menu.png)
-
-## Meet your guide
-
-On your first flight (or any time via the **TUTORIAL** menu), **Charles Darwin**
-walks you through the basics with an interactive, step-by-step tutorial that
-waits for you to actually flap, eat, digest and graze before moving on.
-
-![Darwin's interactive tutorial](docs/tutorial.png)
 
 ## How to play
 
 Open `index.html` in any modern browser. No build step, no dependencies.
+Everything (art, sound, world) is generated in code.
+
+### ☀️ Day — the expedition (climb & tranquilize)
 
 | Input | Action |
 |---|---|
-| `Space` / `↑` / `W` / tap / click | Flap (costs wing energy; hold to glide, once evolved) |
-| `←` `→` / `A` `D` / tap a card | Choose a hatchling trait or migration path |
-| `Enter` / `Space` / tap selected card | Confirm choice |
-| tap during arrival | Skip the nest cutscene |
-| `P` | Pause · `M` Mute · `R` Restart |
+| `A` `D` / `←` `→` | Move · steer / pump your swing |
+| `Space` | Jump (grounded) · **let go** of the rope (swinging) |
+| **Mouse** | Aim |
+| **Left-click** / `J` | Fire tranq dart |
+| **Right-click** / `F` | Fire **grappling hook**, then swing |
+| `W` `S` (while swinging) | Reel in / pay out the line |
+| `1` `2` `3` | Tranq Dart · Heavy Dart · Capture Net |
+| `R` | Reload |
+| `E` (at the truck) | Drive your catch to the sanctuary |
 
-## The forest
+![Climbing the rainforest and darting wildlife](docs/expedition.png)
 
-You're not over the ocean — you're deep in a **living forest**: layered trees
-receding into misty depth, shafts of light through the canopy, drifting pollen,
-and an undergrowth floor of ferns, bushes, mushrooms and fallen logs. Fall into
-the undergrowth and you'll get hurt.
+The climb is the heart of the game:
 
-![Flying through the forest](docs/flight.png)
+1. **Ascend the layers.** Jump between branches, grapple onto higher ones and
+   reel up, and swing across gaps on vines. The higher you go, the **rarer and
+   more dangerous** the wildlife.
+2. **Mind your GRIP.** The green **grip meter** is your "oxygen" — it drains
+   while you hang on ropes and vines and refills when you stand on a solid
+   branch. Run it dry and you start to slip.
+3. **Tranquilize, don't kill.** Aim with the mouse and dart animals until their
+   little **sedation bar** fills. Different ammo suits different quarry — light
+   darts for macaws, **heavy darts** for a jaguar, a **capture net** to bag a
+   tricky target instantly.
+4. **Stay safe.** Boars **charge**, snakes **strike**, jaguars **pounce** — read
+   the tell, dart them, or swing clear. Take too many hits and you're knocked
+   out and lose half your catch.
+5. **Stow & extract.** Walk over a sedated animal to load it onto your back
+   (limited **cargo slots**), then return to the **truck** and press `E` to
+   drive everything to the sanctuary.
+
+**Animals:** 🦜 Macaw · 🐒 Monkey · 🐗 Boar · 🐍 Snake · 🦥 Sloth ·
+🦤 Toucan · 🐆 Jaguar · ✨ Golden Frog — each in its own layer of the canopy,
+with its own behaviour, danger and rarity/value.
+
+### 🌙 Night — the sanctuary (feed, play, earn)
+
+![The wildlife sanctuary at night](docs/sanctuary.png)
+
+Your rescued animals fill the enclosures. Click a pen to **Feed** or **Play**:
+
+- **Feeding** is a timing minigame — click when the marker crosses the fruit.
+- **Playtime** is a mash minigame — keep the ball bouncing.
+
+![Feeding minigame](docs/feeding.png)
+
+Happy, well-fed animals draw bigger tips from the **visitors** who stroll the
+path and pay to admire each exhibit. Hunger drifts down over the night, so keep
+your residents fed. When the night ends you bank your **admission earnings**.
+
+### 🛒 The Outfitter (between days)
+
+Spend your money on a branching upgrade tree:
+
+- **Gun** — bigger magazine, faster reload, more potent serum
+- **Climb** — more grip, longer grapple line, higher jump
+- **Cargo** — extra carry slots
+- **Sanctuary** — new enclosures, premium feed, décor that boosts spending
+- **Ammo** — restock heavy darts and capture nets
+
+Progress and your sanctuary are **saved automatically** between days.
 
 ## The loop
 
-1. **Manage your wings.** Every flap spends **wing energy** (the green bar).
-   It refills over time, faster while **gliding**, and topping it up by
-   **eating** and **grazing treetops** — so when you run low, slide and feast
-   instead of hammering the flap key.
-2. **Graze, don't crash.** The leafy **tops of trees are soft** — skim and slide
-   along a canopy safely (it even restores energy). Only the woody **trunk
-   core** deals damage.
-3. **Eat.** Food floats in your path — seeds, berries, nectar, nuts, grubs,
-   frogs, mangoes and rare golden fruit. Catch it **on your beak** and it sits
-   there while you **digest**. You can't grab more until it goes down — and
-   over-gulping leaves you **STUFFED**: heavy and weak-winged.
-4. **Chase the bug.** Now and then a glowing beetle darts ahead — pursue it and
-   snatch it for a big burst of score, evolution and full energy.
-5. **Boost to escape.** Double-tap (double-click / double-press) to **dash** — a
-   burst of speed that costs wing energy. Use it to outrun what's chasing you.
-6. **Dodge the dangers.** Every threat is **telegraphed and fair**:
-   - 🐍 **Canopy snakes** rear up and strike — and if one hits, it **latches on**;
-     **tap fast (swipe 5×) to shake it off** before it drains you.
-   - 🦅 **Falcons** chase you down from behind — **boost away** or juke them.
-   - 🌿 **Pitcher plants** bubble in the undergrowth, then lunge — stay high.
-   - 🦅 **Hawks** cast a warning shadow, then dive — drop low.
-   - 🥭 **Durians** hang from branches and *drop* when you near them — move!
-
-![A canopy snake latches on — swipe to shake it off](docs/snake-latch.png)
-6. **Rest at the nest.** Arriving at a grove triggers a landing cutscene with a
-   sweeping **overview pan** across the clearing. When enough food is banked, an
-   egg in the nest **hatches a new generation** — you pick the trait it
-   inherits — then you choose your next migration path.
-
-![The nest — hatch a new generation](docs/nest.png)
-
-## Generations, traits & DNA
-
-Digested food fills your **hatch meter**. At the nest a new generation hatches
-and inherits one of three traits, drawn by **rarity** — <span>COMMON</span>,
-**RARE** or **EPIC** — and weighted by what your flock has been eating. Spend
-banked **DNA** to **reroll** the offered traits.
-
-![Hatching a new generation — rarity traits + DNA reroll](docs/hatch.png)
-
-**DNA is permanent.** You earn it every run and it is saved between runs. Each
-leg you reach becomes a **checkpoint**, so when a finch dies you can **hatch
-again from your last nest** — for a cost in DNA — keeping your build and depth,
-or start a fresh **new lineage**.
-
-![Extinction — hatch from your checkpoint or begin anew](docs/checkpoint.png)
-
-Traits: Mighty Wings · Hollow Bones · Tail Rudder · Glider Wing · Wide Beak ·
-Rapid Gut · Crop Pouch · Iron Gizzard · Downy Plume · Sweet Tooth · Bug Snatcher ·
-Feather Shield · Second Stomach · Big Lungs · Light Frame · Sun Feathers ·
-Keen Forager · Nimble Frame · Iron Beak · **Aerial Master** · **Apex Instinct**.
-
-## Biomes & environments
-
-Ten biomes across four environments — forest, ocean, tundra and desert — each
-with its own trees/obstacles, light, food and dangers. Paths branch and
-difficulty ramps the deeper you migrate.
-
-| Biome | Env | Obstacles | Hazards |
-|---|---|---|---|
-| 🌼 **Meadow Isles** | forest | leafy oaks | — |
-| 🌲 **Pinewood Reach** | forest | conifers | durians |
-| 🌰 **Oaknut Grove** | forest | golden oaks | pitchers, durians |
-| 🐛 **Buzzing Marsh** | forest | mangroves | — |
-| 🐍 **Mire Swamp** | forest | cypress | snakes, pitchers |
-| ⛰️ **Storm Crags** | forest | rock spires | hawks, falcons |
-| 🌴 **Lush Jungle** | forest | broadleaf + vines | everything |
-| 🌊 **Coral Coast** | ocean | swaying palms | falcons |
-| ❄️ **Frost Reach** | tundra | snow-laden pines | falcons, hawks, gusts |
-| 🏜️ **Dune Sea** | desert | saguaro cacti | snakes, falcons |
-
-![Dune Sea — desert environment with cacti](docs/desert.png)
-
-![Frost Reach — tundra with snowfall](docs/tundra.png)
-
-![A golden jungle, evolved](docs/jungle.png)
-
-Traits stack across generations and **visibly change the bird** — bigger wings,
-wider beak, a fanned tail, a growing crest. Every run is procedural: layouts,
-food, paths and dangers differ each time.
-
-![Branchy trees in golden light](docs/forest.png)
+**Menu → choose a region → expedition (climb + tranq + capture) → drive to the
+sanctuary → run the night (feed / play / visitors) → the Outfitter → next day.**
+Deeper regions unlock as the days go by, with rarer wildlife and steeper danger.
 
 ## Tech
 
 - Pure vanilla JavaScript + HTML5 canvas, **zero dependencies**
 - 320×180 internal resolution, integer-scaled with crisp pixels
-- Every sprite authored in-code as pixel character maps (`js/sprites.js`)
-- Procedural forest, trees, grove, parallax depth and light drawn per-pixel
-  (`js/game.js`)
+- All sprites drawn **procedurally** with dithered "3D-pixel" shading, parallax
+  canopy depth, god-rays, drop shadows and particle juice (`js/hunter.js`)
+- Verlet-style rope **pendulum physics** for grappling & vine swinging
 - All sound effects synthesized live with WebAudio (`js/audio.js`)
 - 3×5 bitmap font (`js/font.js`)
 
-`tools/preview.html` renders the whole sprite sheet for art iteration.
+Add `?dev=1` to the URL to expose a small `window.CR` debug helper.
