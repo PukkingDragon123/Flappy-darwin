@@ -71,31 +71,31 @@
       hazards: [], durian: true, foods: { seed: 5, nut: 3, berry: 1.5, grub: 1, gold: 0.2 },
       hint: ['TALL PINES', 'SEEDS + NUTS'], foodIcons: ['seed', 'nut'], icon: SPR.ICON_FOREST },
     grove: { name: 'OAKNUT GROVE', danger: 2, obst: 'tree', tree: 'nutoak', gapBase: 54, dense: true, sky: 'golden', deco: '#a76f3e',
-      hazards: ['snapper'], durian: true, foods: { nut: 5, seed: 2, berry: 1, grub: 0.6, gold: 0.2 },
+      hazards: ['snapper', 'bfrog'], durian: true, foods: { nut: 5, seed: 2, berry: 1, grub: 0.6, gold: 0.2 },
       hint: ['PITCHER JAWS', 'FALLING DURIAN'], foodIcons: ['nut', 'seed'], icon: SPR.ICON_GROVE },
     marsh: { name: 'BUZZING MARSH', danger: 2, obst: 'tree', tree: 'mangrove', gapBase: 58, sky: 'day', deco: '#d4c24a',
-      hazards: [], foods: { bug: 6, grub: 1.5, berry: 1.5, seed: 1, gold: 0.2 },
-      hint: ['QUICK BUGS', 'TANGLED ROOTS'], foodIcons: ['bug', 'berry'], icon: SPR.ICON_MARSH },
+      hazards: ['dfly', 'bfrog'], foods: { bug: 6, grub: 1.5, berry: 1.5, seed: 1, gold: 0.2 },
+      hint: ['DARTING DRAGONFLIES', 'LEAPING FROGS'], foodIcons: ['bug', 'berry'], icon: SPR.ICON_MARSH },
     swamp: { name: 'MIRE SWAMP', danger: 2, obst: 'tree', tree: 'cypress', gapBase: 56, dense: true, sky: 'misty', deco: '#8a4f6b',
-      hazards: ['snake', 'snapper'], foods: { bug: 4, grub: 3, frog: 2, berry: 1, gold: 0.3 },
+      hazards: ['snake', 'snapper', 'bat'], foods: { bug: 4, grub: 3, frog: 2, berry: 1, gold: 0.3 },
       hint: ['LURKING JAWS', 'GRUBS + FROGS'], foodIcons: ['grub', 'frog'], icon: SPR.ICON_SWAMP },
     crags: { name: 'STORM CRAGS', danger: 3, obst: 'rock', tree: null, gapBase: 54, wind: true, sky: 'stormy', deco: '#9aa2b5',
-      hazards: ['hawk', 'falcon'], foods: { seed: 2, nut: 2, berry: 2, gold: 0.7 },
-      hint: ['HAWKS + FALCONS', 'WILD GUSTS'], foodIcons: ['gold', 'nut'], icon: SPR.ICON_CRAGS },
+      hazards: ['hawk', 'falcon', 'vulture'], foods: { seed: 2, nut: 2, berry: 2, gold: 0.7 },
+      hint: ['HAWKS + VULTURES', 'WILD GUSTS'], foodIcons: ['gold', 'nut'], icon: SPR.ICON_CRAGS },
     jungle: { name: 'LUSH JUNGLE', danger: 3, obst: 'tree', tree: 'broadleaf', gapBase: 52, dense: true, sky: 'golden', deco: '#ff5f9e',
-      hazards: ['snake', 'hawk', 'snapper'], durian: true, foods: { mango: 4, nectar: 3, nut: 2, berry: 2, bug: 2, frog: 1.5, gold: 0.8 },
+      hazards: ['snake', 'hawk', 'snapper', 'bat', 'dfly'], durian: true, foods: { mango: 4, nectar: 3, nut: 2, berry: 2, bug: 2, frog: 1.5, gold: 0.8 },
       hint: ['EVERY DANGER', 'RICH FRUIT'], foodIcons: ['mango', 'gold'], icon: SPR.ICON_JUNGLE },
   };
   // new environments beyond the forest
   BIOMES.coast = { name: 'CORAL COAST', danger: 2, obst: 'tree', tree: 'palm', gapBase: 58, env: 'ocean', sky: 'day', deco: '#ff9f4d',
-    hazards: ['falcon'], foods: { nectar: 3, berry: 2, bug: 2, mango: 1, gold: 0.4 },
-    hint: ['DIVING FALCONS', 'SWAYING PALMS'], foodIcons: ['nectar', 'gold'], icon: SPR.ICON_MEADOW };
+    hazards: ['falcon', 'jelly', 'piranha'], foods: { nectar: 3, berry: 2, bug: 2, mango: 1, gold: 0.4 },
+    hint: ['DRIFTING JELLYFISH', 'LEAPING PIRANHAS'], foodIcons: ['nectar', 'gold'], icon: SPR.ICON_MEADOW };
   BIOMES.tundra = { name: 'FROST REACH', danger: 3, obst: 'tree', tree: 'snowpine', gapBase: 55, env: 'tundra', sky: 'misty', wind: true, deco: '#a8e4f2',
-    hazards: ['falcon', 'hawk'], foods: { seed: 4, nut: 2, berry: 1, gold: 0.4 },
+    hazards: ['falcon', 'hawk', 'bat'], foods: { seed: 4, nut: 2, berry: 1, gold: 0.4 },
     hint: ['ICY GUSTS', 'RAPTORS HUNT'], foodIcons: ['seed', 'gold'], icon: SPR.ICON_FOREST };
   BIOMES.desert = { name: 'DUNE SEA', danger: 3, obst: 'cactus', tree: 'cactus', gapBase: 56, env: 'desert', sky: 'golden', deco: '#ff7a4d',
-    hazards: ['snake', 'falcon'], foods: { seed: 3, bug: 2, frog: 1, gold: 0.6 },
-    hint: ['SPINY CACTI', 'CANOPY SNAKES'], foodIcons: ['gold', 'seed'], icon: SPR.ICON_CRAGS };
+    hazards: ['snake', 'falcon', 'vulture'], foods: { seed: 3, bug: 2, frog: 1, gold: 0.6 },
+    hint: ['SPINY CACTI', 'CIRCLING VULTURES'], foodIcons: ['gold', 'seed'], icon: SPR.ICON_CRAGS };
   // boss arena — the Great Eagle's aerie
   BIOMES.aerie = { name: 'THE AERIE', danger: 5, obst: 'rock', tree: null, gapBase: 99, env: 'forest', sky: 'stormy', deco: '#c6cfe0', boss: true, hazards: [], foods: {}, hint: ['THE GREAT EAGLE'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_CRAGS };
   for (var _bk in BIOMES) if (!BIOMES[_bk].env) BIOMES[_bk].env = 'forest';
@@ -149,21 +149,40 @@
     hawk: 'SNATCHED FROM THE SKY BY A HAWK', falcon: 'RUN DOWN BY A HUNTING FALCON',
     durian: 'FLATTENED BY A FALLING DURIAN', eagle: 'SEIZED BY THE GREAT EAGLE',
     wasp: 'STUNG DOWN BY THE SWARM', spider: 'ENSNARED BY A SPIDER',
+    bat: 'BLINDSIDED BY A DUSK BAT', dfly: 'SLICED BY A DRAGONFLY DASH',
+    bfrog: 'BOWLED OVER BY A BULLFROG', jelly: 'STUNG BY A DRIFTING JELLYFISH',
+    piranha: 'SNAPPED UP BY A LEAPING PIRANHA', vulture: 'RUN DOWN BY A DIVING VULTURE',
   };
   const FLOORKEY = { forest: 'ground', ocean: 'water', tundra: 'ice', desert: 'sand' };
   const FLOORDUST = { forest: ['#5cad3c', '#6b4a2a'], ocean: ['#68b7cf', '#a8e4f2', '#ffffff'], tundra: ['#eef6ff', '#c9dce8'], desert: ['#e8c98a', '#c9a86a'] };
 
-  // ---------- persistent save: DNA (meta currency) + best + tutorial flag ----------
+  // ---------- persistent save: DNA (meta currency) + best + tutorial flag + settings ----------
   const SAVE_KEY = 'flappyDarwinSave';
+  const DEFAULT_SETTINGS = { shake: true, flash: true, difficulty: 'normal' };
+  function normSettings(s) {
+    s = s || {};
+    const out = {};
+    for (const k in DEFAULT_SETTINGS) out[k] = (s[k] === undefined) ? DEFAULT_SETTINGS[k] : s[k];
+    if (['easy', 'normal', 'hard'].indexOf(out.difficulty) < 0) out.difficulty = 'normal';
+    return out;
+  }
   function loadSave() {
-    try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.best) { if (s.dna == null) s.dna = 0; return s; } } catch (e) { /* ignore */ }
+    try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && s.best) { if (s.dna == null) s.dna = 0; s.settings = normSettings(s.settings); return s; } } catch (e) { /* ignore */ }
     let b = { score: 0, depth: 0, evos: 0 };
     try { const old = JSON.parse(localStorage.getItem('flappyDarwinBest')); if (old) b = old; } catch (e) { /* ignore */ }
-    return { dna: 0, best: b, tutorialDone: false };
+    return { dna: 0, best: b, tutorialDone: false, settings: normSettings(null) };
   }
   function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* private mode */ } }
   let save = loadSave();
   let best = save.best;
+  let settings = save.settings;
+  // difficulty knobs: easy = slower telegraphs + rarer hazards, hard = the reverse
+  const DIFF_TABLE = {
+    easy:   { tele: 1.35, timer: 1.4,  speed: 0.92, label: 'EASY' },
+    normal: { tele: 1.0,  timer: 1.0,  speed: 1.0,  label: 'NORMAL' },
+    hard:   { tele: 0.78, timer: 0.72, speed: 1.08, label: 'HARD' },
+  };
+  function diff() { return DIFF_TABLE[settings.difficulty] || DIFF_TABLE.normal; }
   function addDNA(n) { if (run) run.dnaEarned = (run.dnaEarned || 0) + n; }
   function hatchCost() { return run.checkpoint ? 8 + run.checkpoint.depth * 3 : 999; }
 
@@ -182,7 +201,8 @@
   let newBestFlag = false;
 
   function slowmo(d) { slowT = Math.max(slowT, d); }
-  function shakeIt(mag, dur) { shake.mag = Math.max(shake.mag, mag); shake.t = Math.max(shake.t, dur); }
+  function shakeIt(mag, dur) { if (!settings.shake) return; shake.mag = Math.max(shake.mag, mag); shake.t = Math.max(shake.t, dur); }
+  function setFlash(v) { if (settings.flash) flashT = Math.max(flashT, v); }
 
   function newRun(tutorialMode) {
     run = {
@@ -192,8 +212,8 @@
       foodEaten: 0, obstaclesPassed: 0, evoReadyPinged: false, bugsChased: 0,
       dnaEarned: 0, checkpoint: null,
       tutorialMode: !!tutorialMode || !save.tutorialDone,
-      darwin: null,
-      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true },
+      darwin: null, journey: [{ depth: 0, key: 'meadow', type: 'start', danger: 0 }],
+      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true, bat: true, dfly: true, bfrog: true, jelly: true, piranha: true, vulture: true },
     };
     bird = {
       x: BIRD_X, y: 84, vy: 0, rot: 0,
@@ -244,10 +264,12 @@
     run.checkpoint = { depth: d, biomeKey: biomeKey, taken: run.taken.slice(), maxHearts: bird ? bird.maxHearts : 3, evolutions: run.evolutions, evoNeed: run.evoNeed, score: run.score, dnaEarned: run.dnaEarned };
     // Darwin's interactive tutorial runs on the first leg
     if (d === 1 && run.tutorialMode) run.darwin = { step: 0, t: 0, done: false, flapped: false, ate: false, digested: false, grazed: false };
+    if (!biome.boss) run.journey.push({ depth: d, key: biomeKey, type: 'biome', danger: biome.danger });
+    const DT = diff().timer, has2 = function (h) { return biome.hazards.indexOf(h) >= 0; };
     world = {
       biomeKey: biomeKey, biome: biome,
       dist: 0,
-      speed: d === 1 ? 42 : Math.min(84, 46 + (d - 1) * 3.0),
+      speed: (d === 1 ? 42 : Math.min(84, 46 + (d - 1) * 3.0)) * diff().speed,
       spacing: Math.max(90, (biome.dense ? 108 : 118) - d * 1.6),
       gapH: Math.max(40, biome.gapBase - (d - 1) * 0.9),
       legLen: (d === 1 ? 6 : Math.min(20, 6 + d * 2)) - (hasPred ? 1 : 0),
@@ -255,13 +277,19 @@
       obstacles: [], foods: [], snappers: [], hawk: null,
       phase: 'fly', island: null, cine: null,
       banner: 2.4, fade: 1,
-      gust: null, gustTimer: biome.wind ? rnd(2.5, 4.5) : -1,
-      snapperTimer: biome.hazards.indexOf('snapper') >= 0 ? rnd(3.5, 6) : -1,
-      hawkTimer: biome.hazards.indexOf('hawk') >= 0 ? rnd(4, 7) : -1,
-      falconTimer: biome.hazards.indexOf('falcon') >= 0 ? rnd(5, 9) : -1, falcon: null,
+      gust: null, gustTimer: biome.wind ? rnd(2.5, 4.5) * DT : -1,
+      snapperTimer: has2('snapper') ? rnd(3.5, 6) * DT : -1,
+      hawkTimer: has2('hawk') ? rnd(4, 7) * DT : -1,
+      falconTimer: has2('falcon') ? rnd(5, 9) * DT : -1, falcon: null,
       chaseTimer: rnd(4.5, 9), chaseBug: null, thermal: null, rush: null, eventBanner: null,
       legDiet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       cam: { scale: 1, focusX: W / 2, focusY: H / 2, kickX: 0, kickY: 0 },
+      // new hazards (roaming flyers + floor leapers)
+      bat: null,   batTimer: has2('bat') ? rnd(4, 7) * DT : -1,
+      dfly: null,  dflyTimer: has2('dfly') ? rnd(4, 8) * DT : -1,
+      vulture: null, vultureTimer: has2('vulture') ? rnd(5, 9) * DT : -1,
+      leapers: [], leaperTimer: (has2('bfrog') || has2('jelly') || has2('piranha')) ? rnd(3.5, 6) * DT : -1,
+      slalom: null, trail: null, storm: null, flutter: null,
     };
     bird.x = BIRD_X; bird.y = 84; bird.vy = 0; bird.rot = 0; bird.dead = false;
     bird.shieldUp = has('shield'); bird.invuln = 0.8; bird.legsDown = false; bird.glidePose = false;
@@ -277,12 +305,43 @@
   let flapQueued = false, actionQueued = false, boostQueued = false, swipeQueued = false, lastFlapPress = -1;
   const REROLL_COST = 5, BOOST_COST = 22;
 
-  function menuItems() { return ['PLAY', 'TUTORIAL', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
+  function menuItems() { return ['PLAY', 'TUTORIAL', 'SETTINGS', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
   function gotoTitle() { STATE = 'title'; ui = { demoY: 84, menuSel: 0 }; }
   function activateMenu() {
     const sel = ui.menuSel || 0;
-    if (sel === 2) { AUDIO.toggleMute(); return; }
-    AUDIO.play('confirm'); newRun(sel === 1);
+    if (sel === 0) { AUDIO.play('confirm'); newRun(false); }
+    else if (sel === 1) { AUDIO.play('confirm'); newRun(true); }
+    else if (sel === 2) { AUDIO.play('confirm'); openSettings(); }
+    else AUDIO.toggleMute();
+  }
+
+  // ---------- settings screen ----------
+  function openSettings() { STATE = 'settings'; ui = { menuSel: 0, confirmReset: false, t: 0, resetFlash: 0 }; }
+  function settingsItems() {
+    return [
+      { key: 'sfx',        label: 'SOUND FX',     val: AUDIO.isMuted() ? 'OFF' : 'ON' },
+      { key: 'shake',      label: 'SCREEN SHAKE', val: settings.shake ? 'ON' : 'OFF' },
+      { key: 'flash',      label: 'HIT FLASH',    val: settings.flash ? 'ON' : 'OFF' },
+      { key: 'difficulty', label: 'DIFFICULTY',   val: diff().label },
+      { key: 'reset',      label: 'RESET SAVE',   val: ui.confirmReset ? 'PRESS AGAIN!' : '-', action: true },
+      { key: 'back',       label: 'BACK',         val: '', action: true },
+    ];
+  }
+  function doResetSave() {
+    save = { dna: 0, best: { score: 0, depth: 0, evos: 0 }, tutorialDone: false, settings: normSettings(settings) };
+    best = save.best; settings = save.settings; persist();
+    AUDIO.play('evolve'); ui.confirmReset = false; ui.resetFlash = 0.6;
+  }
+  function settingChange(sel, mode) { // mode: -1 left, +1 right, 0 activate
+    const it = settingsItems()[sel]; if (!it) return;
+    if (it.key === 'reset') { if (mode === 0) { if (ui.confirmReset) doResetSave(); else { ui.confirmReset = true; AUDIO.play('select'); } } return; }
+    if (it.key === 'back') { if (mode === 0) { persist(); AUDIO.play('confirm'); gotoTitle(); } return; }
+    ui.confirmReset = false;
+    if (it.key === 'sfx') AUDIO.toggleMute();
+    else if (it.key === 'shake') settings.shake = !settings.shake;
+    else if (it.key === 'flash') settings.flash = !settings.flash;
+    else if (it.key === 'difficulty') { const order = ['easy', 'normal', 'hard']; let i = order.indexOf(settings.difficulty); i = (i + (mode === 0 ? 1 : mode) + 3) % 3; settings.difficulty = order[i]; }
+    persist(); AUDIO.play('select');
   }
   function activateOver() {
     const opt = (ui.options || ['new'])[ui.sel || 0];
@@ -316,9 +375,20 @@
   window.addEventListener('keydown', function (e) {
     const up = e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW';
     if (STATE === 'title') {
-      if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); ui.menuSel = (ui.menuSel + 2) % 3; AUDIO.play('select'); return; }
-      if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); ui.menuSel = (ui.menuSel + 1) % 3; AUDIO.play('select'); return; }
+      const n = menuItems().length;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); ui.menuSel = (ui.menuSel + n - 1) % n; AUDIO.play('select'); return; }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); ui.menuSel = (ui.menuSel + 1) % n; AUDIO.play('select'); return; }
       if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat) activateMenu(); return; }
+    }
+    if (STATE === 'settings') {
+      const n = settingsItems().length;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); ui.menuSel = (ui.menuSel + n - 1) % n; ui.confirmReset = false; AUDIO.play('select'); return; }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') { e.preventDefault(); ui.menuSel = (ui.menuSel + 1) % n; ui.confirmReset = false; AUDIO.play('select'); return; }
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') { e.preventDefault(); settingChange(ui.menuSel, -1); return; }
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') { e.preventDefault(); settingChange(ui.menuSel, +1); return; }
+      if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat) settingChange(ui.menuSel, 0); return; }
+      if (e.code === 'Escape' || e.code === 'KeyR') { e.preventDefault(); persist(); AUDIO.play('confirm'); gotoTitle(); return; }
+      return;
     }
     if (STATE === 'over') {
       const opts = ui.options || ['new'];
@@ -352,6 +422,10 @@
     if (STATE === 'title' && ui.menuRects) {
       for (let i = 0; i < ui.menuRects.length; i++) { const c = ui.menuRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.menuSel === i) activateMenu(); else { ui.menuSel = i; AUDIO.play('select'); } return; } }
       activateMenu(); return;
+    }
+    if (STATE === 'settings') {
+      if (ui.setRects) for (let i = 0; i < ui.setRects.length; i++) { const c = ui.setRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.menuSel === i) settingChange(i, 0); else { ui.menuSel = i; ui.confirmReset = false; AUDIO.play('select'); } return; } }
+      return;
     }
     if (STATE === 'over' && ui.overRects) {
       for (let i = 0; i < ui.overRects.length; i++) { const c = ui.overRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.sel === i) { if (ui.overT > 0.7) activateOver(); } else { ui.sel = i; AUDIO.play('select'); } return; } }
@@ -509,7 +583,7 @@
     AUDIO.play(opts.sfx || 'hit');
     shakeIt(opts.shake || 2.4, opts.shakeDur || 0.28);
     freezeT = Math.max(freezeT, opts.freeze || 0.10);
-    if (opts.flash) flashT = opts.flash;
+    if (opts.flash) setFlash(opts.flash);
     spawnParts(opts.feathers || 8, function () { return feather(bird.x, bird.y); });
     if (bird.hearts <= 0) {
       bird.dead = true; bird.deathBy = source; bird.vy = -140;
@@ -554,6 +628,10 @@
     for (const s of world.snappers) if (s.state === 'telegraph' || s.state === 'lunge') return false;
     if (world.hawk && (world.hawk.state === 'warn' || world.hawk.state === 'swoop')) return false;
     if (world.falcon && (world.falcon.state === 'warn' || world.falcon.state === 'chase')) return false;
+    if (world.bat && world.bat.state !== 'gone') return false;
+    if (world.dfly && world.dfly.state !== 'gone') return false;
+    if (world.vulture && world.vulture.state !== 'gone') return false;
+    if (world.leapers) for (const l of world.leapers) if (l.state === 'telegraph' || l.state === 'leap') return false;
     return true;
   }
 
@@ -769,20 +847,21 @@
     updateDurians(dt);
     updateSpiders(dt);
     updateWasps(dt);
+    updateBat(dt);
+    updateDragonfly(dt);
+    updateVulture(dt);
+    updateLeapers(dt);
     if (world.isBoss) updateBoss(dt);
-    // random bonus mini-game event (chase / thermal ring / fruit rush)
+    // random bonus event: mini-games + the wasp swarm
     if (world.chaseTimer > 0 && world.phase === 'fly') {
       world.chaseTimer -= dt;
-      if (world.chaseTimer <= 0 && world.spawned > 2 && !world.chaseBug && !world.thermal && !world.rush) {
-        const ev = pick(['chase', 'thermal', 'rush', 'wasps']);
-        if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE!', '#fff3a8'); } AUDIO.play('evoReady'); }
-        else if (ev === 'thermal') startThermal();
-        else if (ev === 'wasps') startWasps();
-        else startRush();
+      if (world.chaseTimer <= 0 && world.spawned > 2 && !eventBusy()) {
+        startEvent(pick(['chase', 'thermal', 'rush', 'wasps', 'slalom', 'trail', 'storm', 'flutter']));
         world.chaseTimer = rnd(8, 14); // allow another event later this leg
       }
     }
     updateChase(dt); updateThermal(dt); updateRush(dt);
+    updateSlalom(dt); updateTrail(dt); updateStorm(dt); updateFlutter(dt);
     if (world.eventBanner) { world.eventBanner.t += dt; if (world.eventBanner.t > 2.2) world.eventBanner = null; }
 
     // floor contact — varies by environment
@@ -1133,6 +1212,20 @@
   }
 
   // ---------- mini-game events ----------
+  function eventBusy() {
+    return !!(world.chaseBug || world.thermal || world.rush || world.wasps || world.slalom || world.trail || world.storm || world.flutter);
+  }
+  function startEvent(ev) {
+    if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE!', '#fff3a8'); } AUDIO.play('evoReady'); }
+    else if (ev === 'thermal') startThermal();
+    else if (ev === 'wasps') startWasps();
+    else if (ev === 'rush') startRush();
+    else if (ev === 'slalom') startSlalom();
+    else if (ev === 'trail') startTrail();
+    else if (ev === 'storm') startStorm();
+    else if (ev === 'flutter') startFlutter();
+  }
+
   function startThermal() {
     world.thermal = { x: W + 24, y: rnd(48, SEA_Y - 48), t: 0, passed: false };
     world.eventBanner = { text: 'THERMAL RING', t: 0 };
@@ -1177,6 +1270,146 @@
       const eaten = run.foodEaten - r.startFood;
       if (eaten >= 3) { const bonus = eaten * 8; run.score += bonus; addDNA(eaten); addFloat(bird.x, bird.y - 20, 'FEAST! +' + bonus, '#f6c945', true); AUDIO.play('confirm'); }
       world.rush = null;
+    }
+  }
+
+  // ---------- mini-game: RING SLALOM — chain of rings for escalating bonus ----------
+  function startSlalom() {
+    const rings = [], n = 4; let y = rnd(50, SEA_Y - 50);
+    for (let i = 0; i < n; i++) { y = clamp(y + rnd(-30, 30), 40, SEA_Y - 40); rings.push({ dx: 40 + i * 40, y: y, hit: false }); }
+    world.slalom = { t: 0, x0: W + 30, rings: rings, combo: 0 };
+    world.eventBanner = { text: 'RING SLALOM!', t: 0 }; AUDIO.play('evoReady');
+  }
+  function updateSlalom(dt) {
+    const s = world.slalom; if (!s) return;
+    s.t += dt; s.x0 -= world.speed * dt;
+    let remaining = 0;
+    for (const r of s.rings) {
+      r.x = s.x0 + r.dx;
+      if (Math.random() < 0.2) parts.push({ type: 'puff', x: r.x + rnd(-8, 8), y: r.y + 10, vx: rnd(-5, 5), vy: -rnd(16, 36), g: -5, t: 0, life: 0.5, color: 'rgba(168,228,242,0.5)' });
+      if (!r.hit) {
+        remaining++;
+        if (!bird.dead && !bird.latched && Math.abs(r.x - bird.x) < 7 && Math.abs(r.y - bird.y) < 11) {
+          r.hit = true; s.combo++;
+          const pts = 20 * s.combo; run.score += pts; run.evo += 10; addDNA(1);
+          bird.energy = bird.maxEnergy || 100; bird.boost = Math.max(bird.boost, 0.4);
+          AUDIO.play('point'); AUDIO.play('pop');
+          addFloat(r.x, r.y - 12, 'x' + s.combo + ' +' + pts, '#a8e4f2');
+          spawnParts(8, function () { return sparkle(r.x + rnd(-8, 8), r.y + rnd(-10, 10), '#a8e4f2'); });
+        }
+      }
+    }
+    if (s.x0 + s.rings[s.rings.length - 1].dx < -20) {
+      if (s.combo >= s.rings.length) { run.score += 60; addDNA(3); addFloat(bird.x, bird.y - 20, 'CLEAN SLALOM! +60', '#96f0e4', true); AUDIO.play('confirm'); slowmo(0.12); }
+      world.slalom = null;
+    }
+  }
+  function drawSlalom() {
+    const s = world.slalom; if (!s) return;
+    const pulse = 10 + Math.sin(time * 6) * 1.5;
+    for (let i = 0; i < s.rings.length; i++) {
+      const r = s.rings[i]; if (r.x < -14 || r.x > W + 14) continue;
+      const next = !r.hit && (i === 0 || s.rings[i - 1].hit);
+      ctx.strokeStyle = r.hit ? 'rgba(150,240,180,0.85)' : (next ? 'rgba(168,228,242,' + (0.6 + 0.3 * Math.sin(time * 8)).toFixed(2) + ')' : 'rgba(150,170,200,0.5)');
+      ctx.lineWidth = next ? 2 : 1; ctx.beginPath(); ctx.ellipse(r.x, r.y, 6, pulse, 0, 0, 6.28); ctx.stroke();
+    }
+  }
+
+  // ---------- mini-game: FIREFLY TRAIL — a curving chain of glowing dots to collect ----------
+  function startTrail() {
+    const dots = [], n = 9; let y = clamp(bird.y, 40, SEA_Y - 40);
+    for (let i = 0; i < n; i++) { y = clamp(y + Math.sin(i * 0.9) * 16, 30, SEA_Y - 30); dots.push({ dx: 30 + i * 20, y: y, got: false, ph: rnd(0, 6.28) }); }
+    world.trail = { t: 0, x0: W + 20, dots: dots, got: 0 };
+    world.eventBanner = { text: 'FIREFLY TRAIL', t: 0 }; AUDIO.play('evoReady');
+  }
+  function updateTrail(dt) {
+    const tr = world.trail; if (!tr) return;
+    tr.t += dt; tr.x0 -= world.speed * dt;
+    for (const d of tr.dots) {
+      d.x = tr.x0 + d.dx; d.ph += dt * 6;
+      if (!d.got) {
+        if (Math.random() < 0.1) parts.push(sparkle(d.x + rnd(-2, 2), d.y + rnd(-2, 2), '#c7ff9a'));
+        const bp = beakPos();
+        if (!bird.dead && !bird.latched && Math.abs(d.x - bp.x) < 7 && Math.abs(d.y - bp.y) < 7) {
+          d.got = true; tr.got++;
+          run.score += 12; run.evo += 6; addDNA(1); bird.energy = Math.min(bird.maxEnergy || 100, bird.energy + 12);
+          AUDIO.play('catch'); addFloat(d.x, d.y - 8, '+12', '#c7ff9a');
+          spawnParts(5, function () { return sparkle(d.x + rnd(-4, 4), d.y + rnd(-4, 4), '#c7ff9a'); });
+        }
+      }
+    }
+    if (tr.x0 + tr.dots[tr.dots.length - 1].dx < -16) {
+      if (tr.got >= tr.dots.length) { run.score += 80; addDNA(4); addFloat(bird.x, bird.y - 20, 'FULL TRAIL! +80', '#c7ff9a', true); AUDIO.play('confirm'); slowmo(0.12); }
+      world.trail = null;
+    }
+  }
+  function drawTrail() {
+    const tr = world.trail; if (!tr) return;
+    for (const d of tr.dots) {
+      if (d.got || d.x < -8 || d.x > W + 8) continue;
+      const yy = d.y + Math.sin(d.ph) * 2;
+      ctx.drawImage(SPR.FIREFLY, Math.round(d.x - 2), Math.round(yy - 2));
+    }
+  }
+
+  // ---------- mini-game: NUT STORM — dodge a rain of falling acorns for a survival bonus ----------
+  function startStorm() {
+    world.storm = { t: 0, dur: 5.0, cd: 0, drops: [], hits: 0 };
+    world.eventBanner = { text: 'NUT STORM!', t: 0 }; AUDIO.play('snakeHiss');
+  }
+  function updateStorm(dt) {
+    const s = world.storm; if (!s) return;
+    s.t += dt; s.cd -= dt;
+    if (s.cd <= 0 && s.t < s.dur) { s.cd = rnd(0.22, 0.4) / diff().speed; s.drops.push({ x: rnd(W * 0.2, W + 10), y: -6, vy: rnd(120, 190), rot: 0 }); }
+    for (let i = s.drops.length - 1; i >= 0; i--) {
+      const d = s.drops[i]; d.vy += 260 * dt; d.y += d.vy * dt; d.x -= world.speed * 0.3 * dt; d.rot += dt * 8;
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(d.x - bird.x) < 6 && Math.abs(d.y - bird.y) < 6) { hurt('durian', { sfx: 'hit', shake: 2, feathers: 4, knockVy: 40 }); s.hits++; s.drops.splice(i, 1); continue; }
+      if (d.y > SEA_Y - 2) { spawnParts(3, function () { return dust(d.x, SEA_Y, '#a76f3e'); }); s.drops.splice(i, 1); }
+    }
+    if (s.t >= s.dur && !s.drops.length) {
+      if (s.hits === 0) { run.score += 90; addDNA(5); addFloat(bird.x, bird.y - 20, 'UNSCATHED! +90', '#f6c945', true); AUDIO.play('confirm'); slowmo(0.14); }
+      else if (s.hits <= 2) { run.score += 30; addDNA(2); addFloat(bird.x, bird.y - 20, 'WEATHERED IT +30', '#f6c945'); AUDIO.play('confirm'); }
+      world.storm = null;
+    }
+  }
+  function drawStorm() {
+    const s = world.storm; if (!s) return;
+    if (s.t < 0.9 && Math.floor(time * 8) % 2) drawTextShadow(ctx, 'LOOK OUT ABOVE!', W / 2, 40, '#f6c945', 1, 'center');
+    for (const d of s.drops) ctx.drawImage(SPR.NUT, Math.round(d.x - SPR.NUT.width / 2), Math.round(d.y - SPR.NUT.height / 2));
+  }
+
+  // ---------- mini-game: BUTTERFLY SWARM — a friendly cloud to glide through for energy ----------
+  function startFlutter() {
+    const flies = [];
+    for (let i = 0; i < 10; i++) flies.push({ x: W + 10 + rnd(0, 60), y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28), got: false });
+    world.flutter = { t: 0, flies: flies, got: 0 };
+    world.eventBanner = { text: 'BUTTERFLIES', t: 0 }; AUDIO.play('chirp');
+  }
+  function updateFlutter(dt) {
+    const fl = world.flutter; if (!fl) return;
+    fl.t += dt;
+    let alive = 0;
+    for (const b of fl.flies) {
+      b.ph += dt * 4; b.x -= (world.speed * 0.75) * dt; b.y += Math.sin(b.ph) * 14 * dt;
+      if (b.x > -8) alive++;
+      if (!b.got && !bird.dead && !bird.latched && Math.abs(b.x - bird.x) < 8 && Math.abs(b.y - bird.y) < 8) {
+        b.got = true; run.score += 8; addDNA(1); bird.energy = Math.min(bird.maxEnergy || 100, bird.energy + 10);
+        AUDIO.play('pop'); addFloat(b.x, b.y - 8, '+8', '#ffd257');
+        spawnParts(4, function () { return sparkle(b.x + rnd(-4, 4), b.y + rnd(-4, 4), '#ffd257'); });
+      }
+    }
+    if (!alive) {
+      if (fl.got >= 8) { run.score += 50; addDNA(3); addFloat(bird.x, bird.y - 20, 'DANCED THROUGH! +50', '#ffd257', true); AUDIO.play('confirm'); }
+      world.flutter = null;
+    }
+    fl.got = fl.flies.filter(function (b) { return b.got; }).length;
+  }
+  function drawFlutter() {
+    const fl = world.flutter; if (!fl) return;
+    for (const b of fl.flies) {
+      if (b.got || b.x < -8 || b.x > W + 8) continue;
+      const spr = Math.floor(time * 12 + b.ph) % 2 ? SPR.BFLY1 : SPR.BFLY2;
+      ctx.drawImage(spr, Math.round(b.x - spr.width / 2), Math.round(b.y - spr.height / 2));
     }
   }
 
@@ -1225,6 +1458,166 @@
       ctx.strokeStyle = 'rgba(230,230,240,0.6)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(sx, sp.topH); ctx.lineTo(sx, sp.y - 2); ctx.stroke();
       ctx.drawImage(SPR.SPIDER, Math.round(sx - 4), Math.round(sp.y - 3));
+    }
+  }
+
+  // ---------- new enemies: bat / dragonfly / vulture (roaming flyers) ----------
+  function updateBat(dt) {
+    if (world.batTimer > 0 && world.phase === 'fly' && !world.bat) {
+      world.batTimer -= dt;
+      if (world.batTimer <= 0) {
+        if (threatFree()) { world.bat = { state: 'warn', t: 0, x: W + 8, y: rnd(16, 40), first: run.tut.bat }; AUDIO.play('snakeHiss'); if (world.bat.first) { run.tut.bat = false; addFloat(W - 30, 32, 'BAT!', '#c8b9e0'); } }
+        else world.batTimer = 0.5;
+      }
+    }
+    const b = world.bat; if (!b) return;
+    const WARN = 0.5 * (b.first ? 1.5 : 1) * diff().tele;
+    if (b.state === 'warn') {
+      b.t += dt; b.x = lerp(W + 8, W - 22, clamp(b.t / WARN, 0, 1)); b.y += Math.sin(time * 12) * 20 * dt;
+      if (b.t >= WARN) { b.state = 'dive'; b.t = 0; AUDIO.play('hawkWhoosh'); }
+    } else if (b.state === 'dive') {
+      b.t += dt;
+      b.x -= (86 + world.speed * 0.4) * dt;
+      b.y += (bird.y - b.y) * Math.min(1, dt * 1.1) + Math.sin(b.t * 11) * 48 * dt; // loose homing + erratic wobble
+      b.y = clamp(b.y, 12, SEA_Y - 8);
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && !b.first && Math.abs(b.x - bird.x) < 6 && Math.abs(b.y - bird.y) < 6) hurt('bat', { sfx: 'hit', shake: 2.5, feathers: 5, knockVy: -90 });
+      if (b.x < -12) { world.bat = null; world.batTimer = rnd(5, 9) * diff().timer; }
+    } else { world.bat = null; world.batTimer = rnd(5, 9) * diff().timer; }
+  }
+  function drawBat() {
+    const b = world.bat; if (!b) return;
+    if (b.state === 'warn' && Math.floor(time * 10) % 2) drawTextShadow(ctx, '!', Math.round(b.x), Math.round(b.y - 9), '#e0525c', 1, 'center');
+    const spr = Math.floor(time * 18 + b.x) % 2 ? SPR.BAT1 : SPR.BAT2;
+    ctx.drawImage(spr, Math.round(b.x - spr.width / 2), Math.round(b.y - spr.height / 2));
+  }
+
+  function updateDragonfly(dt) {
+    if (world.dflyTimer > 0 && world.phase === 'fly' && !world.dfly) {
+      world.dflyTimer -= dt;
+      if (world.dflyTimer <= 0) {
+        if (threatFree()) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: run.tut.dfly }; AUDIO.play('rustle'); if (world.dfly.first) { run.tut.dfly = false; addFloat(W - 26, clamp(bird.y, 24, SEA_Y - 20) - 10, 'DRAGONFLY!', '#7fe0d0'); } }
+        else world.dflyTimer = 0.5;
+      }
+    }
+    const f = world.dfly; if (!f) return;
+    const HOVER = 0.85 * (f.first ? 1.5 : 1) * diff().tele;
+    if (f.state === 'hover') {
+      f.t += dt; f.x += ((W - 22) - f.x) * Math.min(1, dt * 5);
+      if (f.t < 0.35) f.y += (bird.y - f.y) * Math.min(1, dt * 5); // lock onto the bird's lane early
+      if (Math.random() < 0.3) parts.push(sparkle(f.x + rnd(-4, 4), f.y + rnd(-3, 3), '#7fe0d0'));
+      if (f.t >= HOVER) { f.state = 'dash'; f.t = 0; AUDIO.play('hawkWhoosh'); }
+    } else if (f.state === 'dash') {
+      f.t += dt; f.x -= 320 * dt;
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && !f.first && Math.abs(f.x - bird.x) < 7 && Math.abs(f.y - bird.y) < 6) hurt('dfly', { sfx: 'hit', shake: 2.5, feathers: 4, knockVy: -70 });
+      if (f.x < -12) { world.dfly = null; world.dflyTimer = rnd(4, 8) * diff().timer; }
+    } else { world.dfly = null; world.dflyTimer = rnd(4, 8) * diff().timer; }
+  }
+  function drawDragonfly() {
+    const f = world.dfly; if (!f) return;
+    if (f.state === 'hover' && Math.floor(time * 8) % 2) { ctx.fillStyle = 'rgba(127,224,208,0.35)'; ctx.fillRect(0, Math.round(f.y) - 1, Math.round(f.x), 3); }
+    const spr = Math.floor(time * 24) % 2 ? SPR.DFLY1 : SPR.DFLY2;
+    ctx.drawImage(spr, Math.round(f.x - spr.width / 2), Math.round(f.y - spr.height / 2));
+  }
+
+  function updateVulture(dt) {
+    if (world.vultureTimer > 0 && world.phase === 'fly' && !world.vulture) {
+      world.vultureTimer -= dt;
+      if (world.vultureTimer <= 0) {
+        if (threatFree()) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: run.tut.vulture }; AUDIO.play('hawkScreech'); if (world.vulture.first) { run.tut.vulture = false; addFloat(W - 40, 20, 'VULTURE!', '#c97a6a'); } }
+        else world.vultureTimer = 0.5;
+      }
+    }
+    const v = world.vulture; if (!v) return;
+    const CIRC = 1.3 * (v.first ? 1.4 : 1) * diff().tele;
+    if (v.state === 'circle') {
+      v.t += dt; v.ang += dt * 5;
+      v.x = v.cx + Math.cos(v.ang) * 16; v.y = v.cy + Math.sin(v.ang) * 7;
+      if (v.t < 0.45) v.lockY = bird.y;
+      if (v.t >= CIRC) { v.state = 'dive'; v.t = 0; AUDIO.play('hawkWhoosh'); }
+    } else if (v.state === 'dive') {
+      v.t += dt;
+      const k = Math.min(1, v.t / 0.7);
+      v.x = lerp(v.cx, bird.x - 6, k); v.y = lerp(v.cy, v.lockY, Math.sin(k * Math.PI * 0.5));
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && !v.first && Math.abs(v.x - bird.x) < 11 && Math.abs(v.y - bird.y) < 10) hurt('vulture', { sfx: 'chomp', shake: 4, shakeDur: 0.4, freeze: 0.12, flash: 0.14, feathers: 10, knockVy: 120 });
+      if (v.t > 0.85) { v.state = 'rise'; v.t = 0; }
+    } else if (v.state === 'rise') {
+      v.t += dt; v.x += 60 * dt; v.y -= 90 * dt;
+      if (v.y < -16) { world.vulture = null; world.vultureTimer = rnd(6, 10) * diff().timer; }
+    } else { world.vulture = null; world.vultureTimer = rnd(6, 10) * diff().timer; }
+  }
+  function drawVulture() {
+    const v = world.vulture; if (!v) return;
+    if (v.state === 'circle' && Math.floor(time * 8) % 2) { // target reticle at the intercept lane
+      ctx.strokeStyle = 'rgba(201,122,106,0.8)'; ctx.lineWidth = 1;
+      ctx.strokeRect(Math.round(bird.x - 6), Math.round(v.lockY - 6), 12, 12);
+    }
+    const spr = Math.floor(time * 10) % 2 ? SPR.VULT_MID : SPR.VULT_UP;
+    ctx.drawImage(spr, Math.round(v.x - spr.width / 2), Math.round(v.y - spr.height / 2));
+  }
+
+  // ---------- new enemies: floor leapers (bullfrog / piranha) + jellyfish drifter ----------
+  function spawnLeaper() {
+    const hz = world.biome.hazards, kinds = [];
+    if (hz.indexOf('bfrog') >= 0) kinds.push('bfrog');
+    if (hz.indexOf('piranha') >= 0) kinds.push('piranha');
+    if (hz.indexOf('jelly') >= 0) kinds.push('jelly');
+    if (!kinds.length) return;
+    const kind = pick(kinds), first = run.tut[kind];
+    if (kind === 'jelly') { world.leapers.push({ kind: 'jelly', worldX: world.dist + W + 12, y: SEA_Y - 8, state: 'rise', t: 0, bob: rnd(0, 6.28), first: first }); return; }
+    if (kind === 'piranha') { for (let i = 0; i < 3; i++) world.leapers.push({ kind: 'piranha', worldX: world.dist + W + 20 + i * 16, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first && i === 0 }); return; }
+    world.leapers.push({ kind: 'bfrog', worldX: world.dist + W + 20, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first });
+  }
+  function updateJelly(l, dt) {
+    l.t += dt;
+    if (l.state === 'rise') { l.y -= (11 + Math.sin(l.t * 2) * 4) * dt; if (l.y < 42) l.state = 'drift'; }
+    else { l.y -= 7 * dt; if (l.y < 6) { const idx = world.leapers.indexOf(l); if (idx >= 0) world.leapers.splice(idx, 1); return; } }
+    l.y += Math.sin(l.t * 3) * 8 * dt;
+    if (l.first && l.sx < W - 12) { run.tut.jelly = false; l.first = false; addFloat(l.sx, l.y - 12, 'JELLYFISH!', '#a8e4f2'); }
+    if (Math.random() < 0.04) parts.push(bubble(l.sx + rnd(-4, 4), l.y + 4));
+    if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(l.sx - bird.x) < 6 && Math.abs(l.y - bird.y) < 7) hurt('jelly', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -70 });
+  }
+  function updateLeapers(dt) {
+    if (world.leaperTimer > 0 && world.phase === 'fly') {
+      world.leaperTimer -= dt;
+      if (world.leaperTimer <= 0) { spawnLeaper(); world.leaperTimer = rnd(3.5, 6) * diff().timer; }
+    }
+    for (let i = world.leapers.length - 1; i >= 0; i--) {
+      const l = world.leapers[i];
+      l.sx = l.worldX - world.dist; l.bob += dt * 3;
+      if (l.sx < -20) { world.leapers.splice(i, 1); continue; }
+      if (l.kind === 'jelly') { updateJelly(l, dt); continue; }
+      const TELE = (l.kind === 'piranha' ? 0.4 : 0.62) * (l.first ? 1.5 : 1) * diff().tele;
+      if (l.state === 'lurk') {
+        if (l.kind === 'piranha' && Math.random() < 0.05) parts.push(bubble(l.sx, SEA_Y - 2));
+        if (l.sx <= BIRD_X + 40 && l.sx > BIRD_X - 4 && threatFree()) {
+          l.state = 'telegraph'; l.t = 0; AUDIO.play(l.kind === 'piranha' ? 'snapperRise' : 'rustle');
+          if (l.first) { run.tut[l.kind] = false; addFloat(l.sx, SEA_Y - 24, l.kind === 'piranha' ? 'PIRANHA!' : 'BULLFROG!', '#96d454'); }
+        }
+      } else if (l.state === 'telegraph') {
+        l.t += dt;
+        if (l.kind === 'bfrog' && Math.random() < 0.3) parts.push(dust(l.sx, SEA_Y, '#5cad3c'));
+        if (l.t >= TELE) { l.state = 'leap'; l.t = 0; l.vy = l.kind === 'piranha' ? -250 : -300; l.ly = SEA_Y - 4; AUDIO.play(l.kind === 'piranha' ? 'chomp' : 'whoosh'); }
+      } else if (l.state === 'leap') {
+        l.t += dt; l.vy += 620 * dt; l.ly += l.vy * dt;
+        if (!bird.dead && bird.invuln <= 0 && !l.first && Math.abs(l.sx - bird.x) < 8 && Math.abs(l.ly - bird.y) < 8) { hurt(l.kind, { sfx: 'chomp', shake: 3.5, shakeDur: 0.35, freeze: 0.1, flash: 0.12, feathers: 8, knockVy: -120 }); l.hit = true; }
+        if (l.ly >= SEA_Y - 4 && l.vy > 0) { l.state = 'spent'; l.ly = SEA_Y - 4; if (!l.hit) AUDIO.play('land'); spawnParts(6, function () { return dust(l.sx, SEA_Y, l.kind === 'piranha' ? '#68b7cf' : '#5cad3c'); }); }
+      }
+    }
+  }
+  function drawLeapers() {
+    for (const l of world.leapers) {
+      const sx = l.sx; if (sx < -12 || sx > W + 12) continue;
+      if (l.kind === 'jelly') {
+        const spr = Math.floor(time * 3 + l.bob) % 2 ? SPR.JELLY1 : SPR.JELLY2;
+        ctx.globalAlpha = 0.92; ctx.drawImage(spr, Math.round(sx - spr.width / 2), Math.round(l.y - spr.height / 2)); ctx.globalAlpha = 1;
+        continue;
+      }
+      const spr = l.kind === 'bfrog' ? SPR.BFROG : SPR.PIRANHA;
+      let yy;
+      if (l.state === 'lurk') yy = SEA_Y - 3;
+      else if (l.state === 'telegraph') yy = SEA_Y - 3 + (l.kind === 'bfrog' ? Math.sin(time * 26) * 1 : 0);
+      else yy = l.ly;
+      ctx.drawImage(spr, Math.round(sx - spr.width / 2), Math.round(yy - spr.height / 2));
     }
   }
 
@@ -1493,7 +1886,9 @@
       updateBirdCosmetics(dt);
       ui.demoY = 78 + Math.sin(time * 1.6) * 7;
       if (Math.sin(time * 1.6) > 0.93 && Math.random() < 0.2) bird && (bird.flapT = 0.22);
+      updateTitleScene(dt);
     }
+    else if (STATE === 'settings') { ui.t = (ui.t || 0) + dt; if (ui.resetFlash > 0) ui.resetFlash -= dt; updateBirdCosmetics(dt); }
     updateParts(dt);
     actionQueued = false; flapQueued = false;
   }
@@ -2327,12 +2722,20 @@
     drawFoods();
     drawChase();
     drawThermal();
+    drawSlalom();
+    drawTrail();
+    drawFlutter();
     drawSnappers();
+    drawLeapers();
     drawSea();
+    drawStorm();
     drawBirdFull();
     drawHawk();
     drawFalcon();
     drawWasps();
+    drawBat();
+    drawDragonfly();
+    drawVulture();
     if (world.isBoss) drawBoss();
     drawParts();
     ctx.restore();
@@ -2354,6 +2757,7 @@
     ctx.restore();
     drawHUD();
     if (ui.phase === 'summary') {
+      drawJourneyMap(4); // the run map so far
       drawPanel(20, 40, 130, 96);
       drawTextShadow(ctx, 'THE NEST', 85, 46, '#f6c945', 1, 'center');
       drawText(ctx, 'DEPTH ' + run.depth + ' - GEN ' + (run.evolutions + 1), 85, 56, '#ffffff', 1, 'center');
@@ -2385,23 +2789,108 @@
     drawTextShadow(ctx, label, x + w2 - 4, y + 5, col, 1, 'right');
   }
 
+  // ---------- Slay-the-Spire-style run map ----------
+  // renders the migration so far as a ribbon of wooden nodes with biome icons;
+  // the current leg glows and the fork ahead shows a "?" or a boss skull.
+  function drawJourneyMap(y) {
+    if (!run || !run.journey || !run.journey.length) return;
+    drawTextShadow(ctx, 'YOUR JOURNEY', W / 2, y, '#c9b088', 1, 'center');
+    const bossNext = run.depth > 0 && run.depth % 4 === 0;
+    const list = run.journey.slice(); list.push({ type: bossNext ? 'bossNext' : 'next' });
+    const maxN = 6, show = list.slice(Math.max(0, list.length - maxN));
+    const n = show.length, gap = Math.min(48, (W - 44) / Math.max(1, n - 1));
+    const totalW = (n - 1) * gap, x0 = Math.round(W / 2 - totalW / 2), ny = y + 9, cy = ny + 9;
+    ctx.fillStyle = '#8f5e34';
+    for (let i = 0; i < n - 1; i++) { for (let px = x0 + i * gap + 11; px < x0 + (i + 1) * gap - 11; px += 4) ctx.fillRect(px, cy - 1, 2, 2); }
+    for (let i = 0; i < n; i++) {
+      const nd = show[i], cx = Math.round(x0 + i * gap), isCurrent = (i === n - 2);
+      if (isCurrent) { ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257'; ctx.fillRect(cx - 11, ny - 1, 22, 22); }
+      drawPanel(cx - 10, ny, 20, 20);
+      if (nd.type === 'next' || nd.type === 'bossNext') {
+        if (nd.type === 'bossNext') ctx.drawImage(SPR.SKULL, cx - Math.round(SPR.SKULL.width / 2), cy - Math.round(SPR.SKULL.height / 2));
+        else drawTextShadow(ctx, '?', cx, cy - 3, Math.floor(time * 4) % 2 ? '#f6c945' : '#c9b088', 1, 'center');
+      } else {
+        const icon = nd.type === 'start' ? SPR.NEST : ((BIOMES[nd.key] && BIOMES[nd.key].icon) || SPR.ICON_MEADOW);
+        ctx.drawImage(icon, cx - Math.round(icon.width / 2), cy - Math.round(icon.height / 2));
+      }
+    }
+  }
+
+  // ---------- interactive title scene: distant gulls + fluttering butterflies ----------
+  let titleBirds = [], titleFlies = [];
+  function updateTitleScene(dt) {
+    if (titleBirds.length < 3 && Math.random() < 0.012) titleBirds.push({ x: W + 10, y: rnd(16, 58), sp: rnd(16, 30), flap: rnd(0, 6.28) });
+    for (let i = titleBirds.length - 1; i >= 0; i--) { const b = titleBirds[i]; b.x -= b.sp * dt; b.flap += dt * 8; if (b.x < -12) titleBirds.splice(i, 1); }
+    if (!titleFlies.length) for (let i = 0; i < 3; i++) titleFlies.push({ cx: rnd(30, 70), cy: rnd(64, 92), r: rnd(6, 14), a: rnd(0, 6.28), sp: rnd(1.2, 2.2), ph: rnd(0, 6.28) });
+    for (const f of titleFlies) f.a += dt * f.sp;
+  }
+  function drawTitleBirds() {
+    ctx.fillStyle = 'rgba(38,28,48,0.55)';
+    for (const b of titleBirds) {
+      const x = Math.round(b.x), y = Math.round(b.y), up = Math.sin(b.flap) > 0;
+      const d = up ? -1 : 1;
+      ctx.fillRect(x - 3, y + d, 2, 1); ctx.fillRect(x - 1, y, 3, 1); ctx.fillRect(x + 2, y + d, 2, 1);
+    }
+  }
+  function drawTitleFlies() {
+    for (const f of titleFlies) {
+      const x = Math.round(f.cx + Math.cos(f.a) * f.r), yy = Math.round(f.cy + Math.sin(f.a * 1.3) * f.r * 0.6);
+      const spr = Math.floor(time * 10 + f.ph) % 2 ? SPR.BFLY1 : SPR.BFLY2;
+      ctx.drawImage(spr, x - Math.round(spr.width / 2), yy - Math.round(spr.height / 2));
+    }
+  }
+
+  // ---------- settings screen ----------
+  function renderSettings() {
+    drawBackground(time * 10);
+    drawSea();
+    ctx.fillStyle = 'rgba(10,6,18,0.55)'; ctx.fillRect(0, 0, W, H);
+    drawPanel(W / 2 - 90, 12, 180, 20);
+    drawTextShadow(ctx, 'SETTINGS', W / 2, 18, '#f6c945', 2, 'center');
+    ctx.drawImage(SPR.GEAR, W / 2 - 90 + 6, 15);
+    const items = settingsItems();
+    ui.setRects = [];
+    const rw = 200, rx = W / 2 - rw / 2, y0 = 42, rh = 18;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i], sel = (ui.menuSel || 0) === i, ry = y0 + i * (rh + 3);
+      ui.setRects.push({ x: rx, y: ry, w: rw, h: rh });
+      drawPanel(rx, ry, rw, rh);
+      if (sel) {
+        ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257';
+        ctx.fillRect(rx, ry, rw, 1); ctx.fillRect(rx, ry + rh - 1, rw, 1); ctx.fillRect(rx, ry, 1, rh); ctx.fillRect(rx + rw - 1, ry, 1, rh);
+      }
+      const lcol = it.action ? (it.key === 'reset' ? '#e0525c' : '#f6c945') : '#e5c28c';
+      drawTextShadow(ctx, it.label, rx + 8, ry + 6, sel ? '#ffffff' : lcol, 1);
+      if (it.val) {
+        const on = it.val === 'ON', off = it.val === 'OFF';
+        const vc = on ? '#8fd66a' : (off ? '#8f6a6a' : (sel ? '#ffe27a' : '#c9d2e0'));
+        if (!it.action) drawTextShadow(ctx, '< ' + it.val + ' >', rx + rw - 8, ry + 6, vc, 1, 'right');
+        else drawTextShadow(ctx, it.val, rx + rw - 8, ry + 6, '#e0525c', 1, 'right');
+      }
+    }
+    drawTextShadow(ctx, 'ARROWS MOVE   < > CHANGE   ESC BACK', W / 2, H - 8, '#8f7a5a', 1, 'center');
+    if (ui.resetFlash > 0) { ctx.fillStyle = 'rgba(224,82,92,' + (ui.resetFlash * 0.5).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
+  }
+
   function renderTitle() {
     drawBackground(time * 12);
     drawSea();
+    drawTitleBirds(); // distant flapping gulls
     // atmospheric dim + drifting embers for a Slay-the-Spire mood
     ctx.fillStyle = 'rgba(12,8,20,0.32)'; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = 'rgba(255,196,110,0.5)';
     for (let i = 0; i < 14; i++) { const ex = (i * 53 + time * (8 + i % 5)) % W; const ey = (H - 20 - ((time * (10 + i % 4) + i * 40) % (H - 30))); ctx.fillRect(Math.round(ex), Math.round(ey), 1, 1); }
 
     // title banner (wooden sign) + logo
-    drawPanel(W / 2 - 78, 10, 156, 46);
-    const ly = 16 + Math.round(Math.sin(time * 1.2) * 1);
+    drawPanel(W / 2 - 78, 8, 156, 44);
+    const ly = 13 + Math.round(Math.sin(time * 1.2) * 1);
     FONT.drawTextOutline(ctx, 'FLAPPY', W / 2, ly, '#f6c945', 3, 'center');
-    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 19, '#3fc0b0', 3, 'center');
-    drawText(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 38, '#c9b088', 1, 'center');
+    FONT.drawTextOutline(ctx, 'DARWIN', W / 2, ly + 18, '#3fc0b0', 3, 'center');
+    drawText(ctx, 'EAT. DIGEST. EVOLVE.', W / 2, ly + 35, '#c9b088', 1, 'center');
 
-    // a perched evolved "hero" bird beside the sign
-    const dby = 74 + Math.sin(time * 1.6) * 3;
+    // a perched evolved "hero" bird beside the sign, with fluttering butterflies
+    const dby = 70 + Math.sin(time * 1.6) * 3;
+    drawTitleFlies();
     SPR.drawBird(ctx, 46, dby, Math.sin(time * 1.6 + 1) * 0.08, {
       frame: bird && bird.flapT > 0 ? Math.floor(time * 12) % 3 : 1, open: false, bigWings: true, bigTail: true, crest: 3,
       legsDown: true, blink: Math.sin(time * 0.7) > 0.97, time: time, sx: 1, sy: 1,
@@ -2409,28 +2898,28 @@
     if (Math.random() < 0.04) parts.push(feather(40, dby + 4));
     drawParts();
 
-    // menu as vertical wooden cards
+    // menu as vertical wooden cards (compact to fit 4 items)
     const items = menuItems(); ui.menuRects = [];
-    const cw = 122, mx = W / 2 - cw / 2, my0 = 78;
+    const cw = 116, mx = W / 2 - cw / 2, my0 = 62, sp = 18, ch = 16;
     for (let i = 0; i < items.length; i++) {
-      const sel = (ui.menuSel || 0) === i, yy = my0 + i * 22 + (sel ? -1 : 0), ch = 18;
-      ui.menuRects.push({ x: mx, y: my0 + i * 22, w: cw, h: 20 });
+      const sel = (ui.menuSel || 0) === i, yy = my0 + i * sp + (sel ? -1 : 0);
+      ui.menuRects.push({ x: mx, y: my0 + i * sp, w: cw, h: ch });
       drawPanel(mx, yy, cw, ch);
       if (sel) {
         ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257';
         ctx.fillRect(mx, yy, cw, 1); ctx.fillRect(mx, yy + ch - 1, cw, 1); ctx.fillRect(mx, yy, 1, ch); ctx.fillRect(mx + cw - 1, yy, 1, ch);
-        drawText(ctx, '>', mx + 8, yy + 7, '#ffd257', 1); drawText(ctx, '<', mx + cw - 12, yy + 7, '#ffd257', 1);
+        drawText(ctx, '>', mx + 7, yy + 6, '#ffd257', 1); drawText(ctx, '<', mx + cw - 11, yy + 6, '#ffd257', 1);
       }
-      drawTextShadow(ctx, items[i], W / 2, yy + 6, sel ? '#ffe27a' : '#b79666', 1, 'center');
+      drawTextShadow(ctx, items[i], W / 2, yy + 5, sel ? '#ffe27a' : '#b79666', 1, 'center');
     }
 
     // Darwin welcome sign
-    ctx.drawImage(SPR.DARWIN, 4, H - 44);
-    drawSpeech(26, H - 45, ["I'M DARWIN.", 'PICK TUTORIAL', 'IF NEW HERE!'], 74);
+    ctx.drawImage(SPR.DARWIN, 4, H - 40);
+    drawSpeech(24, H - 42, ["I'M DARWIN.", 'PICK TUTORIAL', 'IF NEW HERE!'], 74);
     // stat plaques
-    drawPlaque(W - 74, H - 46, 70, SPR.DNA, 'DNA ' + save.dna, '#8fd6c8');
-    drawPlaque(W - 74, H - 29, 70, SPR.SKULL, best.score > 0 ? (best.score + ' D' + best.depth) : 'NO RUNS', '#f6c945');
-    drawText(ctx, 'ARROWS + ENTER / TAP', W / 2, H - 6, '#8f7a5a', 1, 'center');
+    drawPlaque(W - 74, H - 44, 70, SPR.DNA, 'DNA ' + save.dna, '#8fd6c8');
+    drawPlaque(W - 74, H - 27, 70, SPR.SKULL, best.score > 0 ? (best.score + ' D' + best.depth) : 'NO RUNS', '#f6c945');
+    drawText(ctx, 'ARROWS + ENTER / TAP', W / 2, H - 5, '#8f7a5a', 1, 'center');
   }
 
   function renderOver() {
@@ -2475,6 +2964,7 @@
     ctx.save();
     if (shake.t > 0) ctx.translate(Math.round(rnd(-shake.mag, shake.mag)), Math.round(rnd(-shake.mag, shake.mag)));
     if (STATE === 'title') renderTitle();
+    else if (STATE === 'settings') renderSettings();
     else if (STATE === 'fly') renderFly();
     else if (STATE === 'island') renderIsland();
     else if (STATE === 'over') renderOver();
@@ -2483,8 +2973,9 @@
     if (flashT > 0) { ctx.fillStyle = 'rgba(224,82,92,' + clamp(flashT * 1.4, 0, 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
     if (paused) {
       ctx.fillStyle = 'rgba(10,6,18,0.7)'; ctx.fillRect(0, 0, W, H);
-      drawTextShadow(ctx, 'PAUSED', W / 2, 80, '#ffffff', 2, 'center');
-      drawText(ctx, 'P TO RESUME', W / 2, 98, '#8f86a8', 1, 'center');
+      drawTextShadow(ctx, 'PAUSED', W / 2, 74, '#ffffff', 2, 'center');
+      drawText(ctx, 'P TO RESUME', W / 2, 92, '#8f86a8', 1, 'center');
+      if (run && run.journey) drawJourneyMap(112);
     }
     if (AUDIO.isMuted()) drawText(ctx, 'MUTED', 4, H - 24, '#8f86a8', 1);
   }
@@ -2534,6 +3025,14 @@
     forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL RING', t: 0 }; } },
     forceRush: function () { if (world) startRush(); },
     forceWasps: function () { if (world) startWasps(); },
+    forceSlalom: function () { if (world) startSlalom(); },
+    forceTrail: function () { if (world) startTrail(); },
+    forceStorm: function () { if (world) startStorm(); },
+    forceFlutter: function () { if (world) startFlutter(); },
+    forceBat: function () { if (world) { world.bat = { state: 'dive', t: 0, x: W - 20, y: bird.y - 20, first: false }; } },
+    forceDragonfly: function () { if (world) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: false }; } },
+    forceVulture: function () { if (world) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: false }; } },
+    forceLeaper: function (kind) { if (!world) return 'no world'; const k = kind || 'bfrog'; if (k === 'jelly') world.leapers.push({ kind: 'jelly', worldX: world.dist + bird.x + 40, y: SEA_Y - 8, state: 'rise', t: 0, bob: 0, first: false }); else world.leapers.push({ kind: k, worldX: world.dist + bird.x + 34, state: 'telegraph', t: 0, bob: 0, first: false }); return 'ok'; },
     forceSpider: function () { if (!world) return 'no world'; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 20 && sx < W) { o.spider = { state: 'drop', t: 0, targetY: bird.y, y: o.gapY - o.gapH / 2 }; return 'ok'; } } return 'none'; },
     forceBoss: function () { if (run) { run.depth--; newLeg('aerie'); } },
     bossHp: function () { return (world && world.boss) ? world.boss.hp : -1; },

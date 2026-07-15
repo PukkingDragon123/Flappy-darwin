@@ -10,6 +10,33 @@ hatch again from your last checkpoint. Charles Darwin himself guides you in.
 
 ![Main menu](docs/menu.png)
 
+An interactive **Slay-the-Spire-style** main menu: a framed wooden title banner,
+glowing card buttons (**PLAY · TUTORIAL · SETTINGS · MUTE**), Darwin's welcome
+sign and DNA/best plaques — with distant gulls flapping past and butterflies
+fluttering around your perched finch.
+
+## Settings
+
+A wooden **SETTINGS** screen lets you tune the experience:
+
+- **Sound FX** on/off · **Screen shake** on/off · **Hit flash** on/off
+- **Difficulty** — EASY / NORMAL / HARD, which changes how soon dangers arrive,
+  how long they telegraph, and the pace of flight
+- **Reset save** — wipe your DNA, best and progress (with a confirm)
+
+Everything is saved to your browser and persists between runs.
+
+![The settings screen](docs/settings.png)
+
+## The run map
+
+At every nest — and any time you pause — a **Slay-the-Spire-style run map**
+shows your migration as a ribbon of wooden nodes: the biomes you've crossed,
+your **current leg glowing**, and the fork ahead (a **?** for the next choice,
+or a **skull** when a boss aerie looms).
+
+![The run map](docs/map.png)
+
 ## Meet your guide
 
 On your first flight (or any time via the **TUTORIAL** menu), **Charles Darwin**
@@ -52,11 +79,17 @@ the undergrowth and you'll get hurt.
    frogs, mangoes and rare golden fruit. Catch it **on your beak** and it sits
    there while you **digest**. You can't grab more until it goes down — and
    over-gulping leaves you **STUFFED**: heavy and weak-winged.
-4. **Bonus mini-games.** Between obstacles a surprise event may appear:
+4. **Bonus mini-games.** Between obstacles a surprise event may appear — seven in all:
    - 🐛 **Bug chase** — a glowing beetle darts ahead; pursue and snatch it.
    - 💨 **Thermal ring** — fly cleanly through the glowing hoop for a PERFECT
      boost, full energy and bonus.
    - 🍓 **Fruit rush** — a wave of fruit floods in; feast for a combo bonus.
+   - 💍 **Ring slalom** — a chain of hoops; thread them all for an escalating combo.
+   - ✨ **Firefly trail** — a curving chain of glowing fireflies to collect.
+   - 🌰 **Nut storm** — a rain of acorns; survive unscathed for a big bonus.
+   - 🦋 **Butterfly dance** — a friendly cloud to glide through for energy and points.
+
+![Ring slalom — thread the hoops](docs/slalom.png)
 5. **Boost to escape.** Double-tap (double-click / double-press) to **dash** — a
    burst of speed that costs wing energy. Use it to outrun what's chasing you.
 6. **Dodge the dangers.** Every threat is **telegraphed and fair**:
@@ -68,6 +101,12 @@ the undergrowth and you'll get hurt.
    - 🌿 **Pitcher plants** bubble in the undergrowth, then lunge — stay high.
    - 🦅 **Hawks** cast a warning shadow, then dive — drop low.
    - 🥭 **Durians** hang from branches and *drop* when you near them — move!
+   - 🦇 **Bats** screech in, then flit across in an erratic, homing zigzag.
+   - 🪰 **Dragonflies** hover to lock your lane, then **dash** straight across it.
+   - 🐸 **Bullfrogs** crouch on the floor, then **leap** in a tall arc — mind the gap.
+   - 🎐 **Jellyfish** drift up through ocean lanes, pulsing — weave around the sting.
+   - 🐟 **Piranhas** break the water in a quick burst of leaps — thread between them.
+   - 🦅 **Vultures** circle overhead marking your lane, then **dive** once, hard.
 
 ## Boss: The Great Eagle
 
@@ -117,14 +156,14 @@ difficulty ramps the deeper you migrate.
 |---|---|---|---|
 | 🌼 **Meadow Isles** | forest | leafy oaks | — |
 | 🌲 **Pinewood Reach** | forest | conifers | durians |
-| 🌰 **Oaknut Grove** | forest | golden oaks | pitchers, durians |
-| 🐛 **Buzzing Marsh** | forest | mangroves | — |
-| 🐍 **Mire Swamp** | forest | cypress | snakes, pitchers |
-| ⛰️ **Storm Crags** | forest | rock spires | hawks, falcons |
-| 🌴 **Lush Jungle** | forest | broadleaf + vines | everything |
-| 🌊 **Coral Coast** | ocean | swaying palms | falcons |
-| ❄️ **Frost Reach** | tundra | snow-laden pines | falcons, hawks, gusts |
-| 🏜️ **Dune Sea** | desert | saguaro cacti | snakes, falcons |
+| 🌰 **Oaknut Grove** | forest | golden oaks | pitchers, durians, bullfrogs |
+| 🐛 **Buzzing Marsh** | forest | mangroves | dragonflies, bullfrogs |
+| 🐍 **Mire Swamp** | forest | cypress | snakes, pitchers, bats |
+| ⛰️ **Storm Crags** | forest | rock spires | hawks, falcons, vultures, gusts |
+| 🌴 **Lush Jungle** | forest | broadleaf + vines | everything, bats, dragonflies |
+| 🌊 **Coral Coast** | ocean | swaying palms | falcons, jellyfish, piranhas |
+| ❄️ **Frost Reach** | tundra | snow-laden pines | falcons, hawks, bats, gusts |
+| 🏜️ **Dune Sea** | desert | saguaro cacti | snakes, falcons, vultures |
 
 ![Dune Sea — desert environment with cacti](docs/desert.png)
 
@@ -141,7 +180,10 @@ food, paths and dangers differ each time.
 ## Look & feel
 
 - A **Slay-the-Spire-style** interactive main menu — a framed wooden title
-  banner, glowing wooden card buttons, Darwin's sign, and DNA/best plaques.
+  banner, glowing wooden card buttons, Darwin's sign, DNA/best plaques, and
+  ambient life (drifting gulls, fluttering butterflies).
+- A dedicated **settings** screen (sound, screen shake, hit flash, difficulty,
+  reset) and a **run map** ribbon shown at every nest and on pause.
 - A cohesive **wooden, Stardew-Valley-style UI** across every panel, card and
   sign — carved frames, dark boards and corner nails.
 - Layered, branchy **background forests** with lit organic canopies and depth,

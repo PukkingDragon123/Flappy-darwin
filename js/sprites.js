@@ -785,6 +785,155 @@
   }));
 
   // ============================================================
+  //  NEW ENEMIES & MINI-GAME CRITTERS
+  // ============================================================
+  // ---- bat: erratic dusk flyer ----
+  const BAT_PAL = Object.assign({}, PAL, { o: '#1f1626', P: '#43314a', b: '#63496b', e: '#ffd257' });
+  const BAT1 = bake([   // wings raised
+    'o.o.....o.o',
+    'oPoo...ooPo',
+    'oPPPo.oPPPo',
+    '.bPPPPPPPb.',
+    '..oPe.ePo..',
+    '...o.o.o...',
+  ], BAT_PAL);
+  const BAT2 = bake([   // wings lowered
+    '...........',
+    '.oo.....oo.',
+    'oPPPo.oPPPo',
+    '.bPPPPPPPb.',
+    '..oPe.ePo..',
+    '..o.o.o.o..',
+  ], BAT_PAL);
+
+  // ---- dragonfly: hovers then dashes (faces left) ----
+  const DFLY_PAL = Object.assign({}, PAL, { u: '#a8e4f2', G: '#2c8a80', t: '#3fc0b0', e: '#ffd257', o: '#18342f' });
+  const DFLY1 = bake([   // wings out
+    '..u.....u..',
+    '.uuu...uuu.',
+    '..uu...uu..',
+    'eeGtGtGtGtt',
+    '..uu...uu..',
+    '.uuu...uuu.',
+    '..u.....u..',
+  ], DFLY_PAL);
+  const DFLY2 = bake([   // wings folded
+    '...........',
+    '.uu.....uu.',
+    '..u.....u..',
+    'eeGtGtGtGtt',
+    '..u.....u..',
+    '.uu.....uu.',
+    '...........',
+  ], DFLY_PAL);
+
+  // ---- bullfrog: floor leaper (distinct from the small FROG food) ----
+  const BFROG_PAL = Object.assign({}, PAL, { g: '#5cad3c', G: '#3d7f2a', e: '#ffd257', p: '#161020', w: '#cfe8a0' });
+  const BFROG = bake([
+    '..e.....e..',
+    '.epe...epe.',
+    '.ggggggggg.',
+    'ggGgggggGgg',
+    'gGggwwwwggG',
+    'GGGGGGGGGGG',
+    '.GG.....GG.',
+  ], BFROG_PAL);
+
+  // ---- jellyfish: slow ocean drifter (2 pulse frames) ----
+  const JELLY_PAL = Object.assign({}, PAL, { u: '#a8e4f2', U: '#68b7cf', d: '#f2748f', o: '#5a7f9a' });
+  const JELLY1 = bake([
+    '..ouuo..',
+    '.ouuuuo.',
+    'ouuuuuuo',
+    'oUduuduo',
+    '.o.oo.o.',
+    '.d.u.d.u',
+    '.u.d.u.d',
+    '..d...u.',
+  ], JELLY_PAL);
+  const JELLY2 = bake([
+    '..ouuo..',
+    '.ouuuuo.',
+    '.ouuuuo.',
+    'oUduuduo',
+    '.oo..oo.',
+    '.u.dd.u.',
+    '..d..u..',
+    '..u..d..',
+  ], JELLY_PAL);
+
+  // ---- piranha: leaps from the water (faces up-left) ----
+  const PIR_PAL = Object.assign({}, PAL, { s: '#5f6f7a', S: '#3a4650', d: '#e0525c', z: '#f2f7ff', e: '#ffd257', o: '#20282e' });
+  const PIRANHA = bake([
+    '...ooo...',
+    '..ossSo..',
+    '.osssSSo.',
+    'oseszsSSo',
+    'oszzzzsSo',
+    'oSsssdSSo',
+    '.oSddSo..',
+    '..oooo...',
+  ], PIR_PAL);
+
+  // ---- vulture: circles then dives (bald pink head) ----
+  const VULT_PAL = Object.assign({}, PAL, { a: '#4a3d34', H: '#6a5a4a', P: '#2a221c', d: '#c97a6a', y: '#e0b24a' });
+  const VULT_MID = bake([
+    'a...........a',
+    'aaa.......aaa',
+    '.aaaa...aaaa.',
+    '..aaaHdHaaa..',
+    '..aaPPyPPaa..',
+    '.....a.a.....',
+  ], VULT_PAL);
+  const VULT_UP = bake([
+    '..aa.....aa..',
+    '.aaaa...aaaa.',
+    '..aaa.d.aaa..',
+    '...aaHdHaa...',
+    '....PPyPP....',
+    '.....a.a.....',
+  ], VULT_PAL);
+
+  // ---- firefly (mini-game trail dot, green glow) ----
+  const FIREFLY = bake([
+    '.o.o.',
+    'oLlLo',
+    'oltLo',
+    'oLlLo',
+    '.oto.',
+  ], Object.assign({}, PAL, { L: '#c7ff9a', l: '#96f0a0', t: '#5cad3c', o: '#26401f' }));
+
+  // ---- butterfly (friendly swarm, 2 flap frames) ----
+  const BFLY_PAL = Object.assign({}, PAL, { M: '#ff9f4d', d: '#ffd257', o: '#3a2418', P: '#5a3a1c', e: '#fff3a8' });
+  const BFLY1 = bake([   // wings open
+    'oMMo.oMMo',
+    'oMdMoMdMo',
+    'oMMdPdMMo',
+    'oMdMoMdMo',
+    'oMMo.oMMo',
+  ], BFLY_PAL);
+  const BFLY2 = bake([   // wings up
+    '.oo...oo.',
+    'oMMo.oMMo',
+    'oMdPdMo..'.slice(0, 9),
+    'oMMdPdMMo',
+    '.oMo.oMo.',
+  ], BFLY_PAL);
+
+  // ---- gear (settings icon) ----
+  const GEAR = bake([
+    '..o.o.o..',
+    '.oyoyoyo.',
+    'ooyyyyyoo',
+    'oyyoooyoy'.slice(0, 9),
+    '.yyoSoyy.',
+    'oyyoooyoy'.slice(0, 9),
+    'ooyyyyyoo',
+    '.oyoyoyo.',
+    '..o.o.o..',
+  ], Object.assign({}, PAL, { y: '#c9b088', S: '#241611', o: '#5c3a1e' }));
+
+  // ============================================================
   //  BIRD COMPOSITOR
   // ============================================================
   // cfg: frame(0..2), open, bigBeak, bigWings, bigTail, crest(0..3),
@@ -875,6 +1024,9 @@
     PITCHER_LURK: PITCHER_LURK, PITCHER_GAPE: PITCHER_GAPE,
     CHASE_BUG: CHASE_BUG, CHASE_BUG2: CHASE_BUG2, DARWIN: DARWIN,
     WASP1: WASP1, WASP2: WASP2, SPIDER: SPIDER,
+    BAT1: BAT1, BAT2: BAT2, DFLY1: DFLY1, DFLY2: DFLY2, BFROG: BFROG,
+    JELLY1: JELLY1, JELLY2: JELLY2, PIRANHA: PIRANHA, VULT_MID: VULT_MID, VULT_UP: VULT_UP,
+    FIREFLY: FIREFLY, BFLY1: BFLY1, BFLY2: BFLY2, GEAR: GEAR,
     drawBird: drawBird, beakTip: beakTip,
   };
 })();
