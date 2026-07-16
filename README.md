@@ -29,6 +29,12 @@ Everything (art, sound, world) is generated in code.
 | `R` | Reload |
 | `E` (at the truck) | Drive your catch to the sanctuary |
 
+**On a phone?** The game is fully touch-playable. A **virtual stick** on the left
+moves and climbs (and reels the rope while swinging); **tap the right side** to aim
+and fire a dart; on-screen **HOOK**, **JUMP** and **AMMO** buttons handle grappling,
+jumping/letting go, and switching ammunition. Menus, pens and shop are all tap-driven,
+and the view scales to fill the screen (rotate to landscape for the biggest picture).
+
 ![Climbing the rainforest and darting wildlife](docs/expedition.png)
 
 The climb is the heart of the game:
@@ -46,13 +52,18 @@ The climb is the heart of the game:
 4. **Stay safe.** Boars **charge**, snakes **strike**, jaguars **pounce** — read
    the tell, dart them, or swing clear. Take too many hits and you're knocked
    out and lose half your catch.
-5. **Stow & extract.** Walk over a sedated animal to load it onto your back
+5. **Forage as you explore.** Straying off the direct line up pays off — branches
+   and side-ledges hide **wild fruit, rare eggs and orchids** worth instant cash.
+   A treasure counter tracks how many you've found.
+6. **Stow & extract.** Walk over a sedated animal to load it onto your back
    (limited **cargo slots**), then return to the **truck** and press `E` to
    drive everything to the sanctuary.
 
-**Animals:** 🦜 Macaw · 🐒 Monkey · 🐗 Boar · 🐍 Snake · 🦥 Sloth ·
-🦤 Toucan · 🐆 Jaguar · ✨ Golden Frog — each in its own layer of the canopy,
-with its own behaviour, danger and rarity/value.
+**Animals:** 🦜 Macaw · 🌈 Scarlet Macaw · 🐒 Monkey · 🐗 Boar · 🐍 Snake ·
+🦥 Sloth · 🦤 Toucan · 🐦 Hummingbird · 🦋 Blue Morpho · 🐦‍⬛ Heron ·
+🦅 Harpy Eagle · 🦫 Capybara · 🐊 Caiman · 🐆 Jaguar · ✨ Golden Frog — each with
+its own layer, behaviour, danger and rarity/value. Birds patrol, dart and dive;
+river creatures lurk at the water's edge; predators charge, pounce and strike.
 
 ### 🌙 Night — the sanctuary (feed, play, earn)
 
@@ -87,10 +98,16 @@ Progress and your sanctuary are **saved automatically** between days.
 sanctuary → run the night (feed / play / visitors) → the Outfitter → next day.**
 Deeper regions unlock as the days go by, with rarer wildlife and steeper danger.
 
+Four hand-tuned **biomes** each look and play differently — the grassy, river-fed
+**River Basin**, the humid **Deep Canopy**, the fog-wreathed **Misty Highlands**
+(with distant mountains) and the **Flooded Forest** — with flowing rivers, grassy
+banks and ledges, drifting mist and their own mix of fauna.
+
 ## Tech
 
 - Pure vanilla JavaScript + HTML5 canvas, **zero dependencies**
-- 320×180 internal resolution, integer-scaled with crisp pixels
+- 320×180 internal resolution — crisp integer scaling on desktop, edge-to-edge
+  fractional scaling on phones, with a full **multi-touch virtual gamepad**
 - All sprites drawn **procedurally** with dithered "3D-pixel" shading, parallax
   canopy depth, god-rays, drop shadows and particle juice (`js/hunter.js`)
 - Verlet-style rope **pendulum physics** for grappling & vine swinging

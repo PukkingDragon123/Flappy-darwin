@@ -15,14 +15,18 @@
 
   // ---------------- display scaling ----------------
   let scale = 1, rect = null;
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
   function fit() {
     const s = Math.min(window.innerWidth / W, window.innerHeight / H);
-    scale = s >= 1 ? Math.floor(s) : s;
+    // crisp integer scaling on desktop; on touch/small screens fill as much as possible
+    scale = (isTouchDevice || s < 1) ? s : Math.floor(s);
     cv.style.width = (W * scale) + 'px';
     cv.style.height = (H * scale) + 'px';
     rect = cv.getBoundingClientRect();
   }
-  window.addEventListener('resize', fit); fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function () { setTimeout(fit, 80); });
+  fit();
   window.addEventListener('scroll', function () { rect = cv.getBoundingClientRect(); }, true);
 
   // ---------------- math helpers ----------------
@@ -64,10 +68,82 @@
   });
   window.addEventListener('mouseup', e => { if (e.button === 2) mouse.rdown = false; else mouse.down = false; });
   cv.addEventListener('contextmenu', e => e.preventDefault());
-  // touch: tap = shoot at point; two-finger handled minimally
-  cv.addEventListener('touchstart', e => { e.preventDefault(); mapMouse(e); mouse.down = true; mouse.clicked = true; A.unlock(); }, { passive: false });
-  cv.addEventListener('touchmove', e => { e.preventDefault(); mapMouse(e); }, { passive: false });
-  cv.addEventListener('touchend', e => { e.preventDefault(); mouse.down = false; }, { passive: false });
+
+  // ---------------- multi-touch virtual gamepad ----------------
+  let TOUCH = false;                       // becomes true once any touch happens
+  const stick = { active: false, id: -1, ax: 0, ay: 0, x: 0, y: 0 };
+  const tbtn = {};                         // held state per virtual button
+  const tbtnEdge = {};                     // one-shot press
+  const touchRole = new Map();             // touch id -> role ('stick' | 'aim' | 'tap' | button id)
+  const vprev = {};                        // previous virtual key state (for edge)
+  function toGame(clientX, clientY) {
+    if (!rect) rect = cv.getBoundingClientRect();
+    return { x: clamp((clientX - rect.left) / (rect.width / W), 0, W), y: clamp((clientY - rect.top) / (rect.height / H), 0, H) };
+  }
+  function padButtons() {
+    return [
+      { id: 'jump', x: W - 17, y: H - 16, r: 14, label: 'JUMP' },
+      { id: 'hook', x: W - 17, y: H - 45, r: 12, label: 'HOOK' },
+      { id: 'ammo', x: W - 45, y: H - 15, r: 11, label: 'AMMO' },
+    ];
+  }
+  function expActive() { return phase === 'expedition' && !EXP.done && EXP.P && !EXP.P.dead && !EXP.extracting; }
+  cv.addEventListener('touchstart', e => {
+    e.preventDefault(); A.unlock(); TOUCH = true;
+    for (const tch of e.changedTouches) {
+      const g = toGame(tch.clientX, tch.clientY); let role = null;
+      if (expActive()) {
+        for (const b of padButtons()) { if (dist2(g.x, g.y, b.x, b.y) < (b.r + 3) * (b.r + 3)) { role = b.id; tbtn[b.id] = true; tbtnEdge[b.id] = true; break; } }
+        if (!role) {
+          if (g.x < W * 0.42 && g.y > 16 && !stick.active) { role = 'stick'; stick.active = true; stick.id = tch.identifier; stick.ax = g.x; stick.ay = g.y; stick.x = g.x; stick.y = g.y; }
+          else if (g.x < W * 0.42 && g.y > 16) { role = 'idle'; }   // second finger in move zone: ignore
+          else { role = 'aim'; mouse.x = g.x; mouse.y = g.y; mouse.clicked = true; }
+        }
+      } else { role = 'tap'; mouse.x = g.x; mouse.y = g.y; mouse.down = true; mouse.clicked = true; }
+      touchRole.set(tch.identifier, role);
+    }
+  }, { passive: false });
+  cv.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (const tch of e.changedTouches) {
+      const role = touchRole.get(tch.identifier); const g = toGame(tch.clientX, tch.clientY);
+      if (role === 'stick' && tch.identifier === stick.id) { stick.x = g.x; stick.y = g.y; }
+      else if (role === 'aim' || role === 'tap') { mouse.x = g.x; mouse.y = g.y; }
+    }
+  }, { passive: false });
+  function endTouch(e) {
+    e.preventDefault();
+    for (const tch of e.changedTouches) {
+      const role = touchRole.get(tch.identifier); touchRole.delete(tch.identifier);
+      if (role === 'stick') { if (tch.identifier === stick.id) stick.active = false; }
+      else if (role && tbtn[role] !== undefined) tbtn[role] = false;
+      else if (role === 'tap') mouse.down = false;
+    }
+  }
+  cv.addEventListener('touchend', endTouch, { passive: false });
+  cv.addEventListener('touchcancel', endTouch, { passive: false });
+
+  function vset(code, on) { if (on && !vprev[code]) keys[code + '_p'] = true; keys[code] = on; vprev[code] = on; }
+  function cycleAmmo() {
+    const P = EXP.P; if (!P) return;
+    const order = ['dart']; if (S.ammo.heavy > 0) order.push('heavy'); if (S.ammo.net > 0) order.push('net');
+    let i = order.indexOf(P.ammoType); i = (i + 1) % order.length; P.ammoType = order[i]; A.play('select');
+  }
+  function applyTouch() {
+    if (!TOUCH) return;
+    const exp = expActive();
+    let L = false, R = false, U = false, Dn = false;
+    if (exp && stick.active) {
+      const dx = stick.x - stick.ax, dy = stick.y - stick.ay, dead = 3;
+      if (dx < -dead) L = true; if (dx > dead) R = true;
+      if (dy < -dead) U = true; if (dy > dead * 1.5) Dn = true;
+    }
+    keys['ArrowLeft'] = L; keys['ArrowRight'] = R; keys['ArrowUp'] = U; keys['ArrowDown'] = Dn;
+    vset('Space', exp && !!tbtn['jump']);
+    vset('KeyF', exp && !!tbtn['hook']);
+    if (exp && tbtnEdge['ammo']) cycleAmmo();
+    tbtnEdge['ammo'] = false; tbtnEdge['jump'] = false; tbtnEdge['hook'] = false;
+  }
 
   function keyPressed(code) { return !!keys[code + '_p']; }
   function clearEdges() {
@@ -87,6 +163,14 @@
     toucan:   { name: 'TOUCAN',   layer: 'air',  r: 6,  tranq: 2, value: 75,  rarity: 'uncommon', flies: true, danger: 0,  col: ['#1a1a22', '#f2a03a', '#e8e2d0'], move: 40 },
     jaguar:   { name: 'JAGUAR',   layer: 'high', r: 9,  tranq: 5, value: 160, rarity: 'rare', danger: 3,  col: ['#c79a4a', '#8a6320', '#2a1c10'], move: 40, pounces: true },
     goldfrog: { name: 'GOLD FROG', layer: 'high', r: 5, tranq: 1, value: 220, rarity: 'epic', danger: 0,  col: ['#f6d13a', '#f2a640', '#fff2a0'], move: 30, jumps: true },
+    // --- birds & new fauna ---
+    hummer:   { name: 'HUMMER',   layer: 'air',  r: 4,  tranq: 1, value: 70,  rarity: 'uncommon', flies: true, danger: 0, col: ['#2ab89a', '#f24a7a', '#ffe08a'], move: 74, darts: true },
+    morpho:   { name: 'MORPHO',   layer: 'air',  r: 5,  tranq: 1, value: 48,  rarity: 'common',   flies: true, danger: 0, col: ['#3a6ae0', '#7aa8ff', '#12205a'], move: 20, drifts: true },
+    heron:    { name: 'HERON',    layer: 'air',  r: 8,  tranq: 2, value: 95,  rarity: 'uncommon', flies: true, danger: 0, col: ['#e2e8ee', '#aab6c4', '#f2b23a'], move: 26, wader: true },
+    macaw2:   { name: 'SCARLET',  layer: 'air',  r: 6,  tranq: 1, value: 58,  rarity: 'common',   flies: true, danger: 0, col: ['#e83a2e', '#f2d13a', '#2a6ad0'], move: 50 },
+    harpy:    { name: 'HARPY',    layer: 'air',  r: 9,  tranq: 4, value: 205, rarity: 'rare',     flies: true, danger: 3, col: ['#4a4a56', '#c8ccd4', '#f2c83a'], move: 54, dives: true },
+    capybara: { name: 'CAPYBARA', layer: 'low',  r: 8,  tranq: 3, value: 72,  rarity: 'common',   danger: 0, col: ['#8a5a34', '#a9713f', '#5a3a22'], move: 16 },
+    caiman:   { name: 'CAIMAN',   layer: 'low',  r: 9,  tranq: 4, value: 135, rarity: 'rare',     danger: 3, col: ['#3a4a2e', '#5a6e3c', '#1c2814'], move: 24, lunges: true, water: true },
   };
   const ANIMAL_KEYS = Object.keys(ANIMALS);
   const RARITY = { common: { c: '#c9d2c0', l: 'COMMON' }, uncommon: { c: '#6db6d8', l: 'UNCOMMON' }, rare: { c: '#c98fe0', l: 'RARE' }, epic: { c: '#f6c945', l: 'EPIC' } };
@@ -95,6 +179,13 @@
     dart:  { name: 'TRANQ DART', dose: 1, key: 'Digit1', infinite: true },
     heavy: { name: 'HEAVY DART', dose: 3, key: 'Digit2' },
     net:   { name: 'CAPTURE NET', dose: 99, key: 'Digit3', net: true },
+  };
+
+  // forageable collectibles that reward exploration off the main climb
+  const PICKUPS = {
+    fruit:  { name: 'WILD FRUIT', r: 3, value: 10, col: '#e8433a', rarity: 'common' },
+    egg:    { name: 'RARE EGG',   r: 3, value: 24, col: '#efe6cc', rarity: 'uncommon' },
+    orchid: { name: 'ORCHID',     r: 4, value: 44, col: '#d46ae0', rarity: 'rare' },
   };
 
   const UPGRADES = [
@@ -225,22 +316,33 @@
   //  DAY BRIEFING  (choose region -> start expedition)
   // =====================================================================
   const REGIONS = [
-    { name: 'RIVER BASIN', height: 900,  danger: 1, tint: '#3fa06a', spawn: ['parrot', 'monkey', 'boar', 'sloth'] },
-    { name: 'DEEP CANOPY',  height: 1150, danger: 2, tint: '#2f8a58', spawn: ['parrot', 'monkey', 'boar', 'snake', 'sloth', 'toucan'] },
-    { name: 'MISTY HIGHLANDS', height: 1400, danger: 3, tint: '#3a7a7a', spawn: ['monkey', 'snake', 'toucan', 'jaguar', 'goldfrog', 'sloth'] },
+    { id: 'basin', name: 'RIVER BASIN', height: 980, danger: 1, tint: '#3fa06a',
+      sky: ['#bfe4cf', '#5fae86'], ground: '#3c5a2a', water: true, grass: true, fog: 0.10, mountains: false,
+      spawn: ['parrot', 'macaw2', 'monkey', 'boar', 'capybara', 'heron', 'morpho', 'caiman', 'sloth'] },
+    { id: 'canopy', name: 'DEEP CANOPY', height: 1220, danger: 2, tint: '#2f8a58',
+      sky: ['#9fd0b8', '#2f7a52'], ground: '#2a4620', water: false, grass: true, fog: 0.28, mountains: false,
+      spawn: ['parrot', 'macaw2', 'monkey', 'boar', 'snake', 'sloth', 'toucan', 'hummer', 'morpho'] },
+    { id: 'highlands', name: 'MISTY HIGHLANDS', height: 1480, danger: 3, tint: '#3a7a7a',
+      sky: ['#cfe0ea', '#4a8a86'], ground: '#33503e', water: false, grass: true, fog: 0.42, mountains: true,
+      spawn: ['monkey', 'snake', 'toucan', 'hummer', 'jaguar', 'goldfrog', 'harpy', 'sloth'] },
+    { id: 'flooded', name: 'FLOODED FOREST', height: 1600, danger: 4, tint: '#2e7a6a',
+      sky: ['#a8d0d4', '#2a6a6a'], ground: '#284a30', water: true, grass: true, fog: 0.30, mountains: false,
+      spawn: ['heron', 'caiman', 'capybara', 'snake', 'morpho', 'jaguar', 'harpy', 'toucan'] },
   ];
+  function regionsAvail() { return clamp(1 + Math.floor((S.day - 1)), 1, REGIONS.length); }
   let brief = { sel: 0 };
   function startBrief() {
     // pick regions available by day
     brief.sel = 0;
     phase = 'brief';
   }
+  function briefCard(i, avail) { const cw = avail <= 3 ? 84 : 74, gap = avail <= 3 ? 92 : 78; const cx = W / 2 + (i - (avail - 1) / 2) * gap; return { cx, cw, y0: 58, h: 96 }; }
   function updateBrief(dt) {
-    const n = Math.min(REGIONS.length, 1 + Math.floor((S.day - 1) / 1) + 1);
-    const avail = Math.min(REGIONS.length, Math.max(1, Math.min(3, S.day)));
+    const avail = regionsAvail();
+    if (brief.sel >= avail) brief.sel = avail - 1;
     if (keyPressed('ArrowRight') || keyPressed('KeyD')) { brief.sel = (brief.sel + 1) % avail; A.play('select'); }
     if (keyPressed('ArrowLeft') || keyPressed('KeyA')) { brief.sel = (brief.sel + avail - 1) % avail; A.play('select'); }
-    for (let i = 0; i < avail; i++) { const cx = W / 2 + (i - (avail - 1) / 2) * 92; if (mouse.x > cx - 42 && mouse.x < cx + 42 && mouse.y > 64 && mouse.y < 150) { brief.sel = i; if (mouse.clicked) beginExpedition(); } }
+    for (let i = 0; i < avail; i++) { const C = briefCard(i, avail); if (mouse.x > C.cx - C.cw / 2 && mouse.x < C.cx + C.cw / 2 && mouse.y > C.y0 && mouse.y < C.y0 + C.h) { if (brief.sel !== i) A.play('select'); brief.sel = i; if (mouse.clicked) beginExpedition(); } }
     if (keyPressed('Enter') || keyPressed('Space')) beginExpedition();
   }
   function beginExpedition() { A.play('confirm'); startFade(() => startExpedition(REGIONS[brief.sel])); }
@@ -263,7 +365,9 @@
     EXP.cam = LH - H; EXP.branches = []; EXP.vines = []; EXP.animals = []; EXP.darts = []; EXP.hook = null;
     EXP.cargo = []; EXP.score = 0; EXP.time = 0; EXP.extracting = false; EXP.extractT = 0; EXP.done = false;
     EXP.msg = ''; EXP.msgT = 0; EXP.highest = LH - 26;
-    EXP.netFx = [];
+    EXP.netFx = []; EXP.pickups = []; EXP.treasures = 0; EXP.treasuresTotal = 0;
+    EXP.waterY = region.water ? LH - 6 : LH + 40;   // river surface line at the forest floor
+    EXP.foreFerns = []; for (let i = 0; i < 10; i++) EXP.foreFerns.push({ x: rnd(0, W), s: rnd(0.7, 1.4), h: rnd(10, 22) });
     genLevel(region);
     phase = 'expedition';
     setMsg('CLIMB! TRANQ WILDLIFE, RETURN TO TRUCK');
@@ -272,31 +376,68 @@
 
   function genLevel(region) {
     const LH = EXP.LH;
-    // ground platform + truck
+    // ground platform + truck (parked to one side so the river reads across the floor)
     EXP.branches.push({ x: 0, y: LH - 14, w: W, tip: -1, ground: true });
-    EXP.truck = { x: W / 2, y: LH - 14 };
+    EXP.truck = { x: region.water ? 48 : W / 2, y: LH - 14 };
+    // river-edge fauna live down at the water line in watery biomes
+    if (region.water) {
+      spawnAt(region, 'caiman', clamp(W - irnd(40, 90), 30, W - 20), LH - 18);
+      if (Math.random() < 0.8) spawnAt(region, 'heron', clamp(irnd(120, W - 30), 20, W - 20), LH - 30);
+      if (Math.random() < 0.7) spawnAt(region, 'capybara', clamp(irnd(90, W - 40), 20, W - 20), LH - 18);
+    }
     // procedural branches climbing up
     let y = LH - 46;
     let side = Math.random() < 0.5 ? -1 : 1;
     let idx = 0;
-    while (y > 40) {
-      const bw = irnd(50, 96);
-      const bx = side < 0 ? irnd(2, 40) : irnd(W - bw - 40, W - bw - 2);
+    while (y > 34) {
+      // every few levels open a wide "clearing" platform for a breather / vista
+      const clearing = idx > 1 && Math.random() < 0.14;
+      const bw = clearing ? irnd(120, 168) : irnd(48, 96);
+      let bx;
+      if (clearing) bx = clamp(irnd(20, W - bw - 20), 2, W - bw - 2);
+      else bx = side < 0 ? irnd(2, 42) : irnd(Math.max(2, W - bw - 42), W - bw - 2);
       const heightFrac = 1 - (y / LH); // 0 bottom .. 1 top
-      const b = { x: bx, y: y, w: bw, tip: side < 0 ? bx + bw : bx, heightFrac };
+      const b = { x: bx, y: y, w: bw, tip: side < 0 ? bx + bw : bx, heightFrac, grass: region.grass && Math.random() < 0.7 };
       EXP.branches.push(b);
-      // vine sometimes hangs from a branch (grabbable anchor)
-      if (Math.random() < 0.45) {
-        const vx = bx + irnd(10, bw - 10);
-        EXP.vines.push({ ax: vx, ay: y, len: irnd(34, 70), sway: rnd(0, 6.28) });
+      // a second small ledge on the opposite side sometimes — encourages branching routes
+      if (!clearing && Math.random() < 0.32) {
+        const bw2 = irnd(34, 58), bx2 = side < 0 ? irnd(W - bw2 - 30, W - bw2 - 4) : irnd(4, 30);
+        const b2 = { x: bx2, y: y - irnd(4, 14), w: bw2, tip: bx2, heightFrac, grass: region.grass && Math.random() < 0.6 };
+        EXP.branches.push(b2);
+        if (Math.random() < 0.5) spawnPickupOn(region, b2, heightFrac);
       }
+      // vine sometimes hangs from a branch (grabbable anchor)
+      if (Math.random() < (clearing ? 0.7 : 0.45)) {
+        const vx = bx + irnd(10, Math.max(11, bw - 10));
+        EXP.vines.push({ ax: vx, ay: y, len: irnd(34, 74), sway: rnd(0, 6.28) });
+      }
+      // forageable treasure rewards straying from the direct line up
+      if (idx > 0 && Math.random() < 0.4) spawnPickupOn(region, b, heightFrac);
       // spawn an animal on/near this branch based on region + height
-      if (idx > 0 && Math.random() < 0.82) spawnAnimalFor(region, b, heightFrac);
-      y -= irnd(38, 62);
+      if (idx > 0 && Math.random() < (clearing ? 0.9 : 0.8)) spawnAnimalFor(region, b, heightFrac);
+      y -= clearing ? irnd(48, 66) : irnd(36, 58);
       side = -side + (Math.random() < 0.25 ? side : 0); // mostly alternate
       if (Math.random() < 0.3) side = Math.random() < 0.5 ? -1 : 1;
       idx++;
     }
+  }
+
+  function spawnPickupOn(region, b, hf) {
+    const key = pickWeighted([{ v: 'fruit', w: 6 }, { v: 'egg', w: 2.4 }, { v: 'orchid', w: 0.7 + hf }]);
+    const def = PICKUPS[key];
+    const x = clamp(b.x + irnd(6, Math.max(7, b.w - 6)), 6, W - 6);
+    EXP.pickups.push({ key, def, x, y: b.y - def.r - 2, bob: rnd(0, 6.28), got: false });
+    EXP.treasuresTotal++;
+  }
+
+  function spawnAt(region, key, x, y) {
+    const def = ANIMALS[key]; if (!def) return;
+    EXP.animals.push({
+      key, def, x, y, homeX: x, baseY: y, branch: { x: 0, y: EXP.LH - 14, w: W, ground: true },
+      vx: def.flies ? (Math.random() < 0.5 ? -1 : 1) * def.move / 60 : 0, vy: 0,
+      tranq: 0, state: 'idle', dir: Math.random() < 0.5 ? -1 : 1, aggro: 0, timer: rnd(0.5, 2),
+      asleep: false, collected: false, phase: rnd(0, 6.28), atkCD: 0, netted: 0, onGround: !def.flies, hop: 0,
+    });
   }
 
   function spawnAnimalFor(region, b, hf) {
@@ -305,10 +446,12 @@
     const entries = list.map(k => {
       const a = ANIMALS[k];
       let w = a.rarity === 'common' ? 5 : a.rarity === 'uncommon' ? 3 : a.rarity === 'rare' ? 1.4 : 0.6;
-      // higher animals prefer higher branches
+      // higher animals prefer higher branches, water animals stay near the floor
       if (a.layer === 'high' && hf < 0.55) w *= 0.15;
       if (a.layer === 'air' && hf < 0.2) w *= 0.4;
       if (a.layer === 'low' && hf > 0.7) w *= 0.4;
+      if (a.water) w *= 0.05;                 // caiman handled at the river, not up trees
+      if (a.dives && hf < 0.5) w *= 0.2;      // harpy eagles hunt high
       return { v: k, w };
     });
     const key = pickWeighted(entries);
@@ -459,6 +602,18 @@
     for (const a of EXP.animals) {
       if (a.asleep && !a.collected && dist2(P.x, P.y, a.x, a.y) < 12 * 12) collectAnimal(a);
     }
+    // forage collectibles by touch (instant cash reward for exploring)
+    for (const pk of EXP.pickups) {
+      if (!pk.got && dist2(P.x, P.y, pk.x, pk.y) < 11 * 11) collectPickup(pk);
+    }
+  }
+
+  function collectPickup(pk) {
+    pk.got = true; EXP.treasures++;
+    S.money += pk.def.value; EXP.score += pk.def.value;
+    A.play('pickup'); burst(pk.x, pk.y, 7, pk.def.col, 1.8, 0);
+    floatText(pk.x, pk.y - 6, '+$' + pk.def.value, '#f6d13a');
+    doFlash(0.12, '#fff2b0');
   }
 
   function hurtPlayer(dmg, kx) {
@@ -600,12 +755,40 @@
     const seePlayer = near < 60 * 60 && Math.abs(a.y - P.y) < 40;
 
     if (def.flies) {
-      // patrol horizontally with sine bob, flee upward if shot
-      a.x += a.vx;
-      a.y = a.baseY + Math.sin(a.phase * 2) * 5;
-      if (a.x < 10 || a.x > W - 10) a.vx *= -1;
-      if (a.state === 'flee') { a.baseY -= 22 * dt; a.vx *= 1.005; a.timer -= dt; }
-      // flap particles occasionally
+      if (def.drifts) {
+        // morpho butterfly: slow lazy wander, easy to net
+        a.x += a.vx * 0.6 + Math.sin(a.phase * 1.3) * 0.16;
+        a.baseY += Math.sin(a.phase * 0.7) * 0.35;
+        a.y = a.baseY + Math.sin(a.phase * 3) * 3;
+        if (a.x < 10 || a.x > W - 10) a.vx *= -1;
+      } else if (def.darts) {
+        // hummingbird: fast, erratic direction flicks
+        if (a.timer <= 0) { a.vx = (Math.random() < 0.5 ? -1 : 1) * def.move / 60 * rnd(0.7, 1.3); a.timer = rnd(0.3, 0.8); }
+        a.x += a.vx;
+        a.y = a.baseY + Math.sin(a.phase * 9) * 4 + Math.sin(a.phase * 2.3) * 3;
+        if (a.x < 10 || a.x > W - 10) a.vx *= -1;
+      } else if (def.dives) {
+        // harpy eagle: patrol high, then swoop at prey below
+        if (a.state === 'dive') {
+          const dx = a.tx - a.x, dy = a.ty - a.y, dl = Math.sqrt(dx * dx + dy * dy) || 1;
+          a.x += dx / dl * 150 * dt; a.y += dy / dl * 150 * dt; a.dir = dx < 0 ? -1 : 1;
+          if (dl < 7 || dy < -2) a.state = 'return';
+        } else if (a.state === 'return') {
+          a.y -= 70 * dt; a.x += a.vx * 0.5; if (a.y <= a.baseY) { a.y = a.baseY; a.state = 'idle'; }
+        } else {
+          a.x += a.vx; a.y = a.baseY + Math.sin(a.phase * 2) * 4;
+          if (a.x < 10 || a.x > W - 10) a.vx *= -1;
+          if (a.atkCD <= 0 && near < 96 * 96 && P.y > a.y + 6) { a.state = 'dive'; a.tx = P.x; a.ty = P.y; a.atkCD = 3.0; A.play('hawkScreech'); }
+        }
+      } else {
+        // default birds (macaw, toucan, heron): horizontal patrol with sine bob
+        a.x += a.vx;
+        a.y = a.baseY + Math.sin(a.phase * 2) * 5;
+        if (a.x < 10 || a.x > W - 10) a.vx *= -1;
+      }
+      if (a.state === 'flee') { a.baseY -= 22 * dt; a.vx *= 1.005; }
+      a.x = clamp(a.x, 6, W - 6);
+      if (def.danger > 0 && P.invuln <= 0 && near < (def.r + 7) * (def.r + 7)) hurtPlayer(0.5 + def.danger * 0.16, P.x < a.x ? -1.6 : 1.6);
       return;
     }
 
@@ -624,6 +807,8 @@
       a.state = 'pounce'; a.vy = -3; a.vx = (P.x < a.x ? -1 : 1) * 2.2; a.atkCD = 2.6; A.play('growl');
     } else if (def.strikes && near < 34 * 34 && a.atkCD <= 0) {
       a.state = 'strike'; a.timer = 0.5; a.atkCD = 1.6; A.play('snakeStrike');
+    } else if (def.lunges && near < 46 * 46 && a.atkCD <= 0 && Math.abs(a.y - P.y) < 20) {
+      a.state = 'charge'; a.dir = P.x < a.x ? -1 : 1; a.timer = 0.7; a.atkCD = 2.0; A.play('chomp');
     } else if (def.jumps && a.timer <= 0) {
       // monkey/frog hops along/among branches
       a.vy = -2.4; a.dir = Math.random() < 0.5 ? -1 : 1; a.timer = rnd(1.2, 2.6); if (a.key === 'monkey') A.play('monkey');
@@ -891,6 +1076,7 @@
     requestAnimationFrame(frame);
   }
   function update(dt) {
+    applyTouch();
     // fade transitions
     if (fadeTarget === 1) { fade += dt * 3.2; if (fade >= 1) { fade = 1; fadeTarget = 0; if (fadeCb) { const cb = fadeCb; fadeCb = null; cb(); } } }
     else if (fade > 0) { fade -= dt * 3.2; if (fade < 0) fade = 0; }
@@ -964,92 +1150,146 @@
   }
 
   // =====================================================================
-  //  RENDER: shared backgrounds
-  // =====================================================================
-  function jungleSky(topCol, botCol) { ditherV(0, 0, W, H, topCol, botCol); }
-
-  // =====================================================================
   //  RENDER: MENU
   // =====================================================================
-  let leaves = [];
-  function ensureLeaves() { if (leaves.length) return; for (let i = 0; i < 26; i++) leaves.push({ x: rnd(0, W), y: rnd(0, H), s: rnd(6, 20), r: rnd(0, 6.28), sp: rnd(4, 12) }); }
+  let leaves = [], motes = [];
+  function ensureLeaves() {
+    if (leaves.length) return;
+    for (let i = 0; i < 22; i++) leaves.push({ x: rnd(0, W), y: rnd(0, H), s: irnd(2, 4), r: rnd(0, 6.28), sp: rnd(5, 13), c: pick(['#3d7f2a', '#4f9a34', '#2f6a24', '#e8a13a', '#d4b23a']) });
+    for (let i = 0; i < 24; i++) motes.push({ x: rnd(0, W), y: rnd(0, H), sp: rnd(2, 6), ph: rnd(0, 6.28) });
+  }
+  function drawMenuMacaw(x, y) {
+    const flap = Math.sin(t * 6) * 2;
+    ellipse(x, y - 2, 3, 4, '#e83a2e');                                   // body
+    ctx.fillStyle = '#f2d13a'; ctx.fillRect(x - 3, y - 4 - Math.abs(flap), 3, 2 + Math.abs(flap)); // wing
+    circ(x + 1, y - 5, 2, '#e83a2e'); px(x + 2, y - 6, '#111');
+    rectf(x + 2, y - 5, 2, 1, '#1a1a22');                                 // beak
+    rectf(x - 5, y, 5, 1, '#2a6ad0');                                     // tail
+  }
   function renderMenu() {
     ensureLeaves();
-    jungleSky('#123a2a', '#2a6a44');
-    // distant canopy silhouettes
-    for (let layer = 0; layer < 3; layer++) {
-      const yy = 40 + layer * 34; const col = ['#0d2a1e', '#123725', '#17442d'][layer];
-      ctx.fillStyle = col;
-      for (let x = -10; x < W + 10; x += 26) { const h = 20 + ((x * 7 + layer * 13) % 18); ellipse(x + ((t * (layer + 1) * 2) % 26), yy, 20, h, col); }
+    // deep sky with a slow dawn drift
+    const dawn = (Math.sin(t * 0.08) * 0.5 + 0.5);
+    ditherV(0, 0, W, H, mix('#123a2a', '#1a4658', dawn * 0.5), mix('#2a6a44', '#357a58', dawn * 0.4));
+    // sun glow behind the canopy
+    ctx.globalAlpha = 0.45; circ(W * 0.66, 44, 20, mix('#f2e6a0', '#f0c070', dawn)); ctx.globalAlpha = 0.18; circ(W * 0.66, 44, 34, '#f2e6a0'); ctx.globalAlpha = 1;
+    // distant hills
+    for (let p = 0; p < 2; p++) { const hc = mix('#0d2a1e', '#274a54', 0.25 + p * 0.2); for (let x = -10; x < W + 30; x += 40) { const h = 18 + ((x * 7 + p * 20) % 16); ellipse(x, 58 + p * 8, 26, h, hc); } }
+    // a flock crossing the sky
+    for (let i = 0; i < 6; i++) { const bx = ((t * 14 + i * 26) % (W + 60)) - 30; const by = 20 + Math.sin(t * 0.6 + i) * 3 + (i % 3) * 4; const wf = Math.sin(t * 8 + i) * 1.4; ctx.fillStyle = '#0d1f16'; ctx.fillRect((bx - 2) | 0, (by - wf) | 0, 2, 1); ctx.fillRect((bx + 1) | 0, (by - wf) | 0, 2, 1); px(bx | 0, by | 0, '#0d1f16'); }
+    // parallax canopy silhouettes
+    for (let layer = 0; layer < 4; layer++) {
+      const yy = 32 + layer * 28; const col = ['#0d2a1e', '#123725', '#17442d', '#1c5030'][layer];
+      const drift = Math.sin(t * (0.2 + layer * 0.05)) * (layer + 1);
+      for (let x = -10; x < W + 24; x += 24) { const h = 16 + ((x * 7 + layer * 13) % 16); ellipse(x + drift, yy, 20, h, col); }
     }
     // god rays
-    ctx.globalAlpha = 0.10; ctx.fillStyle = '#f0e8a0';
-    for (let i = 0; i < 4; i++) { const x = 30 + i * 80 + Math.sin(t * 0.3 + i) * 6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 30, 0); ctx.lineTo(x + 60, H); ctx.lineTo(x + 20, H); ctx.closePath(); ctx.fill(); }
+    ctx.globalAlpha = 0.10; ctx.fillStyle = '#f4ecb0';
+    for (let i = 0; i < 4; i++) { const x = 20 + i * 78 + Math.sin(t * 0.3 + i) * 6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 24, 0); ctx.lineTo(x + 54, H); ctx.lineTo(x + 16, H); ctx.closePath(); ctx.fill(); }
     ctx.globalAlpha = 1;
+    // floating dust motes
+    for (const m of motes) { m.y -= m.sp * 0.01; m.x += Math.sin(t * 0.5 + m.ph) * 0.08; if (m.y < 0) { m.y = H; m.x = rnd(0, W); } ctx.globalAlpha = 0.25 + Math.sin(t * 2 + m.ph) * 0.2; px(m.x | 0, m.y | 0, '#e8f0c0'); } ctx.globalAlpha = 1;
+    // swinging monkey on a vine
+    const sw = Math.sin(t * 1.6); const mvx = 34 + sw * 10;
+    ctx.strokeStyle = '#2e6a24'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(38, 18); ctx.lineTo(mvx, 58); ctx.stroke();
+    ellipse(mvx, 60, 3, 4, '#4a3320'); circ(mvx, 56, 2, '#4a3320'); px(mvx - 1, 55, '#f0d6a8'); px(mvx + 1, 55, '#f0d6a8');
+    // river along the bottom
+    const ry = H - 18; ditherV(0, ry, W, 18, '#2f6a8a', '#12324a'); rectf(0, ry, W, 1, '#8fd0e8');
+    ctx.globalAlpha = 0.4; ctx.fillStyle = '#bfe4f0'; for (let i = 0; i < 12; i++) { const rx = ((i * 30 + t * 18) % (W + 20)) - 10; ctx.fillRect(rx | 0, ry + 4 + (i % 3) * 4, 4, 1); } ctx.globalAlpha = 1;
     // drifting leaves
-    for (const lf of leaves) { lf.y += lf.sp * 0.016; lf.x += Math.sin(t + lf.r) * 0.3; lf.r += 0.02; if (lf.y > H + 8) { lf.y = -6; lf.x = rnd(0, W); } ctx.globalAlpha = 0.5; ctx.fillStyle = '#3d7f2a'; ctx.fillRect(lf.x | 0, lf.y | 0, 2, 3); ctx.globalAlpha = 1; }
+    for (const lf of leaves) { lf.y += lf.sp * 0.016; lf.x += Math.sin(t + lf.r) * 0.3; lf.r += 0.02; if (lf.y > H + 8) { lf.y = -6; lf.x = rnd(0, W); } ctx.globalAlpha = 0.7; ctx.fillStyle = lf.c; ctx.fillRect(lf.x | 0, lf.y | 0, lf.s, lf.s - 1); ctx.globalAlpha = 1; }
+    // fireflies
+    for (let i = 0; i < 10; i++) { const fx = (i * 37 + Math.sin(t * 0.6 + i) * 20 + 20) % W; const fy = 74 + Math.sin(t * 0.9 + i * 2) * 26; const gl = Math.sin(t * 3 + i) * 0.5 + 0.5; ctx.globalAlpha = gl * 0.8; px(fx | 0, fy | 0, '#eaff8a'); if (gl > 0.75) { ctx.globalAlpha = 0.3; circ(fx | 0, fy | 0, 2, '#eaff8a'); } } ctx.globalAlpha = 1;
+    // foreground framing fronds
+    for (let i = 0; i < 5; i++) { const bx = i * (W / 4) - 10; for (let k = 0; k < 5; k++) ellipse(bx + Math.sin(t * 0.5 + i) * 2, H + 4 - k * 5, (6 - k) * 1.6, 2.2, '#08160e'); }
+    ellipse(4, 4, 18, 10, '#08160e'); ellipse(W - 4, 4, 18, 10, '#08160e');
 
-    // title panel
-    drawTextOutline(ctx, 'CANOPY', W / 2, 26, '#f2d98a', 3, 'center', '#1a3a1a');
-    drawTextOutline(ctx, 'RANGERS', W / 2, 50, '#8ad06a', 3, 'center', '#1a3a1a');
-    drawTextShadow(ctx, 'AMAZON WILDLIFE HUNTER', W / 2, 74, '#cfe8b0', 1, 'center');
+    // title with soft glow + perched macaw
+    const bob = Math.sin(t * 1.3) * 1;
+    ctx.globalAlpha = 0.25; drawTextOutline(ctx, 'CANOPY', W / 2, 24 + bob, '#f6e24a', 3, 'center', '#f6e24a'); ctx.globalAlpha = 1;
+    drawTextOutline(ctx, 'CANOPY', W / 2, 24 + bob, '#f2d98a', 3, 'center', '#12300f');
+    drawTextOutline(ctx, 'RANGERS', W / 2, 48 + bob, '#8ad06a', 3, 'center', '#12300f');
+    drawMenuMacaw(W / 2 + 44, 48 + bob);
+    drawTextShadow(ctx, 'AMAZON WILDLIFE HUNTER', W / 2, 72, '#cfe8b0', 1, 'center');
 
     if (howto) { renderHowto(); return; }
 
     for (let i = 0; i < menu.items.length; i++) {
       const y = 96 + i * 20; const on = i === menu.sel;
-      if (on) { rectf(W / 2 - 66, y - 4, 132, 14, 'rgba(20,50,30,0.7)'); drawText(ctx, '>', W / 2 - 60, y, '#f6d13a', 1, 'left'); }
+      if (on) { rectf(W / 2 - 68, y - 4, 136, 14, 'rgba(12,34,20,0.82)'); ctx.strokeStyle = 'rgba(246,209,58,0.6)'; ctx.strokeRect(W / 2 - 68.5, y - 4.5, 136, 14); drawText(ctx, '>', W / 2 - 62 + Math.sin(t * 6), y, '#f6d13a', 1, 'left'); }
       drawTextShadow(ctx, menu.items[i], W / 2, y, on ? '#fff2b0' : '#a8c898', on ? 2 : 1, 'center');
     }
-    drawTextShadow(ctx, 'BEST CATCH: ' + (S.best || 0) + '   DAY ' + (hasSave ? (loadSaveDay()) : 1), W / 2, H - 12, '#7a9a78', 1, 'center');
+    drawTextShadow(ctx, 'BEST CATCH: ' + (S.best || 0) + '   DAY ' + (hasSave ? (loadSaveDay()) : 1), W / 2, H - 8, '#7a9a78', 1, 'center');
+    if (TOUCH) drawTextShadow(ctx, 'TAP AN OPTION', W / 2, H - 15, '#6a8a68', 1, 'center');
   }
   function loadSaveDay() { const s = loadSave(); return s ? s.day : 1; }
   function renderHowto() {
-    rectf(20, 84, W - 40, H - 96, 'rgba(8,20,14,0.92)');
-    ctx.strokeStyle = '#3d7f2a'; ctx.strokeRect(20.5, 84.5, W - 41, H - 97);
-    const lines = [
+    rectf(18, 82, W - 36, H - 92, 'rgba(8,20,14,0.94)');
+    ctx.strokeStyle = '#3d7f2a'; ctx.strokeRect(18.5, 82.5, W - 37, H - 93);
+    const lines = TOUCH ? [
+      'DAY - CLIMB THE RAINFOREST:',
+      'LEFT STICK: MOVE / CLIMB / REEL',
+      'TAP RIGHT SIDE: AIM + FIRE DART',
+      'HOOK BUTTON: GRAPPLE + SWING',
+      'JUMP BUTTON: JUMP / LET GO OF ROPE',
+      'AMMO BUTTON: DART / HEAVY / NET',
+      'FORAGE FRUIT, SEDATE & STOW ANIMALS,',
+      'RETURN TO THE TRUCK TO EXTRACT.',
+      '',
+      'NIGHT - TAP A PEN TO FEED / PLAY.',
+      'HAPPY ANIMALS = MORE VISITOR $.',
+      '',
+      'TAP TO CLOSE',
+    ] : [
       'DAY - CLIMB THE RAINFOREST:',
       'MOVE A/D   JUMP SPACE   AIM MOUSE',
       'CLICK: FIRE TRANQ DART',
-      'RIGHT-CLICK / F: GRAPPLE HOOK + SWING',
+      'RIGHT-CLICK / F: GRAPPLE + SWING',
       'W/S WHILE SWINGING: REEL IN/OUT',
       '1/2/3: DART / HEAVY / NET',
-      'SEDATE ANIMALS, TOUCH TO STOW,',
+      'FORAGE FRUIT, SEDATE & STOW ANIMALS,',
       'RETURN TO THE TRUCK TO EXTRACT.',
       '',
-      'NIGHT - RUN YOUR SANCTUARY:',
-      'CLICK A PEN TO FEED OR PLAY.',
+      'NIGHT - CLICK A PEN TO FEED / PLAY.',
       'HAPPY ANIMALS = MORE VISITOR $.',
       '',
       'CLICK OR SPACE TO CLOSE',
     ];
-    for (let i = 0; i < lines.length; i++) drawText(ctx, lines[i], 26, 90 + i * 7, i === 0 || i === 9 ? '#f6d13a' : '#cfe8b0', 1, 'left');
+    for (let i = 0; i < lines.length; i++) drawText(ctx, lines[i], 24, 88 + i * 7, (i === 0 || i === 9) ? '#f6d13a' : '#cfe8b0', 1, 'left');
   }
 
   // =====================================================================
   //  RENDER: BRIEF
   // =====================================================================
   function renderBrief() {
-    jungleSky('#16323f', '#2a5a5a');
-    drawTextOutline(ctx, 'CHOOSE REGION', W / 2, 20, '#f2d98a', 2, 'center', '#12303a');
-    drawTextShadow(ctx, 'DAY ' + S.day + '   $' + S.money, W / 2, 40, '#cfe8b0', 1, 'center');
-    const avail = Math.min(REGIONS.length, Math.max(1, Math.min(3, S.day)));
+    ditherV(0, 0, W, H, '#16323f', '#2a5a5a');
+    // faint canopy backdrop
+    for (let layer = 0; layer < 3; layer++) { const yy = 30 + layer * 26, col = ['#12303a', '#173a44', '#1c4650'][layer]; for (let x = -10; x < W + 20; x += 26) ellipse(x + Math.sin(t * 0.2 + layer) * 2, yy, 20, 14, col); }
+    drawTextOutline(ctx, 'CHOOSE REGION', W / 2, 16, '#f2d98a', 2, 'center', '#12303a');
+    drawTextShadow(ctx, 'DAY ' + S.day + '   $' + S.money, W / 2, 38, '#cfe8b0', 1, 'center');
+    const avail = regionsAvail();
     for (let i = 0; i < avail; i++) {
-      const r = REGIONS[i]; const cx = W / 2 + (i - (avail - 1) / 2) * 92; const on = i === brief.sel;
-      const y0 = 60, h = 90;
-      rectf(cx - 42, y0, 84, h, on ? mix(r.tint, '#ffffff', 0.15) : mix(r.tint, '#000000', 0.35));
-      ctx.strokeStyle = on ? '#f6d13a' : '#0d2a1e'; ctx.strokeRect((cx - 42) + 0.5, y0 + 0.5, 83, h - 1);
-      // mini scene
-      ctx.fillStyle = mix(r.tint, '#0a1a12', 0.4); ctx.fillRect(cx - 40, y0 + 14, 80, h - 30);
-      for (let b = 0; b < 4; b++) { ellipse(cx - 20 + b * 14 + (b % 2) * 4, y0 + 24 + b * 10, 10, 6, mix(r.tint, '#0d2a1e', 0.2)); }
-      drawTextShadow(ctx, r.name, cx, y0 + 4, on ? '#fff2b0' : '#dfeecf', 1, 'center');
+      const r = REGIONS[i]; const C = briefCard(i, avail); const cx = C.cx, cw = C.cw, hw = cw / 2; const on = i === brief.sel;
+      const y0 = C.y0, h = C.h;
+      const lift = on ? -3 : 0;
+      rectf(cx - hw, y0 + lift, cw, h, on ? mix(r.tint, '#ffffff', 0.15) : mix(r.tint, '#000000', 0.35));
+      ctx.strokeStyle = on ? '#f6d13a' : '#0d2a1e'; ctx.strokeRect((cx - hw) + 0.5, y0 + lift + 0.5, cw - 1, h - 1);
+      // mini biome scene: sky + water + canopy
+      const sy = y0 + lift + 12;
+      ditherV(cx - hw + 2, sy, cw - 4, 24, r.sky[0], r.sky[1]);
+      if (r.water) { rectf(cx - hw + 2, sy + 24, cw - 4, 6, mix('#3f7fae', '#173a56', 0.3)); rectf(cx - hw + 2, sy + 24, cw - 4, 1, '#8fd0e8'); }
+      else { rectf(cx - hw + 2, sy + 24, cw - 4, 6, mix(r.ground, '#000', 0.2)); }
+      if (r.mountains) { ctx.fillStyle = mix(r.sky[1], '#2a3a4a', 0.4); for (let mx = cx - hw + 6; mx < cx + hw - 4; mx += 10) { ctx.beginPath(); ctx.moveTo(mx - 6, sy + 20); ctx.lineTo(mx, sy + 8); ctx.lineTo(mx + 6, sy + 20); ctx.closePath(); ctx.fill(); } }
+      for (let b = 0; b < 4; b++) ellipse(cx - hw + 8 + b * (cw / 5), sy + 6 + (b % 2) * 4, 8, 5, mix(r.tint, '#0d2a1e', 0.15));
+      drawTextShadow(ctx, r.name, cx, y0 + lift + 2, on ? '#fff2b0' : '#dfeecf', 1, 'center');
       // danger pips
-      for (let d = 0; d < 3; d++) { ctx.fillStyle = d < r.danger ? '#e8623a' : '#33443a'; ctx.fillRect(cx - 12 + d * 9, y0 + h - 10, 6, 4); }
-      drawText(ctx, 'DANGER', cx, y0 + h - 18, '#cfe8b0', 1, 'center');
-      // species icons
-      for (let s = 0; s < Math.min(4, r.spawn.length); s++) { const a = ANIMALS[r.spawn[s]]; circ(cx - 24 + s * 16, y0 + 40, 4, a.col[0]); }
+      for (let d = 0; d < 4; d++) { ctx.fillStyle = d < r.danger ? '#e8623a' : '#33443a'; ctx.fillRect(cx - 11 + d * 7, y0 + lift + h - 9, 5, 4); }
+      drawText(ctx, 'DANGER', cx, y0 + lift + h - 17, '#cfe8b0', 1, 'center');
+      // species icon dots
+      const ns = Math.min(5, r.spawn.length);
+      for (let s = 0; s < ns; s++) { const a = ANIMALS[r.spawn[s]]; circ(cx - (ns - 1) * 6 + s * 12, sy + 34, 3, a.col[0]); if (a.rarity === 'rare' || a.rarity === 'epic') px(cx - (ns - 1) * 6 + s * 12, sy + 30, RARITY[a.rarity].c); }
     }
-    drawTextShadow(ctx, 'ARROWS TO CHOOSE - SPACE TO DEPLOY', W / 2, H - 12, '#a8c898', 1, 'center');
+    drawTextShadow(ctx, TOUCH ? 'TAP A REGION TO DEPLOY' : 'ARROWS TO CHOOSE - SPACE TO DEPLOY', W / 2, H - 10, '#a8c898', 1, 'center');
     drawParts(0); drawFloats(0);
   }
 
@@ -1058,11 +1298,20 @@
   // =====================================================================
   function renderExpedition() {
     const cam = EXP.cam, P = EXP.P, region = EXP.region;
-    // sky gradient by height (higher = brighter/bluer)
+    // sky gradient — biome palette brightened toward the canopy tops
     const hf = clamp(1 - (P.y / EXP.LH), 0, 1);
-    const topC = mix('#1a3320', '#5aa0d0', hf);
-    const botC = mix('#0c1a10', '#2a6a44', 0.5);
+    const topC = mix(region.sky[0], '#eaf4ff', hf * 0.5);
+    const botC = region.sky[1];
     ditherV(0, 0, W, H, topC, botC);
+
+    // distant mountain silhouettes (highlands) — deepest parallax
+    if (region.mountains) {
+      const my = 70 - (cam * 0.12) % 40;
+      for (let pass = 0; pass < 2; pass++) {
+        const mc = mix(region.sky[1], '#2a3a4a', 0.4 + pass * 0.25);
+        for (let x = -20; x < W + 40; x += 44) { const peak = 26 + ((x * 7 + pass * 30) % 20); ctx.fillStyle = mc; ctx.beginPath(); ctx.moveTo(x - 24, my + 40 + pass * 8); ctx.lineTo(x, my - peak + pass * 8); ctx.lineTo(x + 24, my + 40 + pass * 8); ctx.closePath(); ctx.fill(); }
+      }
+    }
 
     // parallax canopy layers (scroll with camera*factor)
     for (let layer = 0; layer < 3; layer++) {
@@ -1078,6 +1327,17 @@
         }
       }
     }
+    // drifting mist bands (fog) — soft horizontal fog that scrolls slowly
+    if (region.fog > 0) {
+      ctx.globalAlpha = region.fog * 0.5;
+      for (let i = 0; i < 4; i++) {
+        const my = ((i * 52 - cam * 0.4) % (H + 60) + H + 60) % (H + 60) - 30;
+        const mx = Math.sin(t * 0.25 + i) * 12;
+        ctx.fillStyle = '#dfeef0';
+        ellipse(W / 2 + mx, my, W * 0.7, 7, '#dfeef0');
+      }
+      ctx.globalAlpha = 1;
+    }
     // god rays
     ctx.globalAlpha = 0.08 + hf * 0.06; ctx.fillStyle = '#f4ecb0';
     for (let i = 0; i < 3; i++) { const x = 40 + i * 110 + Math.sin(t * 0.2 + i) * 8; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 26, 0); ctx.lineTo(x + 70, H); ctx.lineTo(x + 30, H); ctx.closePath(); ctx.fill(); }
@@ -1088,6 +1348,8 @@
 
     // branches
     for (const b of EXP.branches) drawBranch(b, cam, region);
+    // forageable pickups
+    for (const pk of EXP.pickups) drawPickup(pk, cam);
     // vines
     for (const v of EXP.vines) drawVine(v, cam);
     // truck
@@ -1107,10 +1369,66 @@
     // particles (world space)
     drawParts(cam); drawFloats(cam);
 
+    // foreground framing ferns + vignette for depth
+    drawForeground(cam);
+
     // extraction wipe
     if (EXP.extracting) { const e = clamp(EXP.extractT / 1.1, 0, 1); ctx.globalAlpha = e; rectf(0, 0, W, H, '#ffe6a0'); ctx.globalAlpha = 1; }
 
     renderExpHUD();
+    if (TOUCH) drawTouchControls();
+  }
+
+  function drawForeground(cam) {
+    const region = EXP.region;
+    // out-of-focus dark fronds hugging the bottom corners
+    ctx.fillStyle = mix(region.tint, '#050a06', 0.72);
+    for (const fn of EXP.foreFerns) {
+      const sway = Math.sin(t * 0.8 + fn.x) * 2;
+      const bx = fn.x + sway, by = H + 2;
+      for (let i = 0; i < 6; i++) { const fy = by - i * (fn.h / 6); const fw = (6 - i) * fn.s; ellipse(bx, fy, fw, 2.2 * fn.s, mix(region.tint, '#050a06', 0.72)); }
+    }
+    // soft vignette
+    ctx.globalAlpha = 0.22; rectf(0, 0, W, 10, '#050a06'); rectf(0, H - 12, W, 12, '#050a06');
+    ctx.fillStyle = '#050a06'; rectf(0, 0, 6, H, '#050a06'); rectf(W - 6, 0, 6, H, '#050a06'); ctx.globalAlpha = 1;
+  }
+
+  function drawPickup(pk, cam) {
+    if (pk.got) return;
+    const y = pk.y - cam + Math.sin(t * 3 + pk.bob) * 1.2; if (y < -10 || y > H + 10) return;
+    const d = pk.def; const gl = (Math.sin(t * 4 + pk.bob) * 0.5 + 0.5);
+    ctx.globalAlpha = 0.25 + gl * 0.25; circ(pk.x, y, d.r + 2, d.col); ctx.globalAlpha = 1;
+    if (pk.key === 'fruit') { circ(pk.x, y, d.r, d.col); px(pk.x, y - d.r, '#3a7a2a'); px(pk.x - 1, y - 1, mix(d.col, '#fff', 0.5)); }
+    else if (pk.key === 'egg') { ellipse(pk.x, y, d.r - 1, d.r, d.col); px(pk.x - 1, y - 1, '#fff'); px(pk.x + 1, y, mix(d.col, '#000', 0.15)); }
+    else { // orchid
+      ctx.fillStyle = d.col; for (let a2 = 0; a2 < 5; a2++) { const ang = a2 / 5 * 6.28 + t * 0.5; px(pk.x + Math.cos(ang) * 3, y + Math.sin(ang) * 3, d.col); }
+      circ(pk.x, y, 1, '#f6e24a');
+    }
+    // sparkle glints
+    if (Math.floor(t * 6 + pk.bob) % 5 === 0) px(pk.x + irnd(-d.r, d.r), y - irnd(0, d.r), '#fff');
+  }
+
+  // on-screen virtual gamepad (mobile)
+  function drawTouchControls() {
+    const P = EXP.P; if (!P || EXP.done || P.dead) return;
+    // movement stick
+    if (stick.active) {
+      ctx.globalAlpha = 0.28; circ(stick.ax, stick.ay, 18, '#dfeecf'); ctx.globalAlpha = 1;
+      const dx = clamp(stick.x - stick.ax, -16, 16), dy = clamp(stick.y - stick.ay, -16, 16);
+      ctx.globalAlpha = 0.6; circ(stick.ax + dx, stick.ay + dy, 7, '#f2f0d0'); ctx.globalAlpha = 1;
+    } else {
+      // faint idle hint ring so first-time players know where to plant a thumb
+      ctx.globalAlpha = 0.13; circ(30, H - 40, 15, '#dfeecf');
+      ctx.globalAlpha = 0.4; ctx.strokeStyle = '#cfe8b0'; ctx.beginPath(); ctx.arc(30, H - 40, 15, 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    // buttons
+    for (const b of padButtons()) {
+      const held = !!tbtn[b.id];
+      ctx.globalAlpha = held ? 0.55 : 0.32; circ(b.x, b.y, b.r, held ? '#f6d13a' : '#12241a'); ctx.globalAlpha = 0.8;
+      ctx.strokeStyle = '#cfe8b0'; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.283); ctx.stroke();
+      let lbl = b.label; if (b.id === 'ammo') lbl = P.ammoType === 'net' ? 'NET' : P.ammoType === 'heavy' ? 'HVY' : 'DART';
+      drawText(ctx, lbl, b.x, b.y - 2, '#fff2b0', 1, 'center'); ctx.globalAlpha = 1;
+    }
   }
 
   function drawTrunk(cam, region) {
@@ -1133,11 +1451,28 @@
     const y = b.y - cam;
     if (y < -20 || y > H + 20) return;
     if (b.ground) {
-      // forest floor
-      ditherV(0, y, W, H - y + 4, mix(region.tint, '#3a2a16', 0.5), '#1c140c');
-      ctx.fillStyle = '#2a1c10'; ctx.fillRect(0, y, W, 2);
-      // ferns
-      ctx.fillStyle = '#1f5a2a'; for (let x = 4; x < W; x += 16) { ctx.fillRect(x, y - 4, 1, 4); ctx.fillRect(x - 2, y - 2, 5, 1); }
+      const gcol = region.ground;
+      if (region.water) {
+        // earthy bank, then a flowing river down to the bottom of the screen
+        const bankH = 5;
+        ditherV(0, y, W, bankH, mix(gcol, '#6a5a2a', 0.4), mix(gcol, '#2a1c10', 0.3));
+        const wy = y + bankH;
+        ditherV(0, wy, W, H - wy + 4, '#3f7fae', '#173a56');
+        rectf(0, wy, W, 1, '#9fd0e8');                       // surface glint
+        ctx.globalAlpha = 0.4; ctx.fillStyle = '#bfe4f0';    // drifting ripples
+        for (let i = 0; i < 10; i++) { const rx = ((i * 41 + t * 22) % (W + 20)) - 10; const ry = wy + 4 + (i % 4) * 5; ctx.fillRect(rx | 0, ry | 0, 4, 1); }
+        ctx.globalAlpha = 0.14; for (let i = 0; i < 3; i++) { const rx = 40 + i * 110 + Math.sin(t * 0.2 + i) * 8; rectf(rx, wy, 9, H - wy, '#eaf4ff'); } ctx.globalAlpha = 1;
+      } else {
+        ditherV(0, y, W, H - y + 4, mix(gcol, '#3a2a16', 0.4), '#161008');
+      }
+      ctx.fillStyle = mix(gcol, '#000', 0.35); ctx.fillRect(0, y, W, 1);
+      // grassy fringe or ferns along the floor
+      if (region.grass) {
+        for (let x = 2; x < W; x += 5) { const gh = 2 + ((x * 7) % 4); const sway = Math.sin(t * 1.2 + x) * 0.6; px((x + sway) | 0, y - gh, mix(region.tint, '#1f5a2a', 0.5)); px((x + sway) | 0, y - gh + 1, mix(region.tint, '#1f5a2a', 0.4)); }
+        ctx.fillStyle = mix(region.tint, '#a8e060', 0.4); for (let x = 4; x < W; x += 12) ctx.fillRect(x, y - 1, 1, 1);
+      } else {
+        ctx.fillStyle = '#1f5a2a'; for (let x = 4; x < W; x += 16) { ctx.fillRect(x, y - 4, 1, 4); ctx.fillRect(x - 2, y - 2, 5, 1); }
+      }
       return;
     }
     // shadow
@@ -1146,6 +1481,12 @@
     rectf(b.x, y, b.w, 6, '#5a3a1e');
     rectf(b.x, y, b.w, 2, '#7a5230');
     rectf(b.x, y + 5, b.w, 1, '#31200f');
+    // mossy top on grassy branches
+    if (b.grass) {
+      rectf(b.x, y, b.w, 1, mix(region.tint, '#5aa03a', 0.5));
+      ctx.fillStyle = mix(region.tint, '#2f6a24', 0.5);
+      for (let x = b.x + 2; x < b.x + b.w - 1; x += 4) { const gh = 2 + ((x * 5) % 3); const sway = Math.sin(t * 1.1 + x) * 0.5; ctx.fillRect((x + sway) | 0, y - gh, 1, gh); }
+    }
     // leaf clumps on top
     ctx.fillStyle = mix(region.tint, '#0d2a1e', 0.1);
     for (let x = b.x + 4; x < b.x + b.w; x += 12) { ellipse(x, y - 3, 8, 5, mix(region.tint, '#0d2a1e', 0.05)); }
@@ -1262,7 +1603,7 @@
     const dir = a.dir || 1;
 
     switch (a.key) {
-      case 'parrot': case 'toucan': {
+      case 'parrot': case 'toucan': case 'macaw2': {
         const flap = Math.sin(t * 14) * 3;
         // body
         ellipse(0, 0, 5, 4, c[0]);
@@ -1334,6 +1675,80 @@
         if (Math.floor(t * 6) % 3 === 0) px(irnd(-4, 4), irnd(-4, 2), '#fff');
         break;
       }
+      case 'hummer': {
+        const blur = Math.sin(t * 40) * 3;
+        ellipse(0, 0, 3, 3, c[0]);            // iridescent body
+        px(0, -1, mix(c[0], '#fff', 0.4));
+        ctx.fillStyle = c[1]; ctx.fillRect(-1, 1, 2, 1); // throat
+        // blurred wings
+        ctx.globalAlpha = 0.5; ctx.fillStyle = mix(c[0], '#fff', 0.5);
+        ctx.fillRect(-4, -2 - Math.abs(blur), 3, 1 + Math.abs(blur)); ctx.fillRect(1, -2 - Math.abs(blur), 3, 1 + Math.abs(blur)); ctx.globalAlpha = 1;
+        // long needle beak
+        rectf(3 * dir, -1, 4 * dir, 1, '#2a2a2a');
+        px(2 * dir, -1, '#111');
+        break;
+      }
+      case 'morpho': {
+        const fl = (Math.sin(t * 8) * 0.5 + 0.5);            // 0..1 wing open
+        const wy = 1 + fl * 3;
+        ctx.fillStyle = c[0];
+        ellipse(-2, 0, 3, wy, c[0]); ellipse(2, 0, 3, wy, c[0]);           // wings
+        ctx.fillStyle = mix(c[0], c[1], 0.6);
+        ellipse(-2, -1, 2, Math.max(1, wy - 1), mix(c[0], c[1], 0.6)); ellipse(2, -1, 2, Math.max(1, wy - 1), mix(c[0], c[1], 0.6));
+        ctx.fillStyle = c[2]; ctx.fillRect(-0.5, -2, 1, 5);                // body
+        px(-1, -3, '#111'); px(1, -3, '#111');                            // antennae dots
+        break;
+      }
+      case 'heron': {
+        // long legs
+        ctx.fillStyle = c[2]; ctx.fillRect(-2, 3, 1, 5); ctx.fillRect(1, 3, 1, 5);
+        ellipse(0, 1, 5, 3, c[0]);            // body
+        ctx.fillStyle = mix(c[1], '#000', 0.1); ctx.fillRect(-4, 0, 5, 2); // folded wing
+        // S-neck + head
+        ctx.fillStyle = c[0]; ctx.fillRect((2 * dir) | 0, -5, 1, 6);
+        circ(3 * dir, -6, 2, c[0]);
+        rectf(4 * dir, -6, 4 * dir, 1, c[2]);  // dagger beak
+        px(3 * dir, -7, '#111');
+        break;
+      }
+      case 'harpy': {
+        const diving = a.state === 'dive';
+        if (diving) { ctx.globalAlpha = 0.35; circ(0, 0, 12, '#f2c83a'); ctx.globalAlpha = 1; }
+        // spread wings
+        ctx.fillStyle = mix(c[0], '#000', 0.15);
+        const wf = diving ? 6 : Math.sin(t * 8) * 2;
+        ctx.fillRect(-11, -2 - wf * 0.3, 8, 3); ctx.fillRect(3, -2 - wf * 0.3, 8, 3);
+        ellipse(0, 0, 6, 4, c[0]);             // body
+        ctx.fillStyle = c[1]; ctx.fillRect(-2, 1, 5, 3);   // pale chest
+        circ(5 * dir, -3, 3, c[1]);            // head
+        // face crest
+        px(4 * dir, -6, c[0]); px(6 * dir, -6, c[0]);
+        ctx.fillStyle = c[2]; ctx.fillRect((6 * dir) | 0, -3, 2 * dir, 2); // hooked beak
+        px(5 * dir, -4, '#111');
+        // talons
+        ctx.fillStyle = c[2]; ctx.fillRect(-2, 4, 1, 2); ctx.fillRect(1, 4, 1, 2);
+        break;
+      }
+      case 'capybara': {
+        ellipse(0, 0, 8, 5, c[0]);             // barrel body
+        ellipse(6 * dir, -2, 3, 3, c[1]);      // blunt head
+        rectf(8 * dir, -1, 2, 2, c[2]);        // muzzle
+        px(6 * dir, -3, '#111');
+        ctx.fillStyle = c[2]; ctx.fillRect(-5, 4, 2, 3); ctx.fillRect(3, 4, 2, 3); // legs
+        px(5 * dir, -4, c[2]); // ear
+        break;
+      }
+      case 'caiman': {
+        // long low reptile
+        ellipse(0, 1, 9, 3, c[0]);
+        rectf(6 * dir, 0, 6 * dir, 2, c[1]);   // snout
+        // ridged back
+        ctx.fillStyle = c[2]; for (let i = -6; i < 5; i += 3) ctx.fillRect(i, -2, 1, 2);
+        rectf(-12 * dir, 0, 4 * dir, 1, c[0]); // tail
+        px(4 * dir, -1, '#f2d13a'); // eye
+        if (a.state === 'charge') { ctx.fillStyle = c[2]; ctx.fillRect((10 * dir) | 0, -1, 2 * dir, 3); } // open jaw
+        break;
+      }
     }
     ctx.restore();
 
@@ -1357,6 +1772,8 @@
     // height
     const height = Math.max(0, Math.round((EXP.LH - 26 - P.y) / 5));
     drawTextShadow(ctx, height + 'M', 4, 3, '#cfe8b0', 1, 'left');
+    // treasures foraged
+    if (EXP.treasuresTotal > 0) { px(34, 5, '#d46ae0'); drawTextShadow(ctx, EXP.treasures + '/' + EXP.treasuresTotal, 38, 3, '#e4a6f0', 1, 'left'); }
     // score/value
     drawTextShadow(ctx, '$' + EXP.score, W / 2, 3, '#f6d13a', 1, 'center');
     // cargo pips
@@ -1378,8 +1795,8 @@
     if (at === 'dart') { for (let i = 0; i < D.magSize; i++) { ctx.fillStyle = i < P.mag ? '#d8e070' : 'rgba(255,255,255,0.18)'; ctx.fillRect(7 + i * 4, H - 7, 3, 3); } if (P.reloading > 0) { rectf(7, H - 7, 40 * (1 - P.reloading / D.reloadTime), 2, '#8ad0e8'); drawText(ctx, 'RELOAD', 50, H - 7, '#8ad0e8', 1, 'left'); } }
     else drawText(ctx, 'x' + (at === 'heavy' ? S.ammo.heavy : S.ammo.net), 7, H - 7, '#fff', 1, 'left');
 
-    // ammo select hints
-    drawText(ctx, '1 2 3', W - 22, H - 8, 'rgba(255,255,255,0.5)', 1, 'left');
+    // ammo select hints (keyboard only)
+    if (!TOUCH) drawText(ctx, '1 2 3', W - 22, H - 8, 'rgba(255,255,255,0.5)', 1, 'left');
 
     // message
     if (EXP.msgT > 0) { ctx.globalAlpha = clamp(EXP.msgT, 0, 1); drawTextShadow(ctx, EXP.msg, W / 2, H - 30, '#fff2b0', 1, 'center'); ctx.globalAlpha = 1; }
@@ -1588,6 +2005,10 @@
       toSanctuary: (types) => { S.dayCatch = types || ['sloth', 'boar', 'parrot', 'monkey']; startSanctuary(); },
       toShop: () => { startShop(); },
       giveMoney: (n) => { S.money += (n || 500); },
+      region: (i) => { startExpedition(REGIONS[clamp(i || 0, 0, REGIONS.length - 1)]); },
+      setDay: (d) => { S.day = d; },
+      regions: () => REGIONS.map(r => r.name),
+      animals: () => Object.keys(ANIMALS),
     };
   }
   initMenu();

@@ -116,6 +116,7 @@
     nightStart: function () { [523, 440, 349].forEach(function (f, i) { tone(f, 0.18, 'sine', 0.12, null, i * 0.12); }); },
     levelup: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, 0.12, 'square', 0.12, null, i * 0.08); }); },
     buy: function () { tone(660, 0.06, 'square', 0.12, 990); tone(1320, 0.08, 'square', 0.1, null, 0.06); },
+    pickup: function () { tone(880, 0.05, 'triangle', 0.12, 1320); tone(1320, 0.06, 'sine', 0.1, 1760, 0.05); tone(1760, 0.06, 'sine', 0.08, null, 0.1); },
   };
 
   window.AUDIO = {
