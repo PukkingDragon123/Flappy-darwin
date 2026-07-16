@@ -52,6 +52,7 @@ Open `index.html` in any modern browser. No build step, no dependencies.
 | Input | Action |
 |---|---|
 | `Space` / `↑` / `W` / tap / click | Flap (costs wing energy; hold to glide, once evolved) |
+| `X` / `C` / tap the skill button | **Attack** with your equipped skill (cooldown) |
 | `←` `→` / `A` `D` / tap a card | Choose a hatchling trait or migration path |
 | `Enter` / `Space` / tap selected card | Confirm choice |
 | tap during arrival | Skip the nest cutscene |
@@ -107,15 +108,80 @@ the undergrowth and you'll get hurt.
    - 🎐 **Jellyfish** drift up through ocean lanes, pulsing — weave around the sting.
    - 🐟 **Piranhas** break the water in a quick burst of leaps — thread between them.
    - 🦅 **Vultures** circle overhead marking your lane, then **dive** once, hard.
+   - 🪲 **Shieldbugs** drift in like armored walls — 6 HP tanks worth shooting down.
+   - 🐝 **Hornet nests** hang under the canopy releasing hornets — destroy the
+     nest to stop the swarm.
 
-## Boss: The Great Eagle
+## Combat: fight back!
 
-Every few migrations the path leads to **THE AERIE**, where a giant raptor
-boss attacks in telegraphed patterns — dive-bombs, talon sweeps and
-feather-storms. Outlast its stamina by dodging, and it's driven off for a big
-reward (and an extra heart).
+Your finch isn't just prey anymore. Press **X** (or tap the skill button) to
+**attack** with your equipped skill. Every enemy now has **health** — chip it
+down for score, DNA and the occasional dropped snack, and watch the little
+HP bars and damage numbers fly.
+
+![Combat — sonic chirp ring](docs/combat.png)
+
+**10 attack skills**, each with its own icon, cooldown and effect — and every
+nest offers a new one on an orange **ATTACK SKILL** card next to the trait
+cards:
+
+| Skill | Effect |
+|---|---|
+| 🐤 **Power Peck** | lunge and strike in front of you |
+| 🌰 **Seed Shot** | spit a fast seed projectile |
+| 🪶 **Feather Volley** | a fan of three quills |
+| 🌙 **Wing Slash** | an arc that hits all around you |
+| 🎵 **Sonic Chirp** | an expanding wave that hits every foe on screen |
+| 🥚 **Egg Bomb** | a lobbed egg that explodes in an area |
+| 🌪️ **Gust Vortex** | a slow piercing twister that hits everything it passes |
+| ⚡ **Storm Call** | lightning smites the nearest foe |
+| ☀️ **Sun Ray** | a beam across the whole sky lane |
+| 🧪 **Venom Spit** | poisons a foe to take damage over time |
+
+![A skill card at the nest](docs/skill-card.png)
+
+## Diet passives
+
+Devotion to one food group awakens a **passive ability** mid-run:
+
+- 🍒 **Berry Vigor** (8 berries) — every 8th berry heals a heart
+- 🌱 **Swift Wings** (8 seeds) — flaps cost 20% less
+- 🌰 **Hard Shell** (8 nuts) — a shield every leg
+- 🐛 **Hunter Gut** (8 bugs) — attacks deal +1 damage
+- ✨ **Midas Glow** (3 golden fruit) — food is worth +50%
+
+Active passives show as little badges by your energy bar.
+
+## Three area bosses
+
+Every 4th migration the path leads to a **boss arena** — and the three bosses
+**rotate** as you go deeper. Dodge their telegraphed patterns *and* fight
+back — your attacks damage the boss directly:
+
+- 🦅 **The Great Eagle** (the Aerie) — dive-bombs, talon sweeps, feather-storms
+- 🐍 **The Serpent King** (the Serpent Pit) — floor eruptions, head sweeps,
+  venom lobs
+- 🦉 **The Frost Owl** (the Frozen Gale) — talon dives, ice shards, and
+  freezing up/downdrafts you must fight against
+
+Drive one off for +1 heart, a DNA jackpot — **and a cute pet**.
+
+![The Serpent King](docs/serpent-king.png)
+
+![The Frost Owl](docs/frost-owl.png)
 
 ![The Great Eagle boss stage](docs/boss.png)
+
+## Cute pets
+
+Each boss you defeat tames a companion that flutters along behind you in a
+little trail:
+
+- 🐤 **Pip the Chick** — pecks at nearby enemies
+- 🐍 **Noodle the Snake** — nudges food toward your beak
+- ✨ **Lumen the Firefly** — slowly recharges your wing energy
+
+![All three pets in tow](docs/pets.png)
 
 ![A canopy snake latches on — swipe to shake it off](docs/snake-latch.png)
 6. **Rest at the nest.** Arriving at a grove triggers a landing cutscene with a

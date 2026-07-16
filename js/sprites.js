@@ -920,6 +920,214 @@
     '.oMo.oMo.',
   ], BFLY_PAL);
 
+  // ============================================================
+  //  COMBAT: attack-skill icons (9x9, bold read at card scale)
+  // ============================================================
+  const SK_PECK = bake([
+    '.....oo..',
+    '....oyyo.',
+    '...oyyYo.',
+    '..oyyYo..',
+    '.oyyYo...',
+    'oyYYo....',
+    'oYYo.....',
+    '.oo......',
+    '.........',
+  ]);
+  const SK_SEED = bake([
+    '.........',
+    '..ooo....',
+    '.onnno...',
+    '.onNno..j',
+    '.oNNo..j.',
+    '..oo..j..',
+    '.....j...',
+    '....j....',
+    '.........',
+  ]);
+  const SK_VOLLEY = bake([
+    'o........',
+    '.f..o....',
+    '..f..f...',
+    'o..f..f..',
+    '.f..f..fo',
+    '..f..f...',
+    'o..f.....',
+    '.f.......',
+    '.........',
+  ], Object.assign({}, PAL, { f: '#d9c39a', o: '#77502e' }));
+  const SK_SLASH = bake([
+    '......zz.',
+    '....zzu..',
+    '...zu....',
+    '..zu.....',
+    '..zu.....',
+    '..zu.....',
+    '...zu....',
+    '....zzu..',
+    '......zz.',
+  ], Object.assign({}, PAL, { z: '#f2f7ff', u: '#a8e4f2' }));
+  const SK_CHIRP = bake([
+    '...u..u..',
+    '..u..u..u',
+    '.u..u..u.',
+    'u..u..u..',
+    '.u..u..u.',
+    '..u..u..u',
+    '...u..u..',
+    '.........',
+    '.........',
+  ], Object.assign({}, PAL, { u: '#96f0e4' }));
+  const SK_EGG = bake([
+    '...ooo...',
+    '..owwzo..',
+    '.owwzzwo.',
+    '.owwwwwo.',
+    '.oWwwwWo.',
+    '..oWWWo..',
+    '...ooo...',
+    '..A.A.A..',
+    '.A..A..A.',
+  ]);
+  const SK_VORTEX = bake([
+    '..uuuu...',
+    '.u....u..',
+    'u..uu..u.',
+    'u.u..u.u.',
+    'u..uu..u.',
+    '.u....u..',
+    '..uuuu...',
+    '....u....',
+    '...u.....',
+  ], Object.assign({}, PAL, { u: '#a8e4f2' }));
+  const SK_BOLT = bake([
+    '...yyy...',
+    '..yyy....',
+    '.yyy.....',
+    '.yyyyyy..',
+    '...yyy...',
+    '..yyy....',
+    '.yyy.....',
+    'yyy......',
+    'y........',
+  ], Object.assign({}, PAL, { y: '#ffe27a' }));
+  const SK_RAY = bake([
+    '....y....',
+    '.y..y..y.',
+    '..yyyyy..',
+    '.yyLLLyy.',
+    'yyLLzLLyy',
+    '.yyLLLyy.',
+    '..yyyyy..',
+    '.y..y..y.',
+    '....y....',
+  ], Object.assign({}, PAL, { y: '#f6c945', L: '#ffe27a', z: '#fffbe0' }));
+  const SK_VENOM = bake([
+    '....j....',
+    '...jj....',
+    '..jjjj...',
+    '.jjJjjj..',
+    '.jJJjjj..',
+    '.jjjjjj..',
+    '..jjjj...',
+    '...jj....',
+    '.........',
+  ]);
+
+  // ============================================================
+  //  PETS — cute companions that trail behind you
+  // ============================================================
+  const PCHICK_PAL = Object.assign({}, PAL, { y: '#ffe27a', Y: '#f6c945', o: '#5a4010', p: '#241a12', b: '#ff9f4d' });
+  const PET_CHICK1 = bake([
+    '..oooo..',
+    '.oyyyyo.',
+    'oyypyyyo',
+    'oyyyyybo',
+    'oYyyyyo.',
+    '.oYYYo..',
+    '..o.o...',
+  ], PCHICK_PAL);
+  const PET_CHICK2 = bake([
+    '..oooo..',
+    '.oyyyyo.',
+    'oyypyyyo',
+    'oyyyyybo',
+    '.oYyyyo.',
+    '..oYYo..',
+    '..o.o...',
+  ], PCHICK_PAL);
+  const PET_NOODLE = bake([
+    '.oooo....',
+    'oJjJJo.o.',
+    'oJpJJooJo',
+    'oJJJJJJJo',
+    '.ooooooo.',
+  ]);
+  const PET_LUMEN = bake([
+    '.t.o.t.',
+    '.oLLLo.',
+    'oLzzzLo',
+    '.oLLLo.',
+    '.t.t.t.',
+  ], Object.assign({}, PAL, { L: '#c7ff9a', z: '#fffbe0', t: '#5cad3c', o: '#26401f' }));
+
+  // ============================================================
+  //  NEW ATTACKABLE ENEMIES
+  // ============================================================
+  // armored shieldbug — a slow flying tank
+  const SBUG_PAL = Object.assign({}, PAL, { s: '#8a93a6', S: '#5b6474', v: '#c9d2e0', e: '#ffd257', o: '#2a3038' });
+  const SHIELDBUG1 = bake([
+    '..ooooo..',
+    '.osvvvso.',
+    'osvsssvso',
+    'osssSssso',
+    'oSssssSso',
+    '.oSSSSSo.',
+    '..o.e.o..',
+    '.o..o..o.',
+  ], SBUG_PAL);
+  const SHIELDBUG2 = bake([
+    '..ooooo..',
+    '.osvvvso.',
+    'osvsssvso',
+    'osssSssso',
+    'oSssssSso',
+    '.oSSSSSo.',
+    '..o.e.o..',
+    '..o.o.o..',
+  ], SBUG_PAL);
+  // hornet — angrier, oranger wasp
+  const HORNET_PAL = Object.assign({}, PAL, { y: '#f2a63c', P: '#3a2418', u: '#ffd9a8', o: '#241a12', p: '#241a12' });
+  const HORNET1 = bake([
+    'u..o..u',
+    '.oyPyo.',
+    'oPyPyPo',
+    '.oyPyo.',
+    '..ooo..',
+    '...p...',
+  ], HORNET_PAL);
+  const HORNET2 = bake([
+    '.o...o.',
+    'uoyPyou',
+    'oPyPyPo',
+    '.oyPyo.',
+    '..ooo..',
+    '...p...',
+  ], HORNET_PAL);
+  // papery hornet nest, hangs from canopy
+  const HORNET_NEST = bake([
+    '...oo...',
+    '..oqqo..',
+    '.oqwqqo.',
+    'oqqwqqqo',
+    'oqwqqqWo',
+    'oqqqqWWo',
+    '.oqqWWo.',
+    '..oqWo..',
+    '...oxo..',
+    '...ooo..',
+  ], Object.assign({}, PAL, { q: '#c9b088', w: '#e5d4ac', W: '#a08a60', x: '#241a12', o: '#5a4a30' }));
+
   // ---- gear (settings icon) ----
   const GEAR = bake([
     '..o.o.o..',
@@ -1027,6 +1235,10 @@
     BAT1: BAT1, BAT2: BAT2, DFLY1: DFLY1, DFLY2: DFLY2, BFROG: BFROG,
     JELLY1: JELLY1, JELLY2: JELLY2, PIRANHA: PIRANHA, VULT_MID: VULT_MID, VULT_UP: VULT_UP,
     FIREFLY: FIREFLY, BFLY1: BFLY1, BFLY2: BFLY2, GEAR: GEAR,
+    SK_PECK: SK_PECK, SK_SEED: SK_SEED, SK_VOLLEY: SK_VOLLEY, SK_SLASH: SK_SLASH, SK_CHIRP: SK_CHIRP,
+    SK_EGG: SK_EGG, SK_VORTEX: SK_VORTEX, SK_BOLT: SK_BOLT, SK_RAY: SK_RAY, SK_VENOM: SK_VENOM,
+    PET_CHICK1: PET_CHICK1, PET_CHICK2: PET_CHICK2, PET_NOODLE: PET_NOODLE, PET_LUMEN: PET_LUMEN,
+    SHIELDBUG1: SHIELDBUG1, SHIELDBUG2: SHIELDBUG2, HORNET1: HORNET1, HORNET2: HORNET2, HORNET_NEST: HORNET_NEST,
     drawBird: drawBird, beakTip: beakTip,
   };
 })();

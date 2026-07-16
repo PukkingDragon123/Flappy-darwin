@@ -71,7 +71,7 @@
       hazards: [], durian: true, foods: { seed: 5, nut: 3, berry: 1.5, grub: 1, gold: 0.2 },
       hint: ['TALL PINES', 'SEEDS + NUTS'], foodIcons: ['seed', 'nut'], icon: SPR.ICON_FOREST },
     grove: { name: 'OAKNUT GROVE', danger: 2, obst: 'tree', tree: 'nutoak', gapBase: 54, dense: true, sky: 'golden', deco: '#a76f3e',
-      hazards: ['snapper', 'bfrog'], durian: true, foods: { nut: 5, seed: 2, berry: 1, grub: 0.6, gold: 0.2 },
+      hazards: ['snapper', 'bfrog', 'shieldbug'], durian: true, foods: { nut: 5, seed: 2, berry: 1, grub: 0.6, gold: 0.2 },
       hint: ['PITCHER JAWS', 'FALLING DURIAN'], foodIcons: ['nut', 'seed'], icon: SPR.ICON_GROVE },
     marsh: { name: 'BUZZING MARSH', danger: 2, obst: 'tree', tree: 'mangrove', gapBase: 58, sky: 'day', deco: '#d4c24a',
       hazards: ['dfly', 'bfrog'], foods: { bug: 6, grub: 1.5, berry: 1.5, seed: 1, gold: 0.2 },
@@ -91,13 +91,15 @@
     hazards: ['falcon', 'jelly', 'piranha'], foods: { nectar: 3, berry: 2, bug: 2, mango: 1, gold: 0.4 },
     hint: ['DRIFTING JELLYFISH', 'LEAPING PIRANHAS'], foodIcons: ['nectar', 'gold'], icon: SPR.ICON_MEADOW };
   BIOMES.tundra = { name: 'FROST REACH', danger: 3, obst: 'tree', tree: 'snowpine', gapBase: 55, env: 'tundra', sky: 'misty', wind: true, deco: '#a8e4f2',
-    hazards: ['falcon', 'hawk', 'bat'], foods: { seed: 4, nut: 2, berry: 1, gold: 0.4 },
+    hazards: ['falcon', 'hawk', 'bat', 'shieldbug'], foods: { seed: 4, nut: 2, berry: 1, gold: 0.4 },
     hint: ['ICY GUSTS', 'RAPTORS HUNT'], foodIcons: ['seed', 'gold'], icon: SPR.ICON_FOREST };
   BIOMES.desert = { name: 'DUNE SEA', danger: 3, obst: 'cactus', tree: 'cactus', gapBase: 56, env: 'desert', sky: 'golden', deco: '#ff7a4d',
     hazards: ['snake', 'falcon', 'vulture'], foods: { seed: 3, bug: 2, frog: 1, gold: 0.6 },
     hint: ['SPINY CACTI', 'CIRCLING VULTURES'], foodIcons: ['gold', 'seed'], icon: SPR.ICON_CRAGS };
-  // boss arena — the Great Eagle's aerie
-  BIOMES.aerie = { name: 'THE AERIE', danger: 5, obst: 'rock', tree: null, gapBase: 99, env: 'forest', sky: 'stormy', deco: '#c6cfe0', boss: true, hazards: [], foods: {}, hint: ['THE GREAT EAGLE'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_CRAGS };
+  // boss arenas — three area bosses rotate as you migrate deeper
+  BIOMES.aerie = { name: 'THE AERIE', danger: 5, obst: 'rock', tree: null, gapBase: 99, env: 'forest', sky: 'stormy', deco: '#c6cfe0', boss: true, bossKind: 'eagle', hazards: [], foods: {}, hint: ['THE GREAT EAGLE'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_CRAGS };
+  BIOMES.pit = { name: 'THE SERPENT PIT', danger: 5, obst: 'tree', tree: 'cypress', gapBase: 99, env: 'forest', sky: 'misty', deco: '#c7d94a', boss: true, bossKind: 'serpent', hazards: [], foods: {}, hint: ['THE SERPENT KING'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_SWAMP };
+  BIOMES.gale = { name: 'THE FROZEN GALE', danger: 5, obst: 'rock', tree: null, gapBase: 99, env: 'tundra', sky: 'stormy', deco: '#a8e4f2', boss: true, bossKind: 'owl', hazards: [], foods: {}, hint: ['THE FROST OWL'], foodIcons: ['gold', 'gold'], icon: SPR.ICON_FOREST };
   for (var _bk in BIOMES) if (!BIOMES[_bk].env) BIOMES[_bk].env = 'forest';
   const BIOME_KEYS = Object.keys(BIOMES);
 
@@ -136,7 +138,7 @@
     { id: 'aerial',  name: 'AERIAL MASTER',  desc: 'GLIDE FAR, FALL SLOW',    diet: 'berry', rarity: 'epic',   icon: SPR.CLOUD3 },
     { id: 'apex',    name: 'APEX INSTINCT',  desc: 'PREDATORS STRIKE SLOWER', diet: 'any',   rarity: 'epic',   icon: SPR.SNAKE_REAR },
   ];
-  const RARITY = { common: { w: 1.0, col: '#c9d2e0', label: 'COMMON' }, rare: { w: 0.5, col: '#6db6d8', label: 'RARE' }, epic: { w: 0.22, col: '#f6c945', label: 'EPIC' } };
+  const RARITY = { common: { w: 1.0, col: '#c9d2e0', label: 'COMMON' }, rare: { w: 0.5, col: '#6db6d8', label: 'RARE' }, epic: { w: 0.22, col: '#f6c945', label: 'EPIC' }, skill: { w: 0, col: '#ff9f4d', label: 'ATTACK SKILL' } };
 
   const DEATHS = {
     tree: 'SPLINTERED ON AN ANCIENT TREE', pine: 'IMPALED ON A PINE SPIRE',
@@ -152,7 +154,36 @@
     bat: 'BLINDSIDED BY A DUSK BAT', dfly: 'SLICED BY A DRAGONFLY DASH',
     bfrog: 'BOWLED OVER BY A BULLFROG', jelly: 'STUNG BY A DRIFTING JELLYFISH',
     piranha: 'SNAPPED UP BY A LEAPING PIRANHA', vulture: 'RUN DOWN BY A DIVING VULTURE',
+    serpent: 'CRUSHED BY THE SERPENT KING', owl: 'FROZEN BY THE FROST OWL',
+    hornet: 'STUNG BY A FURIOUS HORNET', sbug: 'RAMMED BY AN ARMORED SHIELDBUG',
   };
+
+  // ---------- combat: 10 attack skills ----------
+  const SKILLS = {
+    peck:   { name: 'POWER PECK',     cd: 0.9, dmg: 2, desc: 'LUNGE AND STRIKE',   icon: SPR.SK_PECK },
+    seed:   { name: 'SEED SHOT',      cd: 0.8, dmg: 2, desc: 'SPIT A FAST SEED',   icon: SPR.SK_SEED },
+    volley: { name: 'FEATHER VOLLEY', cd: 1.3, dmg: 1, desc: 'FAN OF 3 QUILLS',    icon: SPR.SK_VOLLEY },
+    slash:  { name: 'WING SLASH',     cd: 1.1, dmg: 3, desc: 'ARC AROUND YOU',     icon: SPR.SK_SLASH },
+    chirp:  { name: 'SONIC CHIRP',    cd: 2.4, dmg: 1, desc: 'WAVE HITS ALL FOES', icon: SPR.SK_CHIRP },
+    egg:    { name: 'EGG BOMB',       cd: 1.9, dmg: 3, desc: 'LOBBED BLAST',       icon: SPR.SK_EGG },
+    vortex: { name: 'GUST VORTEX',    cd: 2.1, dmg: 2, desc: 'PIERCING TWISTER',   icon: SPR.SK_VORTEX },
+    bolt:   { name: 'STORM CALL',     cd: 2.3, dmg: 4, desc: 'SMITE NEAREST FOE',  icon: SPR.SK_BOLT },
+    ray:    { name: 'SUN RAY',        cd: 2.8, dmg: 3, desc: 'BEAM ACROSS SKY',    icon: SPR.SK_RAY },
+    venom:  { name: 'VENOM SPIT',     cd: 1.5, dmg: 1, desc: 'POISONS OVER TIME',  icon: SPR.SK_VENOM, dot: true },
+  };
+
+  // diet passives — keep eating one food group and the flock adapts
+  const PASSIVES = {
+    berry: { at: 8, name: 'BERRY VIGOR', desc: 'EVERY 8 BERRIES HEAL', icon: SPR.BERRY },
+    seed:  { at: 8, name: 'SWIFT WINGS', desc: 'FLAPS COST 20% LESS',  icon: SPR.SEED },
+    nut:   { at: 8, name: 'HARD SHELL',  desc: 'SHIELD EVERY LEG',     icon: SPR.NUT },
+    bug:   { at: 8, name: 'HUNTER GUT',  desc: 'ATTACKS +1 DAMAGE',    icon: SPR.BUG1 },
+    gold:  { at: 3, name: 'MIDAS GLOW',  desc: 'FOOD +50% SCORE',      icon: SPR.GOLD },
+  };
+
+  const BOSS_NAMES = { eagle: 'THE GREAT EAGLE', serpent: 'THE SERPENT KING', owl: 'THE FROST OWL' };
+  const BOSS_PATTERNS = { eagle: ['dive', 'sweep', 'feathers'], serpent: ['rise', 'sweep', 'globs'], owl: ['dive', 'shards', 'gust'] };
+  const PET_NAMES = { chick: 'PIP THE CHICK', noodle: 'NOODLE THE SNAKE', lumen: 'LUMEN THE FIREFLY' };
   const FLOORKEY = { forest: 'ground', ocean: 'water', tundra: 'ice', desert: 'sand' };
   const FLOORDUST = { forest: ['#5cad3c', '#6b4a2a'], ocean: ['#68b7cf', '#a8e4f2', '#ffffff'], tundra: ['#eef6ff', '#c9dce8'], desert: ['#e8c98a', '#c9a86a'] };
 
@@ -207,13 +238,14 @@
   function newRun(tutorialMode) {
     run = {
       depth: 0, score: 0, scorePop: 0,
-      evo: 0, evoNeed: 60, evolutions: 0,
+      evo: 0, evoNeed: 45, evolutions: 0,
       taken: [], diet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       foodEaten: 0, obstaclesPassed: 0, evoReadyPinged: false, bugsChased: 0,
       dnaEarned: 0, checkpoint: null,
+      skillId: 'peck', pets: [], passives: {}, kills: 0,
       tutorialMode: !!tutorialMode || !save.tutorialDone,
       darwin: null, journey: [{ depth: 0, key: 'meadow', type: 'start', danger: 0 }],
-      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true, bat: true, dfly: true, bfrog: true, jelly: true, piranha: true, vulture: true },
+      tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true, bat: true, dfly: true, bfrog: true, jelly: true, piranha: true, vulture: true, sbug: true, hornet: true },
     };
     bird = {
       x: BIRD_X, y: 84, vy: 0, rot: 0,
@@ -221,6 +253,7 @@
       carried: null, crop: null, digestT: 0, digestNeed: 0,
       fullness: 0, stuffed: false, boost: 0, latched: null,
       energy: 100, maxEnergy: 100, tired: 0,
+      atkCd: 0, atkLunge: 0,
       flapT: 0, animT: 0, blinkT: rnd(1.5, 4), blinking: 0, openT: 0,
       catchPop: 0, grazeActive: 0, grazeCd: 0,
       glideHeld: false, shieldUp: false, dead: false, deathBy: null,
@@ -246,6 +279,7 @@
     if (has('light')) flapCost *= 0.68;
     if (has('photo')) regen += 9;
     if (has('aerial')) maxFall *= 0.8;
+    if (run.passives.seed) flapCost *= 0.8; // SWIFT WINGS diet passive
     if (bird.stuffed) { flap *= 0.88; grav *= 1.18; flapCost *= 1.2; }
     return {
       flap: flap, grav: grav, maxFall: maxFall, catchR: catchR, digestMul: digestMul,
@@ -261,7 +295,7 @@
     const hasPred = biome.hazards.length > 0;
     if (d > 1) addDNA(2); // reaching a new leg earns DNA
     // checkpoint = snapshot at the start of this leg, so death can hatch you back here
-    run.checkpoint = { depth: d, biomeKey: biomeKey, taken: run.taken.slice(), maxHearts: bird ? bird.maxHearts : 3, evolutions: run.evolutions, evoNeed: run.evoNeed, score: run.score, dnaEarned: run.dnaEarned };
+    run.checkpoint = { depth: d, biomeKey: biomeKey, taken: run.taken.slice(), maxHearts: bird ? bird.maxHearts : 3, evolutions: run.evolutions, evoNeed: run.evoNeed, score: run.score, dnaEarned: run.dnaEarned, skillId: run.skillId, pets: run.pets.map(function (p) { return p.kind; }), passives: Object.assign({}, run.passives) };
     // Darwin's interactive tutorial runs on the first leg
     if (d === 1 && run.tutorialMode) run.darwin = { step: 0, t: 0, done: false, flapped: false, ate: false, digested: false, grazed: false };
     if (!biome.boss) run.journey.push({ depth: d, key: biomeKey, type: 'biome', danger: biome.danger });
@@ -289,20 +323,23 @@
       dfly: null,  dflyTimer: has2('dfly') ? rnd(4, 8) * DT : -1,
       vulture: null, vultureTimer: has2('vulture') ? rnd(5, 9) * DT : -1,
       leapers: [], leaperTimer: (has2('bfrog') || has2('jelly') || has2('piranha')) ? rnd(3.5, 6) * DT : -1,
+      sbugs: [], sbugTimer: has2('shieldbug') ? rnd(4, 7) * DT : -1,
+      hornets: [],
       slalom: null, trail: null, storm: null, flutter: null,
+      shots: [], fx: [],
     };
     bird.x = BIRD_X; bird.y = 84; bird.vy = 0; bird.rot = 0; bird.dead = false;
-    bird.shieldUp = has('shield'); bird.invuln = 0.8; bird.legsDown = false; bird.glidePose = false;
+    bird.shieldUp = has('shield') || !!run.passives.nut; bird.invuln = 0.8; bird.legsDown = false; bird.glidePose = false;
     world.wasps = null; world.waspT = 0;
     if (biome.boss) {
       world.isBoss = true; world.legLen = 0; world.banner = 3.0;
-      world.boss = { hp: 100, maxHp: 100, state: 'enter', t: 0, x: W + 30, y: 34, wing: 0, pattern: null, attacks: 0, lockY: bird.y, feathers: [], first: true };
+      world.boss = { kind: biome.bossKind || 'eagle', hp: 110, maxHp: 110, state: 'enter', t: 0, x: W + 30, y: 34, wing: 0, pattern: null, attacks: 0, lockY: bird.y, lockX: bird.x, feathers: [], first: true };
     }
     STATE = 'fly';
   }
 
   // ---------- input ----------
-  let flapQueued = false, actionQueued = false, boostQueued = false, swipeQueued = false, lastFlapPress = -1;
+  let flapQueued = false, actionQueued = false, boostQueued = false, swipeQueued = false, attackQueued = false, lastFlapPress = -1;
   const REROLL_COST = 5, BOOST_COST = 22;
 
   function menuItems() { return ['PLAY', 'TUTORIAL', 'SETTINGS', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
@@ -397,6 +434,7 @@
       if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat && ui.overT > 0.7) activateOver(); return; }
     }
     if (up) { e.preventDefault(); if (!e.repeat) { press(); bird && (bird.glideHeld = true); } return; }
+    if (e.code === 'KeyX' || e.code === 'KeyC') { if (STATE === 'fly') { e.preventDefault(); attackQueued = true; } return; }
     if (e.code === 'KeyM') { AUDIO.toggleMute(); return; }
     if (e.code === 'KeyP' && (STATE === 'fly' || STATE === 'island')) { paused = !paused; return; }
     if (e.code === 'KeyR') {
@@ -431,6 +469,10 @@
       for (let i = 0; i < ui.overRects.length; i++) { const c = ui.overRects[i]; if (gx >= c.x && gx <= c.x + c.w && gy >= c.y && gy <= c.y + c.h) { if (ui.sel === i) { if (ui.overT > 0.7) activateOver(); } else { ui.sel = i; AUDIO.play('select'); } return; } }
       if (ui.overT > 0.7) activateOver();
       return;
+    }
+    if (STATE === 'fly' && world && world.phase === 'fly' && ui.atkRect) { // tap the attack button
+      const c = ui.atkRect;
+      if (gx >= c.x - 3 && gx <= c.x + c.w + 3 && gy >= c.y - 3 && gy <= c.y + c.h + 3) { attackQueued = true; return; }
     }
     if (STATE === 'island' && ui.phase === 'mutate' && ui.rerollRect) {
       const c = ui.rerollRect;
@@ -524,8 +566,10 @@
     if (def.bucket === 'berry' && has('sweet')) nutr = Math.round(nutr * 1.5);
     if (kind === 'nut' && has('gizzard')) nutr = Math.round(nutr * 1.25);
     if (has('forager')) nutr = Math.round(nutr * 1.25);
+    if (run.passives.gold) nutr = Math.round(nutr * 1.5); // MIDAS GLOW diet passive
     bird.carried = null;
     run.diet[def.bucket]++; world.legDiet[def.bucket]++;
+    checkPassives(def.bucket);
     run.foodEaten++; run.score += nutr; run.scorePop = 0.25;
     run.evo += nutr; bird.fullness += nutr;
     bird.energy = Math.min(st.maxEnergy, bird.energy + Math.round(nutr * 0.8)); // eating refuels the wings
@@ -537,6 +581,21 @@
     if (bird.fullness > st.cap && !bird.stuffed) { bird.stuffed = true; AUDIO.play('stuffed'); addFloat(bird.x, bird.y - 20, 'STUFFED!', '#e0525c'); }
     if (run.evo >= run.evoNeed && !run.evoReadyPinged) { run.evoReadyPinged = true; AUDIO.play('evoReady'); addFloat(bird.x, bird.y - 26, 'EVOLUTION READY!', '#3fc0b0'); }
     if (bird.crop) { const k = bird.crop; bird.crop = null; startDigest(k, st); }
+  }
+
+  // diet passives — devotion to one food group awakens an ability
+  function checkPassives(bucket) {
+    const P = PASSIVES[bucket]; if (!P) return;
+    if (!run.passives[bucket] && run.diet[bucket] >= P.at) {
+      run.passives[bucket] = true;
+      AUDIO.play('evolve');
+      addFloat(bird.x, bird.y - 30, 'PASSIVE: ' + P.name + '!', '#96f0e4', true);
+      addFloat(bird.x, bird.y - 20, P.desc, '#c9d2e0');
+      spawnParts(14, function () { return sparkle(bird.x + rnd(-10, 10), bird.y + rnd(-10, 6), '#96f0e4'); });
+      if (bucket === 'nut') bird.shieldUp = true;
+    } else if (bucket === 'berry' && run.passives.berry && run.diet.berry % PASSIVES.berry.at === 0 && bird.hearts < bird.maxHearts) {
+      bird.hearts++; AUDIO.play('heart'); addFloat(bird.x, bird.y - 22, '+1 HEART', '#f2748f', true);
+    }
   }
 
   function dropFood() {
@@ -614,6 +673,9 @@
     run.taken = cp.taken.slice(); run.evolutions = cp.evolutions; run.evoNeed = cp.evoNeed;
     run.evo = 0; run.evoReadyPinged = false; run.score = cp.score; run.dnaEarned = cp.dnaEarned || 0;
     run.depth = cp.depth - 1;
+    run.skillId = cp.skillId || 'peck';
+    run.passives = Object.assign({}, cp.passives || {});
+    run.pets = (cp.pets || []).map(function (k) { return { kind: k, x: BIRD_X - 14, y: 84, t: rnd(0, 6.28), cd: 2 }; });
     bird.maxHearts = cp.maxHearts; bird.hearts = cp.maxHearts; bird.dead = false;
     bird.carried = null; bird.crop = null; bird.fullness = 0; bird.stuffed = false; bird.energy = 100;
     parts = []; floats = [];
@@ -640,7 +702,7 @@
     const pool = MUTATIONS.filter(function (m) { return m.repeat || !has(m.id); });
     const cards = [];
     const bag = pool.slice();
-    while (cards.length < 3 && bag.length) {
+    while (cards.length < 2 && bag.length) {
       const entries = bag.map(function (m) {
         const dietBonus = m.diet === 'any' ? 0.6 : run.diet[m.diet] * 0.3;
         const rw = RARITY[m.rarity] ? RARITY[m.rarity].w : 1;
@@ -650,14 +712,21 @@
       bag.splice(bag.indexOf(m), 1);
       cards.push({ kind: 'mut', mut: m, title: m.name, lines: wrap(m.desc, 13), icon: m.icon, rarity: m.rarity });
     }
+    // the third card always teaches a new attack skill
+    const skIds = Object.keys(SKILLS).filter(function (k) { return k !== run.skillId; });
+    if (skIds.length) {
+      const sid = pick(skIds), sk = SKILLS[sid];
+      cards.push({ kind: 'skill', skill: sid, title: sk.name, lines: wrap(sk.desc, 13), icon: sk.icon, rarity: 'skill' });
+    }
     return cards;
   }
 
   function makePathCards() {
-    if (run.depth > 0 && run.depth % 4 === 0) { // a boss stage looms
-      return [{ kind: 'path', biomeKey: 'aerie', title: BIOMES.aerie.name, lines: ['A BOSS AWAITS'], icon: SPR.ICON_CRAGS, danger: 5, boss: true }];
+    if (run.depth > 0 && run.depth % 4 === 0) { // a boss stage looms — the three area bosses rotate
+      const bk = ['aerie', 'pit', 'gale'][(Math.floor(run.depth / 4) - 1) % 3];
+      return [{ kind: 'path', biomeKey: bk, title: BIOMES[bk].name, lines: ['A BOSS AWAITS'], icon: BIOMES[bk].icon, danger: 5, boss: true }];
     }
-    let keys = BIOME_KEYS.filter(function (k) { return k !== world.biomeKey && k !== 'aerie'; });
+    let keys = BIOME_KEYS.filter(function (k) { return k !== world.biomeKey && !BIOMES[k].boss; });
     if (run.depth < 3) keys = keys.filter(function (k) { return BIOMES[k].danger < 3; });
     for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = keys[i]; keys[i] = keys[j]; keys[j] = t; }
     // bias toward higher danger as depth climbs
@@ -683,20 +752,31 @@
     return lines;
   }
 
-  function applyMutation(m) {
-    run.taken.push(m.id);
+  function hatchCommon() { // shared new-generation fanfare
     run.evolutions++;
     run.evo = Math.max(0, run.evo - run.evoNeed);
-    run.evoNeed += 30;
+    run.evoNeed += 15;
     run.evoReadyPinged = run.evo >= run.evoNeed;
     run.score += 150; addDNA(5);
-    if (m.id === 'downy') { bird.maxHearts = Math.min(5, bird.maxHearts + 1); bird.hearts = bird.maxHearts; AUDIO.play('heart'); }
     AUDIO.play('evolve'); AUDIO.play('chirp');
     freezeT = 0.12; shakeIt(1.5, 0.30); ui.flash = 0.35;
     if (STATE === 'island') { ui.hatched = true; ui.hatchAnim = 0; } // egg cracks -> baby born
     addFloat(bird.x, bird.y - 24, 'GEN ' + (run.evolutions + 1) + ' HATCHED!', '#3fc0b0', true);
     spawnParts(28, function () { return sparkle(bird.x + rnd(-16, 16), bird.y + rnd(-16, 10), '#3fc0b0'); });
     spawnParts(14, function () { return crumb(bird.x + rnd(-5, 5), bird.y - 2, pick(['#fbe7bb', '#e5c28c', '#ffffff'])); }); // eggshell
+  }
+  function applyMutation(m) {
+    run.taken.push(m.id);
+    ui.lastGain = m.name;
+    if (m.id === 'downy') { bird.maxHearts = Math.min(5, bird.maxHearts + 1); bird.hearts = bird.maxHearts; AUDIO.play('heart'); }
+    hatchCommon();
+  }
+  function applySkill(sid) {
+    run.skillId = sid;
+    ui.lastGain = SKILLS[sid].name;
+    AUDIO.play('slash');
+    addFloat(bird.x, bird.y - 32, 'LEARNED ' + SKILLS[sid].name + '!', '#ff9f4d', true);
+    hatchCommon();
   }
 
   // ---------- update: flying ----------
@@ -706,6 +786,12 @@
     world.dist += world.speed * (bird.boost > 0 ? 1.9 : 1) * dt;
     if (world.banner > 0) world.banner -= dt;
     if (world.fade > 0) world.fade -= dt * 2.2;
+
+    // combat
+    bird.atkCd = Math.max(0, bird.atkCd - dt);
+    bird.atkLunge = Math.max(0, bird.atkLunge - dt);
+    if (attackQueued) { attackQueued = false; tryAttack(); }
+    updateShots(dt); updateFx(dt); tickPoison(dt);
 
     // spawn obstacles
     if (world.phase === 'fly' && !world.isBoss) {
@@ -727,15 +813,19 @@
         // attach a snake to the top canopy (guard adjacency + threat budget deferred to update)
         if (snakeRoll) {
           const prevSnake = world.obstacles.some(function (p) { return p.snake; });
-          if (!prevSnake) o.snake = { state: 'dormant', t: 0, lockY: 0, spent: false, first: run.tut.snake };
+          if (!prevSnake) o.snake = { state: 'dormant', t: 0, lockY: 0, spent: false, first: run.tut.snake, hp: 3, maxhp: 3 };
         }
         // durian: spiky fruit that hangs from the canopy and drops when you near it
         if (!o.snake && world.biome.durian && world.spawned > 0 && Math.random() < 0.3) {
-          o.durian = { state: 'hang', t: 0, vy: 0, worldX: o.x + o.w / 2, y: (gapY - gh / 2) + 5, first: run.tut.durian };
+          o.durian = { state: 'hang', t: 0, vy: 0, worldX: o.x + o.w / 2, y: (gapY - gh / 2) + 5, first: run.tut.durian, hp: 1, maxhp: 1 };
         }
         // spider: drops on a thread into the gap
         if (!o.snake && !o.durian && world.biome.obst === 'tree' && ['jungle', 'swamp', 'marsh', 'grove'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.22) {
-          o.spider = { state: 'hidden', t: 0, y: 0 };
+          o.spider = { state: 'hidden', t: 0, y: 0, hp: 1, maxhp: 1 };
+        }
+        // hornet nest: papery hive under the canopy that releases angry hornets
+        if (!o.snake && !o.durian && !o.spider && ['marsh', 'jungle'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.18) {
+          o.hnest = { hp: 4, maxhp: 4, cd: 0.9, dead: false, first: run.tut.hornet };
         }
         world.obstacles.push(o);
         const fp = (run.depth === 1) ? 1.0 : 0.85;
@@ -839,7 +929,7 @@
     if (world.falconTimer > 0 && world.phase === 'fly' && !world.falcon) {
       world.falconTimer -= dt;
       if (world.falconTimer <= 0) {
-        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON!', '#a8b4c4'); } }
+        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon, hp: 4, maxhp: 4 }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON!', '#a8b4c4'); } }
         else world.falconTimer = 0.5;
       }
     }
@@ -851,6 +941,8 @@
     updateDragonfly(dt);
     updateVulture(dt);
     updateLeapers(dt);
+    updateShieldbugs(dt);
+    updateHornets(dt);
     if (world.isBoss) updateBoss(dt);
     // random bonus event: mini-games + the wasp swarm
     if (world.chaseTimer > 0 && world.phase === 'fly') {
@@ -923,6 +1015,311 @@
     if (bird.blinkT <= 0) { bird.blinking = 0.12; bird.blinkT = rnd(1.8, 4.5); }
     bird.blinking = Math.max(0, bird.blinking - dt);
     if (run) run.scorePop = Math.max(0, run.scorePop - dt);
+  }
+
+  // ---------- combat: attacks, projectiles, VFX, enemy health ----------
+  function atkDmg(base) { return base + (run.passives.bug ? 1 : 0); }
+
+  // every hittable foe on screen right now, as {kind, x, y, r, o}
+  function enemyTargets() {
+    const out = [];
+    if (!world) return out;
+    const push = function (kind, x, y, r, o) { if (o && o.hp > 0 && x > -10 && x < W + 10) out.push({ kind: kind, x: x, y: y, r: r, o: o }); };
+    if (world.bat && world.bat.state !== 'gone') push('bat', world.bat.x, world.bat.y, 6, world.bat);
+    if (world.dfly && world.dfly.state !== 'gone') push('dfly', world.dfly.x, world.dfly.y, 6, world.dfly);
+    if (world.vulture && world.vulture.state !== 'gone') push('vulture', world.vulture.x, world.vulture.y, 8, world.vulture);
+    if (world.falcon && world.falcon.state !== 'gone') push('falcon', world.falcon.x, world.falcon.y, 8, world.falcon);
+    if (world.hawk && world.hawk.state === 'swoop') push('hawk', world.hawk.hx, world.hawk.hy, 8, world.hawk);
+    if (world.wasps) for (const w of world.wasps) push('wasp', w.x, w.y, 4, w);
+    if (world.hornets) for (const h of world.hornets) push('hornet', h.x, h.y, 4, h);
+    if (world.sbugs) for (const s of world.sbugs) push('sbug', s.sx, s.y, 7, s);
+    for (const s of world.snappers) if (s.state !== 'spent') push('snapper', s.sx, (s.state === 'lunge' || s.state === 'retract') ? (s.mawY || SEA_Y) + 5 : SEA_Y - 4, 7, s);
+    for (const l of world.leapers) {
+      if (l.kind === 'jelly') push('jelly', l.sx, l.y, 5, l);
+      else if (l.state !== 'spent') push(l.kind, l.sx, l.state === 'leap' ? l.ly : SEA_Y - 4, 6, l);
+    }
+    for (const o of world.obstacles) {
+      const sx = o.x - world.dist;
+      if (o.snake && o.snake.state !== 'spent') {
+        const s = o.snake;
+        const struck = s.state === 'strike' || s.state === 'recoil' || s.state === 'latched';
+        push('snake', struck ? s.headX : (sx + o.w * 0.7), struck ? s.headY : ((o.gapY - o.gapH / 2) + 4), 6, s);
+      }
+      if (o.spider && (o.spider.state === 'drop' || o.spider.state === 'hang' || o.spider.state === 'climb')) push('spider', o.spider.sx != null ? o.spider.sx : (sx + o.w * 0.5), o.spider.y, 5, o.spider);
+      if (o.durian && o.durian.state !== 'spent') push('durian', o.durian.worldX - world.dist, o.durian.y, 4, o.durian);
+      if (o.hnest && !o.hnest.dead && o.hnest.sx != null) push('hnest', o.hnest.sx, o.hnest.ny, 6, o.hnest);
+    }
+    if (world.boss && world.boss.state !== 'defeated' && world.boss.state !== 'enter') push('boss', world.boss.x, world.boss.y, 13, world.boss);
+    return out;
+  }
+
+  function damageEnemy(t, dmg, opts) {
+    const o = t.o;
+    if (o.hp == null || o.hp <= 0) return;
+    o.hp -= dmg;
+    addFloat(t.x, t.y - 8, '-' + dmg, '#ff9f4d');
+    spawnParts(4, function () { return sparkle(t.x + rnd(-4, 4), t.y + rnd(-4, 4), '#fff3a8'); });
+    AUDIO.play('pop');
+    if (t.kind === 'boss') {
+      shakeIt(1, 0.1);
+      if (o.hp <= 0) { o.state = 'defeated'; o.t = 0; AUDIO.play('die'); bossReward(); }
+      return;
+    }
+    if (opts && opts.dot && o.hp > 0 && !o.poisonT) { o.poisonT = 3.0; o.poisonTick = 0.6; addFloat(t.x, t.y - 14, 'POISONED', '#c7d94a'); }
+    if (o.hp <= 0) killEnemy(t);
+  }
+
+  function killEnemy(t) {
+    const o = t.o, kind = t.kind;
+    run.kills++;
+    run.score += 20; run.scorePop = 0.25; addDNA(1);
+    AUDIO.play('kill');
+    addFloat(t.x, t.y - 10, '+20', '#ffd257');
+    spawnParts(10, function () { return sparkle(t.x + rnd(-6, 6), t.y + rnd(-6, 6), pick(['#fff3a8', '#ffd257', '#ff9f4d'])); });
+    spawnParts(4, function () { return feather(t.x, t.y); });
+    if (Math.random() < 0.3) { // a felled foe sometimes drops a snack
+      const kd = pick(['berry', 'seed', 'bug']);
+      world.foods.push({ kind: kd, def: FOODS[kd], x: t.x, baseY: clamp(t.y, 30, SEA_Y - 24), y: 0, phase: rnd(0, 6.28), wander: 0, hopT: 0, vy: 0 });
+    }
+    if (kind === 'bat') { world.bat = null; world.batTimer = rnd(5, 9) * diff().timer; }
+    else if (kind === 'dfly') { world.dfly = null; world.dflyTimer = rnd(4, 8) * diff().timer; }
+    else if (kind === 'vulture') { world.vulture = null; world.vultureTimer = rnd(6, 10) * diff().timer; }
+    else if (kind === 'falcon') { world.falcon = null; world.falconTimer = rnd(5, 9) * diff().timer; }
+    else if (kind === 'hawk') { world.hawk = null; }
+    else if (kind === 'wasp') { const i = world.wasps ? world.wasps.indexOf(o) : -1; if (i >= 0) world.wasps.splice(i, 1); if (world.wasps && !world.wasps.length) world.wasps = null; }
+    else if (kind === 'hornet') { const i = world.hornets.indexOf(o); if (i >= 0) world.hornets.splice(i, 1); }
+    else if (kind === 'sbug') { const i = world.sbugs.indexOf(o); if (i >= 0) world.sbugs.splice(i, 1); spawnFoodAt(world.dist + t.x); }
+    else if (kind === 'snapper') { o.state = 'spent'; }
+    else if (kind === 'snake') { if (bird.latched && bird.latched.s === o) freeLatch(true); o.state = 'spent'; o.spent = true; }
+    else if (kind === 'spider') { o.state = 'spent'; }
+    else if (kind === 'durian') { o.state = 'spent'; spawnParts(6, function () { return leaf(t.x, t.y, '#6ea233'); }); }
+    else if (kind === 'hnest') { o.dead = true; run.score += 20; addDNA(2); addFloat(t.x, t.y - 16, 'NEST DOWN!', '#f2a63c'); spawnParts(8, function () { return crumb(t.x, t.y, '#c9b088'); }); }
+    else { const i = world.leapers.indexOf(o); if (i >= 0) world.leapers.splice(i, 1); } // bfrog / piranha / jelly
+  }
+
+  function tickPoison(dt) {
+    const ts = enemyTargets();
+    for (const t of ts) {
+      const o = t.o;
+      if (o.poisonT > 0) {
+        o.poisonT -= dt; o.poisonTick -= dt;
+        if (Math.random() < 0.2) parts.push(crumb(t.x + rnd(-3, 3), t.y + rnd(-3, 3), '#c7d94a'));
+        if (o.poisonTick <= 0) { o.poisonTick = 0.6; damageEnemy(t, 1); }
+      }
+    }
+  }
+
+  function hitArea(x, y, r, dmg, opts) {
+    const ts = enemyTargets();
+    for (const t of ts) { const dx = t.x - x, dy = t.y - y; if (dx * dx + dy * dy <= (r + t.r) * (r + t.r)) damageEnemy(t, dmg, opts); }
+  }
+
+  function tryAttack() {
+    if (bird.dead || bird.latched || world.phase !== 'fly') return;
+    if (bird.atkCd > 0) return;
+    const id = SKILLS[run.skillId] ? run.skillId : 'peck';
+    bird.atkCd = SKILLS[id].cd;
+    useSkill(id);
+  }
+
+  function useSkill(id) {
+    const sk = SKILLS[id], bp = beakPos(), dmg = atkDmg(sk.dmg);
+    if (id === 'peck') {
+      bird.atkLunge = 0.18; bird.catchPop = 0.15; AUDIO.play('slash');
+      world.fx.push({ type: 'slash', x: bp.x + 7, y: bp.y, t: 0, life: 0.18, col: '#f2f7ff' });
+      hitArea(bp.x + 10, bp.y, 14, dmg);
+    } else if (id === 'seed') {
+      AUDIO.play('pop');
+      world.shots.push({ kind: 'seed', x: bp.x, y: bp.y, vx: 250, vy: 0, g: 0, dmg: dmg, r: 3 });
+    } else if (id === 'volley') {
+      AUDIO.play('whoosh');
+      for (let i = -1; i <= 1; i++) world.shots.push({ kind: 'quill', x: bp.x, y: bp.y, vx: 230, vy: i * 60, g: 0, dmg: dmg, r: 3 });
+    } else if (id === 'slash') {
+      AUDIO.play('slash'); bird.atkLunge = 0.14;
+      world.fx.push({ type: 'slash', x: bird.x + 4, y: bird.y, t: 0, life: 0.22, col: '#a8e4f2', big: true });
+      hitArea(bird.x, bird.y, 22, dmg);
+    } else if (id === 'chirp') {
+      AUDIO.play('chirp');
+      world.fx.push({ type: 'ring', x: bird.x, y: bird.y, t: 0, life: 0.55 });
+      const ts = enemyTargets(); for (const t of ts) damageEnemy(t, dmg);
+    } else if (id === 'egg') {
+      AUDIO.play('whoosh');
+      world.shots.push({ kind: 'egg', x: bp.x, y: bp.y - 2, vx: 165, vy: -130, g: 430, dmg: dmg, r: 4, aoe: 20 });
+    } else if (id === 'vortex') {
+      AUDIO.play('wind');
+      world.shots.push({ kind: 'vortex', x: bp.x, y: bp.y, vx: 115, vy: 0, g: 0, dmg: dmg, r: 8, pierce: true, life: 2.4, hitList: [] });
+    } else if (id === 'bolt') {
+      const ts = enemyTargets();
+      let best = null, bd = 1e9;
+      for (const t of ts) { const d = (t.x - bird.x) * (t.x - bird.x) + (t.y - bird.y) * (t.y - bird.y); if (d < bd) { bd = d; best = t; } }
+      AUDIO.play('zap');
+      if (best) { world.fx.push({ type: 'bolt', x: best.x, y: best.y, t: 0, life: 0.3 }); damageEnemy(best, dmg); shakeIt(1.5, 0.12); }
+      else world.fx.push({ type: 'bolt', x: bird.x + 44, y: bird.y, t: 0, life: 0.3 });
+    } else if (id === 'ray') {
+      AUDIO.play('beam');
+      world.fx.push({ type: 'beam', x: bp.x, y: bp.y, t: 0, life: 0.4 });
+      const ts = enemyTargets(); for (const t of ts) if (t.x > bird.x && Math.abs(t.y - bp.y) < 10) damageEnemy(t, dmg);
+    } else if (id === 'venom') {
+      AUDIO.play('pop');
+      world.shots.push({ kind: 'venom', x: bp.x, y: bp.y, vx: 210, vy: -30, g: 140, dmg: dmg, r: 3, dot: true });
+    }
+  }
+
+  function explodeEgg(s) {
+    AUDIO.play('chomp'); shakeIt(1.5, 0.14);
+    world.fx.push({ type: 'burst', x: s.x, y: s.y, t: 0, life: 0.35 });
+    spawnParts(10, function () { return crumb(s.x + rnd(-4, 4), s.y + rnd(-4, 4), pick(['#fbe7bb', '#e5c28c', '#ffffff'])); });
+    hitArea(s.x, s.y, s.aoe || 20, s.dmg);
+  }
+
+  function updateShots(dt) {
+    for (let i = world.shots.length - 1; i >= 0; i--) {
+      const s = world.shots[i];
+      s.t = (s.t || 0) + dt;
+      s.vy += (s.g || 0) * dt;
+      s.x += s.vx * dt; s.y += s.vy * dt;
+      if (s.kind === 'vortex') { s.y += Math.sin(s.t * 7) * 16 * dt; if (Math.random() < 0.5) parts.push(puff(s.x - 5, s.y + rnd(-5, 5))); }
+      let dead = s.x > W + 16 || s.y < -12 || (s.life && s.t > s.life);
+      if (s.y > SEA_Y - 1) { if (s.kind === 'egg') explodeEgg(s); dead = true; }
+      if (!dead) {
+        const ts = enemyTargets();
+        for (const t of ts) {
+          if (s.pierce && s.hitList.indexOf(t.o) >= 0) continue;
+          const dx = t.x - s.x, dy = t.y - s.y;
+          if (dx * dx + dy * dy <= (s.r + t.r) * (s.r + t.r)) {
+            if (s.kind === 'egg') { explodeEgg(s); dead = true; break; }
+            damageEnemy(t, s.dmg, { dot: s.dot });
+            if (s.pierce) { s.hitList.push(t.o); continue; }
+            dead = true; break;
+          }
+        }
+      }
+      if (dead) world.shots.splice(i, 1);
+    }
+  }
+
+  function drawShots() {
+    for (const s of world.shots) {
+      if (s.kind === 'seed') ctx.drawImage(SPR.SEED, Math.round(s.x - 2), Math.round(s.y - 2));
+      else if (s.kind === 'quill') { ctx.fillStyle = '#d9c39a'; ctx.fillRect(Math.round(s.x - 3), Math.round(s.y), 5, 1); ctx.fillStyle = '#9a6c41'; ctx.fillRect(Math.round(s.x + 1), Math.round(s.y), 2, 1); }
+      else if (s.kind === 'egg') ctx.drawImage(SPR.EGG, Math.round(s.x - 3), Math.round(s.y - 4));
+      else if (s.kind === 'venom') { ctx.fillStyle = '#c7d94a'; ctx.fillRect(Math.round(s.x - 1), Math.round(s.y - 1), 3, 3); ctx.fillStyle = '#3e7a2e'; ctx.fillRect(Math.round(s.x), Math.round(s.y), 1, 1); }
+      else if (s.kind === 'vortex') {
+        const a = s.t * 12;
+        ctx.strokeStyle = 'rgba(168,228,242,0.85)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(s.x, s.y, 6, a, a + 4); ctx.stroke();
+        ctx.beginPath(); ctx.arc(s.x, s.y, 4, -a, -a + 4); ctx.stroke();
+        ctx.beginPath(); ctx.arc(s.x, s.y, 8, a * 0.7 + 2, a * 0.7 + 5); ctx.stroke();
+      }
+    }
+  }
+
+  function updateFx(dt) { for (let i = world.fx.length - 1; i >= 0; i--) { const f = world.fx[i]; f.t += dt; if (f.t > f.life) world.fx.splice(i, 1); } }
+
+  function drawFx() {
+    for (const f of world.fx) {
+      const k = clamp(f.t / f.life, 0, 1);
+      if (f.type === 'slash') {
+        const r = (f.big ? 14 : 9) + k * 8;
+        ctx.globalAlpha = 1 - k;
+        ctx.strokeStyle = f.col || '#f2f7ff'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(f.x, f.y, r, -0.9, 0.9); ctx.stroke();
+        ctx.strokeStyle = 'rgba(168,228,242,0.8)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(f.x, f.y, Math.max(2, r - 3), -0.7, 0.7); ctx.stroke();
+        ctx.globalAlpha = 1;
+      } else if (f.type === 'ring') {
+        const r = 6 + k * 130;
+        ctx.globalAlpha = 0.85 * (1 - k);
+        ctx.strokeStyle = '#96f0e4'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(f.x, f.y, r, 0, 6.28); ctx.stroke();
+        ctx.strokeStyle = '#3fc0b0'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(f.x, f.y, r * 0.8, 0, 6.28); ctx.stroke();
+        ctx.globalAlpha = 1;
+      } else if (f.type === 'bolt') {
+        ctx.globalAlpha = 1 - k * 0.7;
+        let px = f.x + rnd(-3, 3), py = 0;
+        while (py < f.y - 4) {
+          const ny = py + rnd(8, 16), nx = f.x + rnd(-6, 6);
+          ctx.strokeStyle = '#ffe27a'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
+          ctx.strokeStyle = '#fffbe0'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
+          px = nx; py = ny;
+        }
+        ctx.fillStyle = '#fffbe0'; ctx.fillRect(Math.round(f.x - 3), Math.round(f.y - 3), 6, 6);
+        ctx.globalAlpha = 1;
+      } else if (f.type === 'beam') {
+        const hh = 3 + Math.sin(f.t * 40);
+        ctx.globalAlpha = 0.85 * (1 - k);
+        ctx.fillStyle = '#f6c945'; ctx.fillRect(Math.round(f.x), Math.round(f.y - hh), W - Math.round(f.x), Math.round(hh * 2));
+        ctx.fillStyle = '#fffbe0'; ctx.fillRect(Math.round(f.x), Math.round(f.y - 1), W - Math.round(f.x), 2);
+        ctx.globalAlpha = 1;
+      } else if (f.type === 'burst') {
+        const r = 4 + k * 18;
+        ctx.globalAlpha = 1 - k;
+        ctx.strokeStyle = '#ffd257'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(f.x, f.y, r, 0, 6.28); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  // tiny health bars over foes that have taken damage
+  function drawEnemyHp() {
+    const ts = enemyTargets();
+    for (const t of ts) {
+      const o = t.o;
+      if (t.kind === 'boss' || !o.maxhp || o.maxhp <= 1 || o.hp >= o.maxhp) continue;
+      const bw = 10, bx = Math.round(t.x - bw / 2), by = Math.round(t.y - t.r - 5);
+      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(bx - 1, by, bw + 2, 3);
+      ctx.fillStyle = o.poisonT > 0 ? '#c7d94a' : '#e0525c'; ctx.fillRect(bx, by + 1, Math.max(1, Math.round(bw * o.hp / o.maxhp)), 1);
+    }
+  }
+
+  // ---------- pets: cute companions that trail behind you ----------
+  function grantPet() {
+    const order = ['chick', 'noodle', 'lumen'];
+    const owned = run.pets.map(function (p) { return p.kind; });
+    const next = order.filter(function (k) { return owned.indexOf(k) < 0; })[0];
+    if (!next) { run.score += 100; addFloat(bird.x, bird.y - 32, 'FLOCK BONUS +100', '#ffd257'); return; }
+    run.pets.push({ kind: next, x: bird.x - 14, y: bird.y, t: rnd(0, 6.28), cd: 2 });
+    AUDIO.play('petJoin');
+    addFloat(bird.x, bird.y - 32, PET_NAMES[next] + ' JOINS YOU!', '#ffd257', true);
+  }
+
+  function updatePets(dt) {
+    let tx = bird.x - 13, ty = bird.y + 2;
+    const inFlight = STATE === 'fly' && world && world.phase === 'fly';
+    for (const p of run.pets) {
+      p.t += dt; p.cd = Math.max(0, p.cd - dt);
+      const spring = Math.min(1, dt * 5);
+      p.x += (tx - p.x) * spring;
+      p.y += (ty + Math.sin(p.t * 3) * 3 - p.y) * spring;
+      if (p.kind === 'lumen') { // a living lantern: trickle of wing energy
+        bird.energy = Math.min(bird.maxEnergy || 100, bird.energy + 4 * dt);
+        if (Math.random() < 0.12) parts.push(sparkle(p.x + rnd(-3, 3), p.y + rnd(-3, 3), '#c7ff9a'));
+      } else if (p.kind === 'noodle' && inFlight) { // nudges nearby food toward you
+        for (const f of world.foods) { const dx = bird.x - f.x, dy = bird.y - f.baseY, d2 = dx * dx + dy * dy; if (d2 < 52 * 52 && d2 > 9) { const d = Math.sqrt(d2); f.x += dx / d * 40 * dt; f.baseY += dy / d * 40 * dt; } }
+      } else if (p.kind === 'chick' && inFlight && p.cd <= 0) { // pecks at nearby foes
+        const ts = enemyTargets();
+        for (const t of ts) {
+          const dx = t.x - p.x, dy = t.y - p.y;
+          if (dx * dx + dy * dy < 44 * 44) { p.cd = 2.6; world.fx.push({ type: 'slash', x: t.x, y: t.y, t: 0, life: 0.16, col: '#ffe27a' }); damageEnemy(t, 1); addFloat(p.x, p.y - 8, 'PIP!', '#ffe27a'); break; }
+        }
+      }
+      tx = p.x - 11; ty = p.y; // the next pet trails this one
+    }
+  }
+
+  function drawPets() {
+    if (!run || !run.pets) return;
+    for (const p of run.pets) {
+      let spr;
+      if (p.kind === 'chick') spr = Math.floor(time * 10 + p.t) % 2 ? SPR.PET_CHICK1 : SPR.PET_CHICK2;
+      else if (p.kind === 'noodle') spr = SPR.PET_NOODLE;
+      else spr = SPR.PET_LUMEN;
+      ctx.drawImage(spr, Math.round(p.x - spr.width / 2), Math.round(p.y - spr.height / 2));
+    }
   }
 
   // ---------- predators ----------
@@ -1056,7 +1453,7 @@
     if (world.snapperTimer > 0 && world.phase === 'fly') {
       world.snapperTimer -= dt;
       if (world.snapperTimer <= 0) {
-        world.snappers.push({ worldX: world.dist + W + 20, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: run.tut.snapper });
+        world.snappers.push({ worldX: world.dist + W + 20, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: run.tut.snapper, hp: 4, maxhp: 4 });
         world.snapperTimer = rnd(4, 7);
       }
     }
@@ -1100,7 +1497,7 @@
     if (world.hawkTimer > 0 && world.phase === 'fly' && !world.hawk) {
       world.hawkTimer -= dt;
       if (world.hawkTimer <= 0) {
-        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, 'HAWK!', '#7a5a3a'); } }
+        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, 'HAWK!', '#7a5a3a'); } }
         else world.hawkTimer = 0.5;
       }
     }
@@ -1416,7 +1813,7 @@
   // ---------- new enemies: wasp swarm + spider ----------
   function startWasps() {
     world.wasps = []; world.waspT = 0;
-    for (let i = 0; i < 6; i++) world.wasps.push({ x: W + 10 + i * 5, y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28) });
+    for (let i = 0; i < 6; i++) world.wasps.push({ x: W + 10 + i * 5, y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28), hp: 1, maxhp: 1 });
     world.eventBanner = { text: 'WASP SWARM!', t: 0 }; AUDIO.play('snakeHiss');
   }
   function updateWasps(dt) {
@@ -1466,7 +1863,7 @@
     if (world.batTimer > 0 && world.phase === 'fly' && !world.bat) {
       world.batTimer -= dt;
       if (world.batTimer <= 0) {
-        if (threatFree()) { world.bat = { state: 'warn', t: 0, x: W + 8, y: rnd(16, 40), first: run.tut.bat }; AUDIO.play('snakeHiss'); if (world.bat.first) { run.tut.bat = false; addFloat(W - 30, 32, 'BAT!', '#c8b9e0'); } }
+        if (threatFree()) { world.bat = { state: 'warn', t: 0, x: W + 8, y: rnd(16, 40), first: run.tut.bat, hp: 2, maxhp: 2 }; AUDIO.play('snakeHiss'); if (world.bat.first) { run.tut.bat = false; addFloat(W - 30, 32, 'BAT!', '#c8b9e0'); } }
         else world.batTimer = 0.5;
       }
     }
@@ -1495,7 +1892,7 @@
     if (world.dflyTimer > 0 && world.phase === 'fly' && !world.dfly) {
       world.dflyTimer -= dt;
       if (world.dflyTimer <= 0) {
-        if (threatFree()) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: run.tut.dfly }; AUDIO.play('rustle'); if (world.dfly.first) { run.tut.dfly = false; addFloat(W - 26, clamp(bird.y, 24, SEA_Y - 20) - 10, 'DRAGONFLY!', '#7fe0d0'); } }
+        if (threatFree()) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: run.tut.dfly, hp: 2, maxhp: 2 }; AUDIO.play('rustle'); if (world.dfly.first) { run.tut.dfly = false; addFloat(W - 26, clamp(bird.y, 24, SEA_Y - 20) - 10, 'DRAGONFLY!', '#7fe0d0'); } }
         else world.dflyTimer = 0.5;
       }
     }
@@ -1523,7 +1920,7 @@
     if (world.vultureTimer > 0 && world.phase === 'fly' && !world.vulture) {
       world.vultureTimer -= dt;
       if (world.vultureTimer <= 0) {
-        if (threatFree()) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: run.tut.vulture }; AUDIO.play('hawkScreech'); if (world.vulture.first) { run.tut.vulture = false; addFloat(W - 40, 20, 'VULTURE!', '#c97a6a'); } }
+        if (threatFree()) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: run.tut.vulture, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.vulture.first) { run.tut.vulture = false; addFloat(W - 40, 20, 'VULTURE!', '#c97a6a'); } }
         else world.vultureTimer = 0.5;
       }
     }
@@ -1563,9 +1960,9 @@
     if (hz.indexOf('jelly') >= 0) kinds.push('jelly');
     if (!kinds.length) return;
     const kind = pick(kinds), first = run.tut[kind];
-    if (kind === 'jelly') { world.leapers.push({ kind: 'jelly', worldX: world.dist + W + 12, y: SEA_Y - 8, state: 'rise', t: 0, bob: rnd(0, 6.28), first: first }); return; }
-    if (kind === 'piranha') { for (let i = 0; i < 3; i++) world.leapers.push({ kind: 'piranha', worldX: world.dist + W + 20 + i * 16, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first && i === 0 }); return; }
-    world.leapers.push({ kind: 'bfrog', worldX: world.dist + W + 20, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first });
+    if (kind === 'jelly') { world.leapers.push({ kind: 'jelly', worldX: world.dist + W + 12, y: SEA_Y - 8, state: 'rise', t: 0, bob: rnd(0, 6.28), first: first, hp: 2, maxhp: 2 }); return; }
+    if (kind === 'piranha') { for (let i = 0; i < 3; i++) world.leapers.push({ kind: 'piranha', worldX: world.dist + W + 20 + i * 16, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first && i === 0, hp: 1, maxhp: 1 }); return; }
+    world.leapers.push({ kind: 'bfrog', worldX: world.dist + W + 20, state: 'lurk', t: 0, bob: rnd(0, 6.28), first: first, hp: 2, maxhp: 2 });
   }
   function updateJelly(l, dt) {
     l.t += dt;
@@ -1621,6 +2018,64 @@
     }
   }
 
+  // ---------- new attackable enemies: armored shieldbug + hornet nest ----------
+  function updateShieldbugs(dt) {
+    if (world.sbugTimer > 0 && world.phase === 'fly') {
+      world.sbugTimer -= dt;
+      if (world.sbugTimer <= 0) {
+        world.sbugs.push({ worldX: world.dist + W + 16, y: rnd(40, SEA_Y - 44), ph: rnd(0, 6.28), hp: 6, maxhp: 6, first: run.tut.sbug });
+        world.sbugTimer = rnd(6, 9) * diff().timer;
+      }
+    }
+    for (let i = world.sbugs.length - 1; i >= 0; i--) {
+      const s = world.sbugs[i];
+      s.ph += dt * 2;
+      s.worldX -= 12 * dt; // drifts slowly against the scroll — a flying wall
+      s.sx = s.worldX - world.dist;
+      s.y += Math.sin(s.ph) * 8 * dt;
+      if (s.first && s.sx < W - 12) { s.first = false; run.tut.sbug = false; addFloat(s.sx, s.y - 12, 'SHIELDBUG!', '#c9d2e0'); }
+      if (s.sx < -14) { world.sbugs.splice(i, 1); continue; }
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(s.sx - bird.x) < 8 && Math.abs(s.y - bird.y) < 7) hurt('sbug', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -80 });
+    }
+  }
+  function drawShieldbugs() {
+    for (const s of world.sbugs) {
+      if (s.sx < -12 || s.sx > W + 12) continue;
+      const spr = Math.floor(time * 14) % 2 ? SPR.SHIELDBUG1 : SPR.SHIELDBUG2;
+      ctx.drawImage(spr, Math.round(s.sx - 4), Math.round(s.y - 4));
+    }
+  }
+
+  function updateHornets(dt) {
+    for (const o of world.obstacles) {
+      const n = o.hnest; if (!n || n.dead) continue;
+      const sx = o.x - world.dist + o.w * 0.5;
+      n.sx = sx; n.ny = (o.gapY - o.gapH / 2) + 9;
+      if (sx < W - 4 && sx > 30 && world.phase === 'fly') {
+        if (n.first) { n.first = false; run.tut.hornet = false; addFloat(sx, n.ny - 14, 'HORNET NEST!', '#f2a63c'); AUDIO.play('snakeHiss'); }
+        n.cd -= dt;
+        if (n.cd <= 0 && world.hornets.length < 3) { n.cd = 1.6 * diff().tele; world.hornets.push({ x: sx, y: n.ny + 5, ph: rnd(0, 6.28), hp: 1, maxhp: 1 }); AUDIO.play('rustle'); }
+      }
+    }
+    for (let i = world.hornets.length - 1; i >= 0; i--) {
+      const h = world.hornets[i]; h.ph += dt * 9;
+      const dx = bird.x - h.x, dy = bird.y - h.y, d = Math.max(1, Math.hypot(dx, dy));
+      h.x += (dx / d * 40) * dt + Math.cos(h.ph) * 9 * dt - world.speed * 0.25 * dt;
+      h.y += (dy / d * 40) * dt + Math.sin(h.ph * 1.2) * 10 * dt;
+      h.y = clamp(h.y, 16, SEA_Y - 6);
+      if (h.x < -12) { world.hornets.splice(i, 1); continue; }
+      if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(h.x - bird.x) < 6 && Math.abs(h.y - bird.y) < 6) { hurt('hornet', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -80 }); world.hornets.splice(i, 1); }
+    }
+  }
+  function drawHornets() {
+    for (const o of world.obstacles) {
+      const n = o.hnest; if (!n || n.dead || n.sx == null) continue;
+      if (n.sx < -10 || n.sx > W + 10) continue;
+      ctx.drawImage(SPR.HORNET_NEST, Math.round(n.sx - 4), Math.round(n.ny - 5 + Math.sin(time * 2) * 1));
+    }
+    for (const h of world.hornets) { const spr = Math.floor(time * 20 + h.ph) % 2 ? SPR.HORNET1 : SPR.HORNET2; ctx.drawImage(spr, Math.round(h.x - 3), Math.round(h.y - 3)); }
+  }
+
   // ---------- boss: THE GREAT EAGLE ----------
   function ellipseFill(cx, cy, rx, ry, col) {
     ctx.fillStyle = col;
@@ -1643,7 +2098,7 @@
     ctx.fillStyle = y; ctx.fillRect(cx - 3, cy + 14, 1, 2); ctx.fillRect(cx + 2, cy + 14, 1, 2);
   }
   function endAttack(B) {
-    B.attacks++; B.hp = Math.max(0, B.hp - 20);
+    B.attacks++; B.hp = Math.max(0, B.hp - 14); // outlasting an attack chips the boss too
     if (B.hp <= 0) { B.state = 'defeated'; B.t = 0; AUDIO.play('die'); bossReward(); }
     else { B.state = 'recover'; B.t = 0; }
   }
@@ -1651,38 +2106,58 @@
     run.score += 300; addDNA(20);
     bird.maxHearts = Math.min(6, bird.maxHearts + 1); bird.hearts = bird.maxHearts;
     AUDIO.play('heart'); AUDIO.play('evolve');
-    addFloat(bird.x, bird.y - 22, 'EAGLE DRIVEN OFF!', '#96f0e4', true);
+    addFloat(bird.x, bird.y - 22, 'BOSS DRIVEN OFF!', '#96f0e4', true);
     spawnParts(24, function () { return sparkle(bird.x + rnd(-20, 20), bird.y + rnd(-16, 10), pick(['#fff3a8', '#e0b24a', '#96f0e4'])); });
+    grantPet(); // every boss tames a cute companion
   }
   function updateBoss(dt) {
     const B = world.boss; if (!B) return;
     B.t += dt; B.wing += dt * 6;
     for (let i = B.feathers.length - 1; i >= 0; i--) {
-      const f = B.feathers[i]; f.t += dt; f.vy += 240 * dt; f.x += f.vx * dt; f.y += f.vy * dt;
-      if (!bird.dead && bird.invuln <= 0 && Math.abs(f.x - bird.x) < 6 && Math.abs(f.y - bird.y) < 6) { hurt('eagle', { sfx: 'chomp', shake: 3, feathers: 6, knockVy: 60 }); f.dead = true; }
-      if (f.dead || f.y > SEA_Y) B.feathers.splice(i, 1);
+      const f = B.feathers[i]; f.t += dt; f.vy += (f.g == null ? 240 : f.g) * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+      if (!bird.dead && bird.invuln <= 0 && Math.abs(f.x - bird.x) < 6 && Math.abs(f.y - bird.y) < 6) { hurt(B.kind, { sfx: 'chomp', shake: 3, feathers: 6, knockVy: 60 }); f.dead = true; }
+      if (f.dead || f.y > SEA_Y || f.x < -20 || f.y < -24 || f.t > 4) B.feathers.splice(i, 1);
     }
     if (B.state === 'enter') {
       B.x += ((W - 64) - B.x) * Math.min(1, dt * 1.5); B.y += (34 - B.y) * Math.min(1, dt * 2);
-      if (B.t > 1.6) { B.state = 'idle'; B.t = 0; if (B.first) { B.first = false; addFloat(W / 2, 62, 'THE GREAT EAGLE', '#e0b24a', true); } AUDIO.play('hawkScreech'); }
+      if (B.t > 1.6) { B.state = 'idle'; B.t = 0; if (B.first) { B.first = false; addFloat(W / 2, 62, BOSS_NAMES[B.kind], '#e0b24a', true); } AUDIO.play('hawkScreech'); }
     } else if (B.state === 'idle') {
       B.x += ((W - 64) - B.x) * Math.min(1, dt * 2); B.y = 34 + Math.sin(B.t * 3) * 3;
-      if (B.t > 0.8) { B.pattern = pick(['dive', 'sweep', 'feathers']); B.state = 'telegraph'; B.t = 0; B.lockY = bird.y; AUDIO.play('hawkScreech'); }
+      if (B.t > 0.8) {
+        B.pattern = pick(BOSS_PATTERNS[B.kind] || BOSS_PATTERNS.eagle);
+        if (B.pattern === 'gust') B.gustDir = pick([-1, 1]);
+        B.state = 'telegraph'; B.t = 0; B.lockY = bird.y; B.lockX = bird.x;
+        AUDIO.play(B.kind === 'serpent' ? 'snakeHiss' : 'hawkScreech');
+      }
     } else if (B.state === 'telegraph') {
-      if (B.t < 0.3) B.lockY = bird.y;
-      if (B.t > 0.85) { B.state = 'attack'; B.t = 0; AUDIO.play('hawkWhoosh'); if (B.pattern === 'feathers') { for (let i = 0; i < 5; i++) B.feathers.push({ x: B.x - 10 + i * 8, y: B.y + 6, vx: rnd(-24, 24), vy: rnd(-10, 20), t: 0 }); } }
+      if (B.t < 0.3) { B.lockY = bird.y; B.lockX = bird.x; }
+      if (B.t > 0.85) {
+        B.state = 'attack'; B.t = 0; AUDIO.play('hawkWhoosh');
+        if (B.pattern === 'feathers') { for (let i = 0; i < 5; i++) B.feathers.push({ x: B.x - 10 + i * 8, y: B.y + 6, vx: rnd(-24, 24), vy: rnd(-10, 20), t: 0 }); }
+        else if (B.pattern === 'globs') { for (let i = 0; i < 4; i++) B.feathers.push({ x: B.x - 4, y: B.y + 2, vx: -rnd(60, 150), vy: -rnd(30, 110), g: 260, t: 0 }); AUDIO.play('snakeStrike'); }
+        else if (B.pattern === 'shards') { for (let i = 0; i < 4; i++) { const dx = bird.x - B.x, dy = (bird.y + (i - 1.5) * 12) - B.y, d = Math.max(1, Math.hypot(dx, dy)); B.feathers.push({ x: B.x - 6, y: B.y + 2, vx: dx / d * 170, vy: dy / d * 170, g: 0, t: 0 }); } AUDIO.play('zap'); }
+      }
     } else if (B.state === 'attack') {
       if (B.pattern === 'dive') {
         const k = Math.min(1, B.t / 0.6); B.x = lerp(W - 64, bird.x, Math.min(1, k * 1.25)); B.y = lerp(34, B.lockY, Math.sin(k * Math.PI));
-        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 12 && Math.abs(B.y - bird.y) < 11) hurt('eagle', { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
+        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 12 && Math.abs(B.y - bird.y) < 11) hurt(B.kind, { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
         if (B.t > 0.7) endAttack(B);
       } else if (B.pattern === 'sweep') {
         B.y = B.lockY; B.x -= 250 * dt;
-        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 13 && Math.abs(B.y - bird.y) < 9) hurt('eagle', { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
+        if (!bird.dead && bird.invuln <= 0 && Math.abs(B.x - bird.x) < 13 && Math.abs(B.y - bird.y) < 9) hurt(B.kind, { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: 130 });
         if (B.x < -30) { B.x = W + 30; endAttack(B); }
-      } else {
+      } else if (B.pattern === 'rise') { // a serpent neck erupts from the mire at your column
+        const k = Math.min(1, B.t / 0.75);
+        B.riseY = SEA_Y - (SEA_Y - 30) * Math.sin(k * Math.PI);
+        if (!bird.dead && bird.invuln <= 0 && Math.abs(bird.x - B.lockX) < 9 && bird.y > B.riseY - 5) hurt(B.kind, { sfx: 'chomp', shake: 5, shakeDur: 0.4, freeze: 0.14, flash: 0.16, feathers: 12, knockVy: -130 });
+        if (B.t > 0.8) endAttack(B);
+      } else if (B.pattern === 'gust') { // the owl beats a freezing wind — fight the push
+        bird.vy += 175 * B.gustDir * dt;
+        if (Math.random() < 0.6) parts.push(streak(rnd(10, SEA_Y - 6)));
+        if (B.t > 1.4) endAttack(B);
+      } else { // volley patterns: feathers / globs / shards
         B.x += ((W - 64) - B.x) * Math.min(1, dt * 2);
-        if ((B.t > 1.0 && B.feathers.length === 0) || B.t > 2.4) endAttack(B);
+        if ((B.t > 1.0 && B.feathers.length === 0) || B.t > 2.6) endAttack(B);
       }
     } else if (B.state === 'recover') {
       B.x += ((W - 64) - B.x) * Math.min(1, dt * 2.5); B.y += (34 - B.y) * Math.min(1, dt * 3);
@@ -1693,14 +2168,62 @@
       if (B.y < -30) { world.boss = null; enterCine(); }
     }
   }
+
+  function drawSerpentHead(cx, cy) {
+    ellipseFill(cx, cy, 7, 6, '#3e7a2e');
+    ellipseFill(cx - 1, cy - 2, 5, 3, '#5cad3c');
+    ctx.fillStyle = '#c7d94a'; ctx.fillRect(cx - 4, cy - 2, 2, 2); ctx.fillRect(cx + 2, cy - 2, 2, 2);
+    ctx.fillStyle = '#161020'; ctx.fillRect(cx - 4, cy - 2, 1, 1); ctx.fillRect(cx + 2, cy - 2, 1, 1);
+    if (Math.floor(time * 5) % 3 === 0) { ctx.fillStyle = '#e0525c'; ctx.fillRect(cx - 1, cy + 5, 1, 3); ctx.fillRect(cx - 2, cy + 8, 1, 1); ctx.fillRect(cx, cy + 8, 1, 1); }
+  }
+  function drawSerpent(cx, cy) {
+    const segs = 9; // body coils down to the mire at the right edge
+    for (let i = segs; i >= 1; i--) {
+      const k = i / segs;
+      const bx = lerp(cx, W - 12, k) + Math.sin(time * 3 + k * 5) * (3 * k);
+      const by = lerp(cy + 4, SEA_Y - 2, k * k);
+      const r = Math.round(3 + k * 4);
+      ellipseFill(bx, by, r, r, i % 2 ? '#2f6b2a' : '#3e7a2e');
+    }
+    drawSerpentHead(cx, cy);
+  }
+  function drawOwl(cx, cy, flap) {
+    for (let s = -1; s <= 1; s += 2) {
+      for (let fI = 0; fI < 5; fI++) {
+        const wx = cx + s * (5 + fI * 5), wyy = cy + flap * (2 + fI * 2), len = Math.max(2, 7 - fI);
+        ctx.fillStyle = fI % 2 ? '#8a97a6' : '#c9d2e0'; ctx.fillRect(Math.round(wx - 2), Math.round(wyy - len / 2), 4, len);
+        ctx.fillStyle = '#5b6474'; ctx.fillRect(Math.round(wx - 2), Math.round(wyy + len / 2 - 1), 4, 1);
+      }
+    }
+    ellipseFill(cx, cy + 3, 6, 8, '#c9d2e0'); ellipseFill(cx, cy + 4, 4, 6, '#eef6ff');
+    ellipseFill(cx, cy - 4, 5, 5, '#eef6ff');
+    ctx.fillStyle = '#5b6474'; ctx.fillRect(cx - 5, cy - 10, 2, 3); ctx.fillRect(cx + 3, cy - 10, 2, 3);
+    ctx.fillStyle = '#f6c945'; ctx.fillRect(cx - 3, cy - 5, 2, 2); ctx.fillRect(cx + 1, cy - 5, 2, 2);
+    ctx.fillStyle = '#161020'; ctx.fillRect(cx - 2, cy - 5, 1, 1); ctx.fillRect(cx + 2, cy - 5, 1, 1);
+    ctx.fillStyle = '#e0b24a'; ctx.fillRect(cx - 1, cy - 3, 2, 2);
+    ctx.fillStyle = '#f6c945'; ctx.fillRect(cx - 3, cy + 11, 1, 2); ctx.fillRect(cx + 2, cy + 11, 1, 2);
+  }
+
   function drawBoss() {
     const B = world.boss; if (!B) return;
-    if (B.state === 'telegraph') {
-      if (B.pattern === 'dive' && Math.floor(time * 8) % 2) { ctx.fillStyle = 'rgba(224,178,74,0.4)'; ctx.fillRect(bird.x - 13, 0, 26, SEA_Y); }
-      else if (B.pattern === 'sweep' && Math.floor(time * 8) % 2) { ctx.fillStyle = 'rgba(224,178,74,0.5)'; ctx.fillRect(0, Math.round(B.lockY) - 1, W, 3); }
+    if (B.state === 'telegraph' && Math.floor(time * 8) % 2) {
+      if (B.pattern === 'dive') { ctx.fillStyle = 'rgba(224,178,74,0.4)'; ctx.fillRect(bird.x - 13, 0, 26, SEA_Y); }
+      else if (B.pattern === 'sweep') { ctx.fillStyle = 'rgba(224,178,74,0.5)'; ctx.fillRect(0, Math.round(B.lockY) - 1, W, 3); }
+      else if (B.pattern === 'rise') { ctx.fillStyle = 'rgba(199,217,74,0.4)'; ctx.fillRect(Math.round(B.lockX - 10), 30, 20, SEA_Y - 30); }
+      else if (B.pattern === 'gust') drawTextShadow(ctx, B.gustDir < 0 ? '! UPDRAFT !' : '! DOWNDRAFT !', W / 2, 52, '#a8e4f2', 1, 'center');
     }
-    drawEagle(B.x, B.y, Math.sin(B.wing * 3));
-    ctx.fillStyle = '#6b4f2e'; for (const f of B.feathers) ctx.fillRect(Math.round(f.x), Math.round(f.y), 2, 3);
+    if (B.pattern === 'rise' && B.state === 'attack' && B.riseY != null) { // the erupting neck column
+      const hx = Math.round(B.lockX), hy = Math.round(B.riseY);
+      ctx.fillStyle = '#2f6b2a'; ctx.fillRect(hx - 4, hy, 8, SEA_Y - hy);
+      ctx.fillStyle = '#3e7a2e'; ctx.fillRect(hx - 2, hy, 3, SEA_Y - hy);
+      drawSerpentHead(hx, hy);
+    }
+    if (B.kind === 'serpent') drawSerpent(B.x, B.y);
+    else if (B.kind === 'owl') drawOwl(B.x, B.y, Math.sin(B.wing * 3));
+    else drawEagle(B.x, B.y, Math.sin(B.wing * 3));
+    const pc = B.kind === 'serpent' ? '#c7d94a' : (B.kind === 'owl' ? '#a8e4f2' : '#6b4f2e');
+    ctx.fillStyle = pc;
+    for (const f of B.feathers) ctx.fillRect(Math.round(f.x), Math.round(f.y), 2, 3);
   }
 
   // ---------- cutscene + island ----------
@@ -1715,6 +2238,7 @@
     world.phase = 'cine';
     world.island = buildIsland();
     world.foods.length = 0;
+    world.shots.length = 0; world.fx.length = 0; world.hornets.length = 0; world.sbugs.length = 0;
     world.cine = { t: 0, skipped: false, bobT: 0, startX: bird.x, startY: bird.y, startVy: bird.vy };
     bird.glideHeld = false;
   }
@@ -1838,7 +2362,8 @@
     }
     if (ui.phase === 'mutate') {
       if (ui.t < 0.3) return;
-      applyMutation(ui.cards[ui.sel].mut);
+      const cc = ui.cards[ui.sel];
+      if (cc.kind === 'skill') applySkill(cc.skill); else applyMutation(cc.mut);
       ui.phase = 'hatching'; ui.cards = null; ui.t = 0;
       return;
     }
@@ -1889,8 +2414,9 @@
       updateTitleScene(dt);
     }
     else if (STATE === 'settings') { ui.t = (ui.t || 0) + dt; if (ui.resetFlash > 0) ui.resetFlash -= dt; updateBirdCosmetics(dt); }
+    if (run && run.pets && run.pets.length && (STATE === 'fly' || STATE === 'island')) updatePets(dt);
     updateParts(dt);
-    actionQueued = false; flapQueued = false;
+    actionQueued = false; flapQueued = false; attackQueued = false;
   }
 
   // ---------- render: background ----------
@@ -2589,10 +3115,27 @@
       ctx.fillStyle = '#96f0e4'; ctx.fillRect(bx, 55, Math.round(bw * n / 5), 3);
     }
     if (bird.boost > 0) drawTextShadow(ctx, 'BOOST', bird.x - 22, bird.y - 2, '#a8e4f2', 1, 'right');
+    // attack-skill button (X key / tap) with cooldown shade
+    const sk = SKILLS[run.skillId] || SKILLS.peck;
+    const abx = W - 27, aby = H - 27, abw = 23, abh = 23;
+    drawPanel(abx, aby, abw, abh);
+    ctx.drawImage(sk.icon, abx + 7, aby + 7);
+    const cdk = sk.cd > 0 ? clamp(bird.atkCd / sk.cd, 0, 1) : 0;
+    if (cdk > 0) { const hh2 = Math.round((abh - 4) * cdk); ctx.fillStyle = 'rgba(10,6,18,0.72)'; ctx.fillRect(abx + 2, aby + 2 + (abh - 4 - hh2), abw - 4, hh2); }
+    else if (Math.floor(time * 4) % 2) {
+      ctx.fillStyle = '#ffe27a';
+      ctx.fillRect(abx, aby, abw, 1); ctx.fillRect(abx, aby + abh - 1, abw, 1); ctx.fillRect(abx, aby, 1, abh); ctx.fillRect(abx + abw - 1, aby, 1, abh);
+    }
+    drawTextShadow(ctx, 'X', abx - 6, aby + 8, '#c9b088', 1);
+    ui.atkRect = { x: abx, y: aby, w: abw, h: abh };
+    // active diet passives as tiny badges by the energy bar
+    let pxi = 0;
+    for (const k in PASSIVES) if (run.passives[k]) { ctx.drawImage(PASSIVES[k].icon, 48 + pxi * 9, 11); pxi++; }
+    if (run.kills > 0) drawTextShadow(ctx, 'KO ' + run.kills, W - 4, 25, '#ff9f4d', 1, 'right');
     // boss stamina bar
     if (world.isBoss && world.boss && world.boss.state !== 'defeated') {
       const B = world.boss, bw = 96, bx = W / 2 - bw / 2, by = 20;
-      drawTextShadow(ctx, 'THE GREAT EAGLE', W / 2, by - 8, '#e0b24a', 1, 'center');
+      drawTextShadow(ctx, BOSS_NAMES[B.kind] || 'BOSS', W / 2, by - 8, '#e0b24a', 1, 'center');
       ctx.drawImage(SPR.FEATHER, bx - 8, by - 1);
       ctx.fillStyle = 'rgba(20,12,28,0.85)'; ctx.fillRect(bx - 1, by, bw + 2, 6);
       const t = clamp(B.hp / B.maxHp, 0, 1);
@@ -2612,6 +3155,7 @@
     if (run.depth === 1 && world.banner < 1.4) {
       drawTextShadow(ctx, 'TAP / SPACE TO FLAP', W / 2, 62, '#ffffff', 1, 'center');
       drawTextShadow(ctx, 'CATCH FOOD ON YOUR BEAK!', W / 2, 70, '#a8e4f2', 1, 'center');
+      drawTextShadow(ctx, 'X TO ATTACK', W / 2, 78, '#ff9f4d', 1, 'center');
     }
   }
 
@@ -2671,7 +3215,7 @@
       ui.cardRects.push({ x: cx, y: cy, w: cw, h: ch });
       drawPanel(cx, cy, cw, ch);
       // rarity accent strip along the card top
-      if (c.kind === 'mut') { ctx.fillStyle = rc; ctx.fillRect(cx + 1, cy + 1, cw - 2, 2); }
+      if (c.kind === 'mut' || c.kind === 'skill') { ctx.fillStyle = rc; ctx.fillRect(cx + 1, cy + 1, cw - 2, 2); }
       if (sel) {
         const bc = c.kind === 'mut' ? rc : '#f6c945';
         ctx.fillStyle = bc;
@@ -2685,7 +3229,7 @@
       for (const line of tl) { drawTextShadow(ctx, line, cx + cw / 2, ty, sel ? rc : '#ffffff', 1, 'center'); ty += 7; }
       ty += 2;
       for (const line of c.lines) { drawText(ctx, line, cx + cw / 2, ty, '#c9d2e0', 1, 'center'); ty += 7; }
-      if (c.kind === 'mut' && c.rarity) drawTextShadow(ctx, RARITY[c.rarity].label, cx + cw / 2, cy + ch - 9, rc, 1, 'center');
+      if ((c.kind === 'mut' || c.kind === 'skill') && c.rarity) drawTextShadow(ctx, RARITY[c.rarity].label, cx + cw / 2, cy + ch - 9, rc, 1, 'center');
       if (c.kind === 'path') { const n = c.danger, sx0 = cx + cw / 2 - (n * 7 - 2) / 2; for (let s = 0; s < n; s++) ctx.drawImage(SPR.SKULL, Math.round(sx0 + s * 7), cy + ch - 10); }
     }
     let hy = y0 + ch + 9;
@@ -2727,8 +3271,10 @@
     drawFlutter();
     drawSnappers();
     drawLeapers();
+    drawHornets();
     drawSea();
     drawStorm();
+    drawPets();
     drawBirdFull();
     drawHawk();
     drawFalcon();
@@ -2736,7 +3282,11 @@
     drawBat();
     drawDragonfly();
     drawVulture();
+    drawShieldbugs();
     if (world.isBoss) drawBoss();
+    drawShots();
+    drawFx();
+    drawEnemyHp();
     drawParts();
     ctx.restore();
     drawHUD();
@@ -2752,6 +3302,7 @@
     drawBackground(world.dist + time * 4);
     if (world.island) drawIsland(world.island); else drawIsland({ x: ISLAND_REST, seed: 7, halfW: 46, capY: 104, baseY: SEA_Y, nestDX: 8, treeDX: -16, perchY: 94, biome: world.biome });
     drawSea();
+    drawPets();
     drawBirdFull();
     drawParts();
     ctx.restore();
@@ -2775,8 +3326,7 @@
     } else if (ui.phase === 'mutate') drawCards('HATCH A NEW GENERATION');
     else if (ui.phase === 'hatching') {
       drawTextShadow(ctx, 'GENERATION ' + (run.evolutions + 1) + ' IS BORN!', W / 2, 30, Math.floor(time * 4) % 2 ? '#96f0e4' : '#3fc0b0', 1, 'center');
-      const m = MUTATIONS.filter(function (x) { return x.id === run.taken[run.taken.length - 1]; })[0];
-      if (m) drawTextShadow(ctx, 'INHERITS: ' + m.name, W / 2, 42, '#ffffff', 1, 'center');
+      if (ui.lastGain) drawTextShadow(ctx, 'INHERITS: ' + ui.lastGain, W / 2, 42, '#ffffff', 1, 'center');
     }
     else if (ui.phase === 'path') drawCards('CHOOSE YOUR MIGRATION');
     if (ui.flash > 0) { ctx.fillStyle = 'rgba(63,192,176,' + (ui.flash * 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
@@ -3007,12 +3557,12 @@
       if (!cand) for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 10 && (!cand || o.x < cand.x)) cand = o; }
       if (cand) {
         const topH = cand.gapY - cand.gapH / 2, botY = cand.gapY + cand.gapH / 2;
-        cand.snake = { state: 'windup', t: 0, wu: 0.75, lockY: clamp(bird.y, topH + 2, botY - 2), spent: false, first: false };
+        cand.snake = { state: 'windup', t: 0, wu: 0.75, lockY: clamp(bird.y, topH + 2, botY - 2), spent: false, first: false, hp: 3, maxhp: 3 };
         AUDIO.play('snakeHiss');
       }
     },
-    forceHawk: function () { if (world && !world.hawk) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: false }; AUDIO.play('hawkScreech'); } },
-    forceSnapper: function () { if (world) world.snappers.push({ worldX: world.dist + bird.x + 60, state: 'lurk', t: 0, bob: 0, first: false }); },
+    forceHawk: function () { if (world && !world.hawk) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: false, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); } },
+    forceSnapper: function () { if (world) world.snappers.push({ worldX: world.dist + bird.x + 60, state: 'lurk', t: 0, bob: 0, first: false, hp: 4, maxhp: 4 }); },
     noInvuln: function () { if (bird) bird.invuln = 0; },
     dbg: function () { return Object.assign({}, DBG); },
     dbgReset: function () { DBG.graze = 0; DBG.hurtTree = 0; DBG.hurtWater = 0; DBG.hurtPred = 0; },
@@ -3021,7 +3571,7 @@
     giveDna: function (n) { save.dna += n; persist(); },
     kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
-    forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false }; },
+    forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false, hp: 4, maxhp: 4 }; },
     forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL RING', t: 0 }; } },
     forceRush: function () { if (world) startRush(); },
     forceWasps: function () { if (world) startWasps(); },
@@ -3029,22 +3579,35 @@
     forceTrail: function () { if (world) startTrail(); },
     forceStorm: function () { if (world) startStorm(); },
     forceFlutter: function () { if (world) startFlutter(); },
-    forceBat: function () { if (world) { world.bat = { state: 'dive', t: 0, x: W - 20, y: bird.y - 20, first: false }; } },
-    forceDragonfly: function () { if (world) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: false }; } },
-    forceVulture: function () { if (world) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: false }; } },
-    forceLeaper: function (kind) { if (!world) return 'no world'; const k = kind || 'bfrog'; if (k === 'jelly') world.leapers.push({ kind: 'jelly', worldX: world.dist + bird.x + 40, y: SEA_Y - 8, state: 'rise', t: 0, bob: 0, first: false }); else world.leapers.push({ kind: k, worldX: world.dist + bird.x + 34, state: 'telegraph', t: 0, bob: 0, first: false }); return 'ok'; },
-    forceSpider: function () { if (!world) return 'no world'; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 20 && sx < W) { o.spider = { state: 'drop', t: 0, targetY: bird.y, y: o.gapY - o.gapH / 2 }; return 'ok'; } } return 'none'; },
-    forceBoss: function () { if (run) { run.depth--; newLeg('aerie'); } },
+    forceBat: function () { if (world) { world.bat = { state: 'dive', t: 0, x: W - 20, y: bird.y - 20, first: false, hp: 2, maxhp: 2 }; } },
+    forceDragonfly: function () { if (world) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: false, hp: 2, maxhp: 2 }; } },
+    forceVulture: function () { if (world) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: false, hp: 3, maxhp: 3 }; } },
+    forceLeaper: function (kind) { if (!world) return 'no world'; const k = kind || 'bfrog'; if (k === 'jelly') world.leapers.push({ kind: 'jelly', worldX: world.dist + bird.x + 40, y: SEA_Y - 8, state: 'rise', t: 0, bob: 0, first: false, hp: 2, maxhp: 2 }); else world.leapers.push({ kind: k, worldX: world.dist + bird.x + 34, state: 'telegraph', t: 0, bob: 0, first: false, hp: 2, maxhp: 2 }); return 'ok'; },
+    forceSpider: function () { if (!world) return 'no world'; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 20 && sx < W) { o.spider = { state: 'drop', t: 0, targetY: bird.y, y: o.gapY - o.gapH / 2, hp: 1, maxhp: 1 }; return 'ok'; } } return 'none'; },
+    forceBoss: function (key) { if (run) { run.depth--; newLeg(key && BIOMES[key] && BIOMES[key].boss ? key : 'aerie'); } },
     bossHp: function () { return (world && world.boss) ? world.boss.hp : -1; },
+    bossKind: function () { return (world && world.boss) ? world.boss.kind : null; },
+    setSkill: function (id) { if (run && SKILLS[id]) run.skillId = id; },
+    attack: function () { attackQueued = true; },
+    atkCd: function () { return bird ? bird.atkCd : -1; },
+    targets: function () { return enemyTargets().map(function (t) { return { kind: t.kind, hp: t.o.hp, x: Math.round(t.x), y: Math.round(t.y) }; }); },
+    kills: function () { return run ? run.kills : 0; },
+    givePet: function (k) { if (run) { run.pets.push({ kind: k || 'chick', x: bird.x - 14, y: bird.y, t: 0, cd: 2 }); } },
+    pets: function () { return run ? run.pets.map(function (p) { return p.kind; }) : []; },
+    passives: function () { return run ? Object.assign({}, run.passives) : {}; },
+    eat: function (bucket, n) { if (!run) return; for (let i = 0; i < (n || 1); i++) { run.diet[bucket]++; checkPassives(bucket); } },
+    forceSbug: function () { if (world) world.sbugs.push({ worldX: world.dist + bird.x + 60, y: bird.y, ph: 0, hp: 6, maxhp: 6, first: false }); },
+    forceHnest: function () { if (!world) return 'none'; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 20 && sx < W) { o.hnest = { hp: 4, maxhp: 4, cd: 0.2, dead: false, first: false }; return 'ok'; } } return 'none'; },
+    skillId: function () { return run ? run.skillId : null; },
     forceLatch: function () {
       if (!world) return 'no world';
       for (const o of world.obstacles) { if (o.snake && o.snake.state !== 'spent') { startLatch(o, o.snake); return 'ok'; } }
-      for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x - 10 && sx < W) { o.snake = { state: 'strike', t: 0, ax: sx + o.w * 0.7, topH: o.gapY - o.gapH / 2, botY: o.gapY + o.gapH / 2, restY: o.gapY - o.gapH / 2 + 4 }; startLatch(o, o.snake); return 'made'; } }
+      for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x - 10 && sx < W) { o.snake = { state: 'strike', t: 0, ax: sx + o.w * 0.7, topH: o.gapY - o.gapH / 2, botY: o.gapY + o.gapH / 2, restY: o.gapY - o.gapH / 2 + 4, hp: 3, maxhp: 3 }; startLatch(o, o.snake); return 'made'; } }
       return 'none';
     },
     latched: function () { return bird && bird.latched ? bird.latched.swipes : -1; },
     refill: function () { if (bird) bird.energy = 999; },
-    forceDurian: function () { if (!world) return; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 16 && sx < bird.x + 90) { o.durian = { state: 'wobble', t: 0, wob: 0.7, vy: 0, worldX: o.x + o.w / 2, y: (o.gapY - o.gapH / 2) + 5, first: false }; return 'ok'; } } return 'none'; },
+    forceDurian: function () { if (!world) return; for (const o of world.obstacles) { const sx = o.x - world.dist; if (sx > bird.x + 16 && sx < bird.x + 90) { o.durian = { state: 'wobble', t: 0, wob: 0.7, vy: 0, worldX: o.x + o.w / 2, y: (o.gapY - o.gapH / 2) + 5, first: false, hp: 1, maxhp: 1 }; return 'ok'; } } return 'none'; },
     // place the bird relative to the nearest on-screen tree's bottom canopy top (botY):
     //   overCore=false -> skim the leafy fringe; overCore=true -> over the trunk column
     probe: function (dyFromBot, overCore) {

@@ -90,6 +90,11 @@
       tone(400, 0.5, 'sawtooth', 0.2, 60);
       noise(0.5, 0.2, 900, 0.05);
     },
+    slash: function () { noise(0.09, 0.16, 2400); tone(700, 0.07, 'triangle', 0.08, 260); },
+    zap: function () { tone(1800, 0.12, 'sawtooth', 0.16, 200); noise(0.1, 0.12, 3200, 0.02); },
+    beam: function () { tone(880, 0.3, 'sawtooth', 0.08, 1320); tone(440, 0.3, 'sine', 0.1, 660); },
+    kill: function () { tone(520, 0.06, 'square', 0.14, 780); tone(1040, 0.08, 'triangle', 0.12, null, 0.05); },
+    petJoin: function () { [880, 1100, 1320].forEach(function (f, i) { tone(f, 0.09, 'sine', 0.12, null, i * 0.06); }); },
   };
 
   window.AUDIO = {
