@@ -37,13 +37,40 @@ or a **skull** when a boss aerie looms).
 
 ![The run map](docs/map.png)
 
+## A gentle beginning
+
+Every run opens with a short **cinematic**: dawn breaks over a nest, an egg
+wobbles and cracks, and a new finch is born — then takes its first flight into
+the meadow. (Tap to skip.)
+
+![The opening hatch cutscene](docs/intro.png)
+
 ## Meet your guide
 
-On your first flight (or any time via the **TUTORIAL** menu), **Charles Darwin**
-walks you through the basics with an interactive, step-by-step tutorial that
-waits for you to actually flap, eat, digest and graze before moving on.
+**Charles Darwin** teaches you by *doing*, not reading. The first flight is a
+purely **action-based tutorial** — each beat waits for you to actually flap,
+catch food, digest and graze before moving on.
 
-![Darwin's interactive tutorial](docs/tutorial.png)
+![Darwin's action tutorial — the calm first leg](docs/tutorial.png)
+
+## The game reveals itself
+
+Flappy Darwin **starts simple and grows with you.** The opening legs are just
+*flap and eat* — no tired wings, no predators, no clutter. As you migrate
+deeper, Darwin returns to introduce **one new system at a time**:
+
+| First reached | Unlocks | Darwin's cue |
+|---|---|---|
+| Leg 1–2 | flap, eat, digest, graze, hatch | the action tutorial |
+| Leg 3 | **wing energy** (flaps start to tire you) | "your wings tire now…" |
+| Leg 4 | **danger + combat** (predators, `X` to fight) | "danger ahead — press X!" |
+| Leg 5 | **bonus mini-games** | "chase the prizes!" |
+| every 4th leg | a **boss** (and the pet it drops) | "a boss — fight back!" |
+
+So there's no wall of mechanics up front — the HUD itself only grows an energy
+bar and an attack button once those systems switch on.
+
+![Darwin returns as danger and combat unlock](docs/guide.png)
 
 ## How to play
 

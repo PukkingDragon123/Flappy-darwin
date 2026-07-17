@@ -235,6 +235,11 @@
   function shakeIt(mag, dur) { if (!settings.shake) return; shake.mag = Math.max(shake.mag, mag); shake.t = Math.max(shake.t, dur); }
   function setFlash(v) { if (settings.flash) flashT = Math.max(flashT, v); }
 
+  // Features reveal gradually so the game opens simple and teaches one thing at a
+  // time. Values are the depth (leg) at which each system switches on.
+  const FEATURES = { energy: 3, hazards: 4, combat: 4, minigames: 5 };
+  function unlocked(f) { return !run || run.depth >= (FEATURES[f] || 1); }
+
   function newRun(tutorialMode) {
     run = {
       depth: 0, score: 0, scorePop: 0,
@@ -244,7 +249,7 @@
       dnaEarned: 0, checkpoint: null,
       skillId: 'peck', pets: [], passives: {}, kills: 0,
       tutorialMode: !!tutorialMode || !save.tutorialDone,
-      darwin: null, journey: [{ depth: 0, key: 'meadow', type: 'start', danger: 0 }],
+      darwin: null, tip: null, seenTips: {}, journey: [{ depth: 0, key: 'meadow', type: 'start', danger: 0 }],
       tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true, bat: true, dfly: true, bfrog: true, jelly: true, piranha: true, vulture: true, sbug: true, hornet: true },
     };
     bird = {
@@ -262,6 +267,7 @@
     newBestFlag = false;
     parts = []; floats = [];
     newLeg('meadow');
+    startIntro(); // open with the hatch cutscene (newLeg left us at STATE 'fly')
   }
 
   function has(id) { return run.taken.indexOf(id) !== -1; }
@@ -331,9 +337,19 @@
     bird.x = BIRD_X; bird.y = 84; bird.vy = 0; bird.rot = 0; bird.dead = false;
     bird.shieldUp = has('shield') || !!run.passives.nut; bird.invuln = 0.8; bird.legsDown = false; bird.glidePose = false;
     world.wasps = null; world.waspT = 0;
+    // early legs stay calm — hold hazards and bonus events back until they unlock
+    if (!unlocked('hazards')) { world.gustTimer = -1; world.snapperTimer = -1; world.hawkTimer = -1; world.falconTimer = -1; world.batTimer = -1; world.dflyTimer = -1; world.vultureTimer = -1; world.leaperTimer = -1; world.sbugTimer = -1; }
+    if (!unlocked('minigames')) world.chaseTimer = 1e9;
     if (biome.boss) {
       world.isBoss = true; world.legLen = 0; world.banner = 3.0;
       world.boss = { kind: biome.bossKind || 'eagle', hp: 110, maxHp: 110, state: 'enter', t: 0, x: W + 30, y: 34, wing: 0, pattern: null, attacks: 0, lockY: bird.y, lockX: bird.x, feathers: [], first: true };
+    }
+    // Darwin the guide returns to introduce each system as it switches on
+    if (!run.darwin) {
+      if (biome.boss) guide('boss', ['A BOSS! DODGE', 'ITS PATTERNS -', 'AND FIGHT BACK!']);
+      else if (d === FEATURES.energy) guide('energy', ['YOUR WINGS TIRE', 'NOW - GLIDE AND', 'EAT TO RECOVER']);
+      else if (d === FEATURES.hazards) guide('danger', ['DANGER AHEAD!', 'DODGE FOES - OR', 'PRESS X TO FIGHT']);
+      else if (d === FEATURES.minigames) guide('events', ['BONUS EVENTS', 'APPEAR NOW -', 'CHASE THE PRIZES!']);
     }
     STATE = 'fly';
   }
@@ -394,6 +410,7 @@
 
   function press() {
     AUDIO.unlock();
+    if (STATE === 'intro') { skipIntro(); return; }
     if (STATE === 'title') { activateMenu(); return; }
     if (STATE === 'over') { if (ui.overT > 0.7) activateOver(); return; }
     if (paused) { paused = false; return; }
@@ -411,6 +428,7 @@
 
   window.addEventListener('keydown', function (e) {
     const up = e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW';
+    if (STATE === 'intro') { if (!e.repeat) { e.preventDefault(); skipIntro(); } return; }
     if (STATE === 'title') {
       const n = menuItems().length;
       if (e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); ui.menuSel = (ui.menuSel + n - 1) % n; AUDIO.play('select'); return; }
@@ -702,7 +720,8 @@
     const pool = MUTATIONS.filter(function (m) { return m.repeat || !has(m.id); });
     const cards = [];
     const bag = pool.slice();
-    while (cards.length < 2 && bag.length) {
+    const traitCount = unlocked('combat') ? 2 : 3; // full trait choice before skills exist
+    while (cards.length < traitCount && bag.length) {
       const entries = bag.map(function (m) {
         const dietBonus = m.diet === 'any' ? 0.6 : run.diet[m.diet] * 0.3;
         const rw = RARITY[m.rarity] ? RARITY[m.rarity].w : 1;
@@ -712,8 +731,8 @@
       bag.splice(bag.indexOf(m), 1);
       cards.push({ kind: 'mut', mut: m, title: m.name, lines: wrap(m.desc, 13), icon: m.icon, rarity: m.rarity });
     }
-    // the third card always teaches a new attack skill
-    const skIds = Object.keys(SKILLS).filter(function (k) { return k !== run.skillId; });
+    // once combat is unlocked, the third card teaches a new attack skill
+    const skIds = unlocked('combat') ? Object.keys(SKILLS).filter(function (k) { return k !== run.skillId; }) : [];
     if (skIds.length) {
       const sid = pick(skIds), sk = SKILLS[sid];
       cards.push({ kind: 'skill', skill: sid, title: sk.name, lines: wrap(sk.desc, 13), icon: sk.icon, rarity: 'skill' });
@@ -797,9 +816,10 @@
     if (world.phase === 'fly' && !world.isBoss) {
       while (world.spawned < world.legLen && world.nextSpawnX - world.dist < W + 60) {
         const margin = 26;
+        const hz = unlocked('hazards'); // hold canopy hazards back on the opening legs
         let gh = world.gapH;
         if (run.depth === 1 && world.spawned < 2) gh += 14; // tutorial
-        const snakeRoll = world.biome.hazards.indexOf('snake') >= 0 &&
+        const snakeRoll = hz && world.biome.hazards.indexOf('snake') >= 0 &&
           world.spawned > 0 && (world.biomeKey === 'swamp' ? 0.35 : 0.30) > Math.random();
         if (snakeRoll) gh += 8; // snake replaces threading; widen the safe lane
         const gapY = rnd(margin + gh / 2, SEA_Y - 22 - gh / 2 - margin * 0.4);
@@ -816,15 +836,15 @@
           if (!prevSnake) o.snake = { state: 'dormant', t: 0, lockY: 0, spent: false, first: run.tut.snake, hp: 3, maxhp: 3 };
         }
         // durian: spiky fruit that hangs from the canopy and drops when you near it
-        if (!o.snake && world.biome.durian && world.spawned > 0 && Math.random() < 0.3) {
+        if (hz && !o.snake && world.biome.durian && world.spawned > 0 && Math.random() < 0.3) {
           o.durian = { state: 'hang', t: 0, vy: 0, worldX: o.x + o.w / 2, y: (gapY - gh / 2) + 5, first: run.tut.durian, hp: 1, maxhp: 1 };
         }
         // spider: drops on a thread into the gap
-        if (!o.snake && !o.durian && world.biome.obst === 'tree' && ['jungle', 'swamp', 'marsh', 'grove'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.22) {
+        if (hz && !o.snake && !o.durian && world.biome.obst === 'tree' && ['jungle', 'swamp', 'marsh', 'grove'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.22) {
           o.spider = { state: 'hidden', t: 0, y: 0, hp: 1, maxhp: 1 };
         }
         // hornet nest: papery hive under the canopy that releases angry hornets
-        if (!o.snake && !o.durian && !o.spider && ['marsh', 'jungle'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.18) {
+        if (hz && !o.snake && !o.durian && !o.spider && ['marsh', 'jungle'].indexOf(world.biomeKey) >= 0 && world.spawned > 0 && Math.random() < 0.18) {
           o.hnest = { hp: 4, maxhp: 4, cd: 0.9, dead: false, first: run.tut.hornet };
         }
         world.obstacles.push(o);
@@ -864,7 +884,7 @@
       if (boostQueued) { boostQueued = false; tryBoost(st); }
       if (flapQueued) {
         flapQueued = false;
-        const cost = st.flapCost;
+        const cost = unlocked('energy') ? st.flapCost : 0; // free flaps until wing energy unlocks
         if (bird.energy >= cost) { bird.vy = st.flap; bird.energy -= cost; }
         else {
           if (bird.tired <= 0) AUDIO.play('denied');
@@ -1002,6 +1022,7 @@
 
     bird.invuln = Math.max(0, bird.invuln - dt);
     if (run.darwin) updateDarwin(dt);
+    updateTip(dt);
     updateBirdCosmetics(dt);
   }
 
@@ -1116,6 +1137,7 @@
 
   function tryAttack() {
     if (bird.dead || bird.latched || world.phase !== 'fly') return;
+    if (!unlocked('combat')) return;
     if (bird.atkCd > 0) return;
     const id = SKILLS[run.skillId] ? run.skillId : 'peck';
     bird.atkCd = SKILLS[id].cd;
@@ -1285,6 +1307,7 @@
     run.pets.push({ kind: next, x: bird.x - 14, y: bird.y, t: rnd(0, 6.28), cd: 2 });
     AUDIO.play('petJoin');
     addFloat(bird.x, bird.y - 32, PET_NAMES[next] + ' JOINS YOU!', '#ffd257', true);
+    guide('pets', ['A PET! IT TRAILS', 'YOU AND HELPS', 'ON EVERY FLIGHT']);
   }
 
   function updatePets(dt) {
@@ -1583,13 +1606,13 @@
   }
 
   // ---------- Charles Darwin interactive tutorial ----------
+  // Leg-1 tutorial: purely action-based — each beat waits for you to DO the thing.
   const DARWIN_STEPS = [
-    { lines: ["I'M DARWIN!", 'TAP SPACE TO', 'FLAP YOUR WINGS'], cond: function (d) { return d.flapped; } },
-    { lines: ['MIND THE WING', 'ENERGY BAR -', 'GLIDE TO REST IT'], cond: function (d) { return d.t > 3.5; } },
-    { lines: ['SNAP FOOD ONTO', 'YOUR BEAK!'], cond: function (d) { return d.ate; } },
-    { lines: ['PATIENCE... LET', 'IT DIGEST FULLY'], cond: function (d) { return d.digested; } },
-    { lines: ['SKIM TREETOPS -', 'LEAVES ARE SAFE', 'TO SLIDE ALONG!'], cond: function (d) { return d.grazed; } },
-    { lines: ['ONWARD! REACH', 'THE NEST TO HATCH', 'A NEW GENERATION'], cond: function (d) { return d.t > 4; } },
+    { lines: ["I'M DARWIN!", 'TAP OR SPACE', 'TO FLAP!'], cond: function (d) { return d.flapped; } },
+    { lines: ['GOOD! NOW FLY', 'INTO FOOD TO', 'CATCH IT!'], cond: function (d) { return d.ate; } },
+    { lines: ['NOW WAIT...', 'LET IT DIGEST', 'FULLY'], cond: function (d) { return d.digested; } },
+    { lines: ['SKIM THE', 'TREETOPS - SOFT', 'LEAVES ARE SAFE'], cond: function (d) { return d.grazed; } },
+    { lines: ['PERFECT! REACH', 'THE NEST TO', 'HATCH & EVOLVE'], cond: function (d) { return d.t > 3.2; } },
   ];
   function updateDarwin(dt) {
     const d = run.darwin; if (!d || d.done) return;
@@ -1606,6 +1629,26 @@
     const px = 4, py = H - 44;
     ctx.drawImage(SPR.DARWIN, px, py);
     drawSpeech(px + 22, py - 4, step.lines, 96);
+  }
+
+  // Guide: Darwin pops back to introduce each new system, once each, non-blocking.
+  function guide(id, lines, life) {
+    if (!run || run.seenTips[id]) return;
+    run.seenTips[id] = true;
+    run.tip = { lines: lines, t: 0, life: life || 5.5 };
+    AUDIO.play('chirp');
+  }
+  function updateTip(dt) {
+    if (run && run.tip) { run.tip.t += dt; if (run.tip.t > run.tip.life) run.tip = null; }
+  }
+  function drawTip() {
+    if (!run || !run.tip || run.darwin) return; // never stack on the leg-1 tutorial
+    const a = clamp(Math.min(run.tip.t * 3, run.tip.life - run.tip.t), 0, 1);
+    ctx.globalAlpha = a;
+    const px = 4, py = H - 44;
+    ctx.drawImage(SPR.DARWIN, px, py);
+    drawSpeech(px + 22, py - 4, run.tip.lines, 100);
+    ctx.globalAlpha = 1;
   }
 
   // ---------- mini-game events ----------
@@ -2414,6 +2457,7 @@
       updateTitleScene(dt);
     }
     else if (STATE === 'settings') { ui.t = (ui.t || 0) + dt; if (ui.resetFlash > 0) ui.resetFlash -= dt; updateBirdCosmetics(dt); }
+    else if (STATE === 'intro') { updateIntro(dt); updateBirdCosmetics(dt); }
     if (run && run.pets && run.pets.length && (STATE === 'fly' || STATE === 'island')) updatePets(dt);
     updateParts(dt);
     actionQueued = false; flapQueued = false; attackQueued = false;
@@ -3076,13 +3120,15 @@
     const st = stats();
     for (let i = 0; i < bird.maxHearts; i++) ctx.drawImage(i < bird.hearts ? SPR.HEART : SPR.HEART_EMPTY, 4 + i * 9, 4);
     if (bird.shieldUp) { ctx.fillStyle = '#a8e4f2'; ctx.fillRect(4 + bird.maxHearts * 9 + 2, 6, 3, 3); }
-    // wing-energy (stamina) bar under the hearts
+    // wing-energy (stamina) bar under the hearts — hidden until it switches on
     const en = clamp(bird.energy / (st.maxEnergy || 100), 0, 1);
-    const ebx = 3, eby = 13, ebw = 36;
-    ctx.drawImage(SPR.FEATHER, ebx, eby - 1);
-    ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(ebx + 5, eby, ebw + 2, 5);
-    ctx.fillStyle = (en < 0.25 || bird.tired > 0) ? (Math.floor(time * 10) % 2 ? '#e0525c' : '#f2748f') : (en < 0.5 ? '#f6c945' : '#8fd66a');
-    ctx.fillRect(ebx + 6, eby + 1, Math.round(ebw * en), 3);
+    const ebx = 3, eby = 13, ebw = 36, showEnergy = unlocked('energy');
+    if (showEnergy) {
+      ctx.drawImage(SPR.FEATHER, ebx, eby - 1);
+      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(ebx + 5, eby, ebw + 2, 5);
+      ctx.fillStyle = (en < 0.25 || bird.tired > 0) ? (Math.floor(time * 10) % 2 ? '#e0525c' : '#f2748f') : (en < 0.5 ? '#f6c945' : '#8fd66a');
+      ctx.fillRect(ebx + 6, eby + 1, Math.round(ebw * en), 3);
+    }
     const ew = 56, ex = Math.round(W / 2 - ew / 2), ey = 5;
     ctx.drawImage(SPR.DNA, ex - 7, ey - 1);
     ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(ex - 1, ey, ew + 2, 5);
@@ -3095,7 +3141,7 @@
     else drawTextShadow(ctx, String(run.score), W - 4, 4, '#ffffff', 1, 'right');
     drawTextShadow(ctx, 'DEPTH ' + run.depth, W - 4, 11, '#c9d2e0', 1, 'right');
     drawTextShadow(ctx, 'DNA ' + (save.dna + (run.dnaEarned || 0)), W - 4, 18, '#3fc0b0', 1, 'right');
-    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1), ebx + 6, eby + 8, '#8fd6c8', 1);
+    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1), ebx + 3, showEnergy ? eby + 8 : eby, '#8fd6c8', 1);
     const tw = 30, tx2 = 4, ty = H - 9;
     drawTextShadow(ctx, 'TUMMY', tx2, ty - 7, '#e5c28c', 1);
     ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(tx2 - 1, ty, tw + 2, 5);
@@ -3115,19 +3161,22 @@
       ctx.fillStyle = '#96f0e4'; ctx.fillRect(bx, 55, Math.round(bw * n / 5), 3);
     }
     if (bird.boost > 0) drawTextShadow(ctx, 'BOOST', bird.x - 22, bird.y - 2, '#a8e4f2', 1, 'right');
-    // attack-skill button (X key / tap) with cooldown shade
-    const sk = SKILLS[run.skillId] || SKILLS.peck;
-    const abx = W - 27, aby = H - 27, abw = 23, abh = 23;
-    drawPanel(abx, aby, abw, abh);
-    ctx.drawImage(sk.icon, abx + 7, aby + 7);
-    const cdk = sk.cd > 0 ? clamp(bird.atkCd / sk.cd, 0, 1) : 0;
-    if (cdk > 0) { const hh2 = Math.round((abh - 4) * cdk); ctx.fillStyle = 'rgba(10,6,18,0.72)'; ctx.fillRect(abx + 2, aby + 2 + (abh - 4 - hh2), abw - 4, hh2); }
-    else if (Math.floor(time * 4) % 2) {
-      ctx.fillStyle = '#ffe27a';
-      ctx.fillRect(abx, aby, abw, 1); ctx.fillRect(abx, aby + abh - 1, abw, 1); ctx.fillRect(abx, aby, 1, abh); ctx.fillRect(abx + abw - 1, aby, 1, abh);
+    // attack-skill button (X key / tap) with cooldown shade — only once combat is unlocked
+    ui.atkRect = null;
+    if (unlocked('combat')) {
+      const sk = SKILLS[run.skillId] || SKILLS.peck;
+      const abx = W - 27, aby = H - 27, abw = 23, abh = 23;
+      drawPanel(abx, aby, abw, abh);
+      ctx.drawImage(sk.icon, abx + 7, aby + 7);
+      const cdk = sk.cd > 0 ? clamp(bird.atkCd / sk.cd, 0, 1) : 0;
+      if (cdk > 0) { const hh2 = Math.round((abh - 4) * cdk); ctx.fillStyle = 'rgba(10,6,18,0.72)'; ctx.fillRect(abx + 2, aby + 2 + (abh - 4 - hh2), abw - 4, hh2); }
+      else if (Math.floor(time * 4) % 2) {
+        ctx.fillStyle = '#ffe27a';
+        ctx.fillRect(abx, aby, abw, 1); ctx.fillRect(abx, aby + abh - 1, abw, 1); ctx.fillRect(abx, aby, 1, abh); ctx.fillRect(abx + abw - 1, aby, 1, abh);
+      }
+      drawTextShadow(ctx, 'X', abx - 6, aby + 8, '#c9b088', 1);
+      ui.atkRect = { x: abx, y: aby, w: abw, h: abh };
     }
-    drawTextShadow(ctx, 'X', abx - 6, aby + 8, '#c9b088', 1);
-    ui.atkRect = { x: abx, y: aby, w: abw, h: abh };
     // active diet passives as tiny badges by the energy bar
     let pxi = 0;
     for (const k in PASSIVES) if (run.passives[k]) { ctx.drawImage(PASSIVES[k].icon, 48 + pxi * 9, 11); pxi++; }
@@ -3155,7 +3204,6 @@
     if (run.depth === 1 && world.banner < 1.4) {
       drawTextShadow(ctx, 'TAP / SPACE TO FLAP', W / 2, 62, '#ffffff', 1, 'center');
       drawTextShadow(ctx, 'CATCH FOOD ON YOUR BEAK!', W / 2, 70, '#a8e4f2', 1, 'center');
-      drawTextShadow(ctx, 'X TO ATTACK', W / 2, 78, '#ff9f4d', 1, 'center');
     }
   }
 
@@ -3293,6 +3341,7 @@
     drawBanner();
     if (world.eventBanner && Math.floor(time * 6) % 2) drawTextShadow(ctx, world.eventBanner.text, W / 2, 58, '#fff3a8', 1, 'center');
     if (!cine && run.darwin) drawDarwin();
+    if (!cine) drawTip();
     if (cine) drawCineTitle();
     if (world.fade > 0) { ctx.fillStyle = 'rgba(10,6,18,' + clamp(world.fade, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
@@ -3422,6 +3471,61 @@
     if (ui.resetFlash > 0) { ctx.fillStyle = 'rgba(224,82,92,' + (ui.resetFlash * 0.5).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
 
+  // ---------- opening cutscene: the hatch ----------
+  const INTRO = { fadein: 0.9, wobble: 1.6, crack: 2.5, hatch: 3.1, d1: 3.6, d2: 5.0, lift: 6.2, end: 7.6 };
+  function startIntro() { STATE = 'intro'; ui = { t: 0, hatched: false, burst: 0 }; }
+  function skipIntro() { STATE = 'fly'; if (world) world.banner = 2.4; }
+  function updateIntro(dt) {
+    ui.t += dt;
+    const t = ui.t;
+    if (!ui.hatched && t >= INTRO.hatch) {
+      ui.hatched = true; ui.burst = 0.5; AUDIO.play('chirp'); AUDIO.play('flare'); shakeIt(2.5, 0.3);
+      spawnParts(22, function () { return sparkle(W / 2 + rnd(-14, 14), 100 + rnd(-10, 10), pick(['#fff3a8', '#ffe27a', '#96f0e4'])); });
+      spawnParts(12, function () { return crumb(W / 2 + rnd(-6, 6), 104, pick(['#fbe7bb', '#e5c28c', '#ffffff'])); });
+    }
+    if (t >= INTRO.lift && t < INTRO.lift + dt * 2) { AUDIO.play('flap'); spawnParts(6, function () { return feather(W / 2, 104); }); }
+    if (ui.burst > 0) ui.burst -= dt;
+    if (t >= INTRO.end) skipIntro();
+  }
+  function renderIntro() {
+    const t = ui.t, cx = W / 2, groundY = 128;
+    drawBackground(0); drawSea();
+    const dim = clamp(0.5 - t * 0.05, 0.1, 0.5);
+    ctx.fillStyle = 'rgba(10,8,20,' + dim.toFixed(2) + ')'; ctx.fillRect(0, 0, W, H);
+    // shaft of dawn light onto the nest
+    ctx.save(); ctx.globalAlpha = 0.16 + 0.04 * Math.sin(t * 2); ctx.fillStyle = '#fff3c0';
+    ctx.beginPath(); ctx.moveTo(cx - 10, 0); ctx.lineTo(cx + 10, 0); ctx.lineTo(cx + 34, groundY); ctx.lineTo(cx - 34, groundY); ctx.closePath(); ctx.fill(); ctx.restore();
+    // branch + nest (scaled up for a cinematic close-up)
+    ctx.fillStyle = '#5a3a1e'; ctx.fillRect(cx - 62, groundY + 8, 124, 6);
+    ctx.fillStyle = '#7c4f28'; ctx.fillRect(cx - 62, groundY + 8, 124, 2);
+    const nestS = 3, nw = SPR.NEST.width * nestS, nh = SPR.NEST.height * nestS;
+    ctx.drawImage(SPR.NEST, Math.round(cx - nw / 2), Math.round(groundY + 10 - nh), nw, nh);
+    if (!ui.hatched) {
+      const wob = (t > INTRO.wobble) ? Math.round(Math.sin(t * 22) * (t > INTRO.crack ? 2 : 1)) : 0;
+      const es = (t > INTRO.crack && Math.floor(t * 6) % 2) ? SPR.EGG_CRACK : SPR.EGG;
+      const s = 3.4, ew = es.width * s, eh = es.height * s;
+      ctx.drawImage(es, Math.round(cx - ew / 2 + wob), Math.round(groundY - eh + 8), Math.round(ew), Math.round(eh));
+    } else {
+      const s = 3, hw = SPR.HATCHLING.width * s, hh = SPR.HATCHLING.height * s;
+      let hy = groundY - hh + 8 + Math.round(Math.sin(t * 8) * 2);
+      if (t > INTRO.lift) { const k = clamp((t - INTRO.lift) / (INTRO.end - INTRO.lift), 0, 1); hy -= Math.round(easeOutCubic(k) * 130); }
+      ctx.drawImage(SPR.HATCHLING, Math.round(cx - hw / 2), Math.round(hy), hw, hh);
+    }
+    drawParts();
+    if (ui.burst > 0) { ctx.fillStyle = 'rgba(255,243,200,' + clamp(ui.burst, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
+    // Darwin's welcome, in beats
+    if (t >= INTRO.d1 && t < INTRO.lift) {
+      const lines = t < INTRO.d2 ? ['A NEW FINCH', 'IS BORN...'] : ['EAT, EVOLVE,', 'AND SURVIVE!'];
+      ctx.drawImage(SPR.DARWIN, 6, H - 46);
+      drawSpeech(28, H - 47, lines, 96);
+    }
+    // title card + fades
+    FONT.drawTextOutline(ctx, 'FLAPPY DARWIN', cx, 12, '#f6c945', 1, 'center');
+    if (t < INTRO.fadein) { ctx.fillStyle = 'rgba(6,5,12,' + (1 - t / INTRO.fadein).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
+    if (t > INTRO.end - 0.5) { ctx.fillStyle = 'rgba(6,5,12,' + clamp((t - (INTRO.end - 0.5)) * 2, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
+    if (Math.floor(t * 2) % 2) drawText(ctx, 'TAP TO SKIP', cx, H - 7, '#c9b088', 1, 'center');
+  }
+
   function renderTitle() {
     drawBackground(time * 12);
     drawSea();
@@ -3514,6 +3618,7 @@
     ctx.save();
     if (shake.t > 0) ctx.translate(Math.round(rnd(-shake.mag, shake.mag)), Math.round(rnd(-shake.mag, shake.mag)));
     if (STATE === 'title') renderTitle();
+    else if (STATE === 'intro') renderIntro();
     else if (STATE === 'settings') renderSettings();
     else if (STATE === 'fly') renderFly();
     else if (STATE === 'island') renderIsland();
@@ -3544,6 +3649,12 @@
     },
     feed: function (n) { if (run) run.evo += n; },
     setBiome: function (k) { if (BIOMES[k]) { run.depth--; newLeg(k); } },
+    depthJump: function (n, k) { if (run) { run.depth = (n || 1) - 1; newLeg(k || (world ? world.biomeKey : 'meadow')); } },
+    unlocked: function (f) { return unlocked(f); },
+    state: function () { return STATE; },
+    tip: function () { return run && run.tip ? run.tip.lines.join(' ') : null; },
+    seenTips: function () { return run ? Object.keys(run.seenTips) : []; },
+    introT: function () { return STATE === 'intro' ? ui.t : -1; },
     heal: function () { if (bird) bird.hearts = bird.maxHearts; },
     preds: function () {
       const out = { snakes: [], snappers: [], hawk: world && world.hawk && world.hawk.state };
