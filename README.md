@@ -1,19 +1,27 @@
 # 🐦 Flappy Darwin
 
+> **`v0.7.2-demo`** — a playable vertical slice, not a finished game. The core
+> loop, combat, three bosses and ten biomes are in; the gallery is stubbed,
+> there's no music yet, and balance is still moving. Rough edges are expected.
+
 A pixel-art **roguelike flappy game** about flying through a living forest,
 eating, digesting and evolving. Flap between the great branching trees, manage
 your wing energy, catch food on your beak, graze safely along the treetops,
-dodge snakes, hawks, carnivorous pitchers and falling durians, chase glowing
-bugs — then rest at **the nest**, where each new **generation** of finches
-hatches with a fresh mutation. Bank **DNA** across runs and, when you fall,
-hatch again from your last checkpoint. Charles Darwin himself guides you in.
+fight or dodge what hunts you — then rest at **the nest**, where each new
+**generation** hatches with a fresh trait. Bank **DNA** across runs and, when
+you fall, hatch again from your last checkpoint.
+
+The UI leans on **icons over words**: bars, glyphs and numbers instead of
+labels and instructions. Darwin teaches by making you *do* things, then gets
+out of the way.
 
 ![Main menu](docs/menu.png)
 
 An interactive **Slay-the-Spire-style** main menu: a framed wooden title banner,
-glowing card buttons (**PLAY · TUTORIAL · SETTINGS · MUTE**), Darwin's welcome
-sign and DNA/best plaques — with distant gulls flapping past and butterflies
-fluttering around your perched finch.
+glowing card buttons (**PLAY · TUTORIAL · SETTINGS · MUTE**, plus a greyed-out
+**GALLERY** that isn't in this build), Darwin's short welcome sign and DNA/best
+plaques — with distant gulls flapping past and butterflies fluttering around
+your perched finch.
 
 ## Settings
 
@@ -78,7 +86,8 @@ Open `index.html` in any modern browser. No build step, no dependencies.
 
 | Input | Action |
 |---|---|
-| `Space` / `↑` / `W` / tap / click | Flap (costs wing energy; hold to glide, once evolved) |
+| `Space` / `↑` / `W` / tap / click | Flap (costs wing energy once that unlocks; hold to glide, when evolved) |
+| double-tap | Dash boost (spends energy) |
 | `X` / `C` / tap the skill button | **Attack** with your equipped skill (cooldown) |
 | `←` `→` / `A` `D` / tap a card | Choose a hatchling trait or migration path |
 | `Enter` / `Space` / tap selected card | Confirm choice |
@@ -106,7 +115,7 @@ the undergrowth and you'll get hurt.
 3. **Eat.** Food floats in your path — seeds, berries, nectar, nuts, grubs,
    frogs, mangoes and rare golden fruit. Catch it **on your beak** and it sits
    there while you **digest**. You can't grab more until it goes down — and
-   over-gulping leaves you **STUFFED**: heavy and weak-winged.
+   over-gulping leaves you heavy and weak-winged (the gut bar flashes red).
 4. **Bonus mini-games.** Between obstacles a surprise event may appear — seven in all:
    - 🐛 **Bug chase** — a glowing beetle darts ahead; pursue and snatch it.
    - 💨 **Thermal ring** — fly cleanly through the glowing hoop for a PERFECT
@@ -139,12 +148,12 @@ the undergrowth and you'll get hurt.
    - 🐝 **Hornet nests** hang under the canopy releasing hornets — destroy the
      nest to stop the swarm.
 
-## Combat: fight back!
+## Combat
 
-Your finch isn't just prey anymore. Press **X** (or tap the skill button) to
-**attack** with your equipped skill. Every enemy now has **health** — chip it
-down for score, DNA and the occasional dropped snack, and watch the little
-HP bars and damage numbers fly.
+Your finch isn't just prey. Press **X** (or tap the skill button) to **attack**
+with your equipped skill. Every enemy has **health** — chip it down for score,
+DNA and the occasional dropped snack. Kills land with a touch of hitstop, and
+**chaining** them inside a couple of seconds multiplies the payout (`x3 +60`).
 
 ![Combat — sonic chirp ring](docs/combat.png)
 
@@ -270,6 +279,17 @@ food, paths and dangers differ each time.
 
 ![Branchy trees in golden light](docs/forest.png)
 
+## Known gaps in this build
+
+Being upfront about what isn't done:
+
+- **GALLERY** on the main menu is a stub — it's greyed out and says `WIP`.
+- **MUSIC** in settings shows `N/A`; only SFX exist so far.
+- Balance is untuned past roughly depth 10, and score inflates fast once
+  kill-chains get going.
+- Some enemies share telegraph tells, so busy screens can read ambiguously.
+- Death causes are one-word placeholders rather than written flavour.
+
 ## Look & feel
 
 - A **Slay-the-Spire-style** interactive main menu — a framed wooden title
@@ -279,6 +299,8 @@ food, paths and dangers differ each time.
   reset) and a **run map** ribbon shown at every nest and on pause.
 - A cohesive **wooden, Stardew-Valley-style UI** across every panel, card and
   sign — carved frames, dark boards and corner nails.
+- A deliberately **quiet HUD**: hearts, an energy bar, an icon column for
+  depth/DNA/kills, and a skill button. No labels, no tooltips, no nagging.
 - Layered, branchy **background forests** with lit organic canopies and depth,
   god-rays, drifting pollen and per-biome light.
 

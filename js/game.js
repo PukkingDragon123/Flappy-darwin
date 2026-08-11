@@ -3,6 +3,7 @@
   'use strict';
 
   const W = 320, H = 180, SEA_Y = 166, BIRD_X = 70;
+  const BUILD = 'v0.7.2-demo';
   const cv = document.getElementById('game');
   const ctx = cv.getContext('2d');
   ctx.imageSmoothingEnabled = false;
@@ -141,35 +142,28 @@
   const RARITY = { common: { w: 1.0, col: '#c9d2e0', label: 'COMMON' }, rare: { w: 0.5, col: '#6db6d8', label: 'RARE' }, epic: { w: 0.22, col: '#f6c945', label: 'EPIC' }, skill: { w: 0, col: '#ff9f4d', label: 'ATTACK SKILL' } };
 
   const DEATHS = {
-    tree: 'SPLINTERED ON AN ANCIENT TREE', pine: 'IMPALED ON A PINE SPIRE',
-    mangrove: 'TANGLED IN THE MARSH ROOTS', cypress: 'SWALLOWED BY THE MIRE',
-    broadleaf: 'LOST IN THE JUNGLE CANOPY', rock: 'DASHED AGAINST THE STORM CRAGS',
-    palm: 'SPEARED ON A PALM TRUNK', snowpine: 'IMPALED ON A FROZEN PINE', cactus: 'SKEWERED ON A CACTUS',
-    water: 'SWALLOWED BY THE HUNGRY SEA', ground: 'CRASHED INTO THE UNDERGROWTH',
-    ice: 'LOST BENEATH THE ICE', sand: 'BURIED IN THE DUNES',
-    snake: 'SWALLOWED BY A CANOPY SERPENT', snapper: 'DEVOURED BY A PITCHER MAW',
-    hawk: 'SNATCHED FROM THE SKY BY A HAWK', falcon: 'RUN DOWN BY A HUNTING FALCON',
-    durian: 'FLATTENED BY A FALLING DURIAN', eagle: 'SEIZED BY THE GREAT EAGLE',
-    wasp: 'STUNG DOWN BY THE SWARM', spider: 'ENSNARED BY A SPIDER',
-    bat: 'BLINDSIDED BY A DUSK BAT', dfly: 'SLICED BY A DRAGONFLY DASH',
-    bfrog: 'BOWLED OVER BY A BULLFROG', jelly: 'STUNG BY A DRIFTING JELLYFISH',
-    piranha: 'SNAPPED UP BY A LEAPING PIRANHA', vulture: 'RUN DOWN BY A DIVING VULTURE',
-    serpent: 'CRUSHED BY THE SERPENT KING', owl: 'FROZEN BY THE FROST OWL',
-    hornet: 'STUNG BY A FURIOUS HORNET', sbug: 'RAMMED BY AN ARMORED SHIELDBUG',
+    tree: 'TREE', pine: 'PINE SPIRE', mangrove: 'MARSH ROOTS', cypress: 'THE MIRE',
+    broadleaf: 'THE CANOPY', rock: 'THE CRAGS', palm: 'PALM TRUNK',
+    snowpine: 'FROZEN PINE', cactus: 'CACTUS', water: 'THE SEA', ground: 'UNDERGROWTH',
+    ice: 'THE ICE', sand: 'THE DUNES', snake: 'SERPENT', snapper: 'PITCHER MAW',
+    hawk: 'HAWK', falcon: 'FALCON', durian: 'DURIAN', eagle: 'GREAT EAGLE',
+    wasp: 'THE SWARM', spider: 'SPIDER', bat: 'DUSK BAT', dfly: 'DRAGONFLY',
+    bfrog: 'BULLFROG', jelly: 'JELLYFISH', piranha: 'PIRANHA', vulture: 'VULTURE',
+    serpent: 'SERPENT KING', owl: 'FROST OWL', hornet: 'HORNET', sbug: 'SHIELDBUG',
   };
 
   // ---------- combat: 10 attack skills ----------
   const SKILLS = {
-    peck:   { name: 'POWER PECK',     cd: 0.9, dmg: 2, desc: 'LUNGE AND STRIKE',   icon: SPR.SK_PECK },
-    seed:   { name: 'SEED SHOT',      cd: 0.8, dmg: 2, desc: 'SPIT A FAST SEED',   icon: SPR.SK_SEED },
-    volley: { name: 'FEATHER VOLLEY', cd: 1.3, dmg: 1, desc: 'FAN OF 3 QUILLS',    icon: SPR.SK_VOLLEY },
-    slash:  { name: 'WING SLASH',     cd: 1.1, dmg: 3, desc: 'ARC AROUND YOU',     icon: SPR.SK_SLASH },
-    chirp:  { name: 'SONIC CHIRP',    cd: 2.4, dmg: 1, desc: 'WAVE HITS ALL FOES', icon: SPR.SK_CHIRP },
-    egg:    { name: 'EGG BOMB',       cd: 1.9, dmg: 3, desc: 'LOBBED BLAST',       icon: SPR.SK_EGG },
-    vortex: { name: 'GUST VORTEX',    cd: 2.1, dmg: 2, desc: 'PIERCING TWISTER',   icon: SPR.SK_VORTEX },
-    bolt:   { name: 'STORM CALL',     cd: 2.3, dmg: 4, desc: 'SMITE NEAREST FOE',  icon: SPR.SK_BOLT },
-    ray:    { name: 'SUN RAY',        cd: 2.8, dmg: 3, desc: 'BEAM ACROSS SKY',    icon: SPR.SK_RAY },
-    venom:  { name: 'VENOM SPIT',     cd: 1.5, dmg: 1, desc: 'POISONS OVER TIME',  icon: SPR.SK_VENOM, dot: true },
+    peck:   { name: 'POWER PECK',     cd: 0.55, dmg: 2, desc: 'LUNGE AND STRIKE',   icon: SPR.SK_PECK },
+    seed:   { name: 'SEED SHOT',      cd: 0.5, dmg: 2, desc: 'SPIT A FAST SEED',   icon: SPR.SK_SEED },
+    volley: { name: 'FEATHER VOLLEY', cd: 0.85, dmg: 1, desc: 'FAN OF 3 QUILLS',    icon: SPR.SK_VOLLEY },
+    slash:  { name: 'WING SLASH',     cd: 0.75, dmg: 3, desc: 'ARC AROUND YOU',     icon: SPR.SK_SLASH },
+    chirp:  { name: 'SONIC CHIRP',    cd: 1.7, dmg: 1, desc: 'WAVE HITS ALL FOES', icon: SPR.SK_CHIRP },
+    egg:    { name: 'EGG BOMB',       cd: 1.3, dmg: 3, desc: 'LOBBED BLAST',       icon: SPR.SK_EGG },
+    vortex: { name: 'GUST VORTEX',    cd: 1.5, dmg: 2, desc: 'PIERCING TWISTER',   icon: SPR.SK_VORTEX },
+    bolt:   { name: 'STORM CALL',     cd: 1.7, dmg: 4, desc: 'SMITE NEAREST FOE',  icon: SPR.SK_BOLT },
+    ray:    { name: 'SUN RAY',        cd: 2.0, dmg: 3, desc: 'BEAM ACROSS SKY',    icon: SPR.SK_RAY },
+    venom:  { name: 'VENOM SPIT',     cd: 1.0, dmg: 1, desc: 'POISONS OVER TIME',  icon: SPR.SK_VENOM, dot: true },
   };
 
   // diet passives — keep eating one food group and the flock adapts
@@ -247,7 +241,7 @@
       taken: [], diet: { berry: 0, seed: 0, nut: 0, bug: 0, gold: 0 },
       foodEaten: 0, obstaclesPassed: 0, evoReadyPinged: false, bugsChased: 0,
       dnaEarned: 0, checkpoint: null,
-      skillId: 'peck', pets: [], passives: {}, kills: 0,
+      skillId: 'peck', pets: [], passives: {}, kills: 0, chain: 0, lastKill: -9,
       tutorialMode: !!tutorialMode || !save.tutorialDone,
       darwin: null, tip: null, seenTips: {}, journey: [{ depth: 0, key: 'meadow', type: 'start', danger: 0 }],
       tut: { flap: true, catch: true, digest: true, snake: true, snapper: true, hawk: true, energy: true, durian: true, chase: true, falcon: true, bat: true, dfly: true, bfrog: true, jelly: true, piranha: true, vulture: true, sbug: true, hornet: true },
@@ -346,25 +340,36 @@
     }
     // Darwin the guide returns to introduce each system as it switches on
     if (!run.darwin) {
-      if (biome.boss) guide('boss', ['A BOSS! DODGE', 'ITS PATTERNS -', 'AND FIGHT BACK!']);
-      else if (d === FEATURES.energy) guide('energy', ['YOUR WINGS TIRE', 'NOW - GLIDE AND', 'EAT TO RECOVER']);
-      else if (d === FEATURES.hazards) guide('danger', ['DANGER AHEAD!', 'DODGE FOES - OR', 'PRESS X TO FIGHT']);
-      else if (d === FEATURES.minigames) guide('events', ['BONUS EVENTS', 'APPEAR NOW -', 'CHASE THE PRIZES!']);
+      if (biome.boss) guide('boss', ['SOMETHING BIG.']);
+      else if (d === FEATURES.energy) guide('energy', ['WINGS TIRE NOW.', 'GLIDE. EAT.']);
+      else if (d === FEATURES.hazards) guide('danger', ['IT BITES BACK.', 'X TO FIGHT.']);
+      else if (d === FEATURES.minigames) guide('events', ['CHASE THE GLOW.']);
     }
     STATE = 'fly';
   }
 
   // ---------- input ----------
-  let flapQueued = false, actionQueued = false, boostQueued = false, swipeQueued = false, attackQueued = false, lastFlapPress = -1;
+  let actionQueued = false, boostQueued = false, swipeQueued = false, attackQueued = false, lastFlapPress = -1;
+  let flapBuf = 0, atkBuf = 0; // short input buffers so early presses aren't eaten
+  const BUF = 0.13;
   const REROLL_COST = 5, BOOST_COST = 22;
 
-  function menuItems() { return ['PLAY', 'TUTORIAL', 'SETTINGS', AUDIO.isMuted() ? 'UNMUTE' : 'MUTE']; }
+  function menuItems() {
+    return [
+      { id: 'play', label: 'PLAY' },
+      { id: 'tut', label: 'TUTORIAL' },
+      { id: 'set', label: 'SETTINGS' },
+      { id: 'mute', label: AUDIO.isMuted() ? 'UNMUTE' : 'MUTE' },
+      { id: 'gallery', label: 'GALLERY', locked: true }, // not in this build
+    ];
+  }
   function gotoTitle() { STATE = 'title'; ui = { demoY: 84, menuSel: 0 }; }
   function activateMenu() {
-    const sel = ui.menuSel || 0;
-    if (sel === 0) { AUDIO.play('confirm'); newRun(false); }
-    else if (sel === 1) { AUDIO.play('confirm'); newRun(true); }
-    else if (sel === 2) { AUDIO.play('confirm'); openSettings(); }
+    const it = menuItems()[ui.menuSel || 0];
+    if (!it || it.locked) { AUDIO.play('denied'); ui.lockNudge = 0.5; return; }
+    if (it.id === 'play') { AUDIO.play('confirm'); newRun(false); }
+    else if (it.id === 'tut') { AUDIO.play('confirm'); newRun(true); }
+    else if (it.id === 'set') { AUDIO.play('confirm'); openSettings(); }
     else AUDIO.toggleMute();
   }
 
@@ -373,6 +378,7 @@
   function settingsItems() {
     return [
       { key: 'sfx',        label: 'SOUND FX',     val: AUDIO.isMuted() ? 'OFF' : 'ON' },
+      { key: 'music',      label: 'MUSIC',        val: 'N/A', disabled: true },
       { key: 'shake',      label: 'SCREEN SHAKE', val: settings.shake ? 'ON' : 'OFF' },
       { key: 'flash',      label: 'HIT FLASH',    val: settings.flash ? 'ON' : 'OFF' },
       { key: 'difficulty', label: 'DIFFICULTY',   val: diff().label },
@@ -387,6 +393,7 @@
   }
   function settingChange(sel, mode) { // mode: -1 left, +1 right, 0 activate
     const it = settingsItems()[sel]; if (!it) return;
+    if (it.disabled) { AUDIO.play('denied'); return; }
     if (it.key === 'reset') { if (mode === 0) { if (ui.confirmReset) doResetSave(); else { ui.confirmReset = true; AUDIO.play('select'); } } return; }
     if (it.key === 'back') { if (mode === 0) { persist(); AUDIO.play('confirm'); gotoTitle(); } return; }
     ui.confirmReset = false;
@@ -419,7 +426,7 @@
         if (bird.latched) { swipeQueued = true; return; }
         if (time - lastFlapPress < 0.30) boostQueued = true;
         lastFlapPress = time;
-        flapQueued = true;
+        flapBuf = BUF;
       } else if (world.phase === 'cine') skipCine();
       return;
     }
@@ -452,7 +459,7 @@
       if (up || e.code === 'Enter') { e.preventDefault(); if (!e.repeat && ui.overT > 0.7) activateOver(); return; }
     }
     if (up) { e.preventDefault(); if (!e.repeat) { press(); bird && (bird.glideHeld = true); } return; }
-    if (e.code === 'KeyX' || e.code === 'KeyC') { if (STATE === 'fly') { e.preventDefault(); attackQueued = true; } return; }
+    if (e.code === 'KeyX' || e.code === 'KeyC') { if (STATE === 'fly') { e.preventDefault(); attackQueued = true; atkBuf = BUF; } return; }
     if (e.code === 'KeyM') { AUDIO.toggleMute(); return; }
     if (e.code === 'KeyP' && (STATE === 'fly' || STATE === 'island')) { paused = !paused; return; }
     if (e.code === 'KeyR') {
@@ -490,7 +497,7 @@
     }
     if (STATE === 'fly' && world && world.phase === 'fly' && ui.atkRect) { // tap the attack button
       const c = ui.atkRect;
-      if (gx >= c.x - 3 && gx <= c.x + c.w + 3 && gy >= c.y - 3 && gy <= c.y + c.h + 3) { attackQueued = true; return; }
+      if (gx >= c.x - 3 && gx <= c.x + c.w + 3 && gy >= c.y - 3 && gy <= c.y + c.h + 3) { attackQueued = true; atkBuf = BUF; return; }
     }
     if (STATE === 'island' && ui.phase === 'mutate' && ui.rerollRect) {
       const c = ui.rerollRect;
@@ -556,10 +563,10 @@
     if (dx * dx + dy * dy > (st.catchR + f.def.r) * (st.catchR + f.def.r)) return false;
     if (bird.carried) {
       bird.crop = f.kind;
-      addFloat(bird.x, bird.y - 14, 'STASHED!', '#f6c945');
+      addFloat(bird.x, bird.y - 14, '+', '#f6c945');
     } else {
       startDigest(f.kind, st);
-      if (run.tut.digest) { run.tut.digest = false; addFloat(bird.x, bird.y - 22, 'DIGESTING... WAIT!', '#a8e4f2'); }
+      run.tut.digest = false;
     }
     AUDIO.play('catch'); AUDIO.play('pop');
     if (run.darwin) run.darwin.ate = true;
@@ -596,8 +603,8 @@
     addFloat(beakPos().x + 4, bird.y - 12, '+' + nutr, kind === 'gold' ? '#fff3a8' : '#96d454', nutr >= 24);
     const col = def.bucket === 'berry' ? '#e0525c' : (kind === 'gold' ? '#f6c945' : (def.bucket === 'bug' ? '#3e7a2e' : '#a76f3e'));
     spawnParts(5, function () { return crumb(bird.x + 8, bird.y, col); });
-    if (bird.fullness > st.cap && !bird.stuffed) { bird.stuffed = true; AUDIO.play('stuffed'); addFloat(bird.x, bird.y - 20, 'STUFFED!', '#e0525c'); }
-    if (run.evo >= run.evoNeed && !run.evoReadyPinged) { run.evoReadyPinged = true; AUDIO.play('evoReady'); addFloat(bird.x, bird.y - 26, 'EVOLUTION READY!', '#3fc0b0'); }
+    if (bird.fullness > st.cap && !bird.stuffed) { bird.stuffed = true; AUDIO.play('stuffed'); addFloat(bird.x, bird.y - 20, 'FULL', '#e0525c'); }
+    if (run.evo >= run.evoNeed && !run.evoReadyPinged) { run.evoReadyPinged = true; AUDIO.play('evoReady'); addFloat(bird.x, bird.y - 26, 'EVO', '#3fc0b0'); }
     if (bird.crop) { const k = bird.crop; bird.crop = null; startDigest(k, st); }
   }
 
@@ -607,12 +614,11 @@
     if (!run.passives[bucket] && run.diet[bucket] >= P.at) {
       run.passives[bucket] = true;
       AUDIO.play('evolve');
-      addFloat(bird.x, bird.y - 30, 'PASSIVE: ' + P.name + '!', '#96f0e4', true);
-      addFloat(bird.x, bird.y - 20, P.desc, '#c9d2e0');
+      addFloat(bird.x, bird.y - 30, P.name, '#96f0e4', true);
       spawnParts(14, function () { return sparkle(bird.x + rnd(-10, 10), bird.y + rnd(-10, 6), '#96f0e4'); });
       if (bucket === 'nut') bird.shieldUp = true;
     } else if (bucket === 'berry' && run.passives.berry && run.diet.berry % PASSIVES.berry.at === 0 && bird.hearts < bird.maxHearts) {
-      bird.hearts++; AUDIO.play('heart'); addFloat(bird.x, bird.y - 22, '+1 HEART', '#f2748f', true);
+      bird.hearts++; AUDIO.play('heart'); 
     }
   }
 
@@ -620,7 +626,7 @@
     if (!bird.carried && !bird.crop) return;
     const bp = beakPos();
     spawnParts(5, function () { return crumb(bp.x, bp.y, '#e5c28c'); });
-    if (bird.carried) addFloat(bird.x, bird.y - 16, 'DROPPED!', '#e0525c');
+    
     bird.carried = null; bird.crop = null;
   }
 
@@ -649,7 +655,7 @@
     if (bird.shieldUp) {
       bird.shieldUp = false; bird.invuln = 1.0;
       AUDIO.play('shield');
-      addFloat(bird.x, bird.y - 16, 'SHIELD!', '#a8e4f2');
+      
       spawnParts(8, function () { return sparkle(bird.x, bird.y, '#a8e4f2'); });
       return;
     }
@@ -780,7 +786,7 @@
     AUDIO.play('evolve'); AUDIO.play('chirp');
     freezeT = 0.12; shakeIt(1.5, 0.30); ui.flash = 0.35;
     if (STATE === 'island') { ui.hatched = true; ui.hatchAnim = 0; } // egg cracks -> baby born
-    addFloat(bird.x, bird.y - 24, 'GEN ' + (run.evolutions + 1) + ' HATCHED!', '#3fc0b0', true);
+    addFloat(bird.x, bird.y - 24, 'GEN ' + (run.evolutions + 1), '#3fc0b0', true);
     spawnParts(28, function () { return sparkle(bird.x + rnd(-16, 16), bird.y + rnd(-16, 10), '#3fc0b0'); });
     spawnParts(14, function () { return crumb(bird.x + rnd(-5, 5), bird.y - 2, pick(['#fbe7bb', '#e5c28c', '#ffffff'])); }); // eggshell
   }
@@ -794,7 +800,7 @@
     run.skillId = sid;
     ui.lastGain = SKILLS[sid].name;
     AUDIO.play('slash');
-    addFloat(bird.x, bird.y - 32, 'LEARNED ' + SKILLS[sid].name + '!', '#ff9f4d', true);
+    addFloat(bird.x, bird.y - 32, SKILLS[sid].name, '#ff9f4d', true);
     hatchCommon();
   }
 
@@ -809,7 +815,7 @@
     // combat
     bird.atkCd = Math.max(0, bird.atkCd - dt);
     bird.atkLunge = Math.max(0, bird.atkLunge - dt);
-    if (attackQueued) { attackQueued = false; tryAttack(); }
+    if (atkBuf > 0) { atkBuf -= dt; if (tryAttack()) atkBuf = 0; }
     updateShots(dt); updateFx(dt); tickPoison(dt);
 
     // spawn obstacles
@@ -882,14 +888,14 @@
     } else if (!bird.dead && world.phase === 'fly') {
       bird.maxEnergy = st.maxEnergy;
       if (boostQueued) { boostQueued = false; tryBoost(st); }
-      if (flapQueued) {
-        flapQueued = false;
+      if (flapBuf > 0) {
+        flapBuf = 0;
         const cost = unlocked('energy') ? st.flapCost : 0; // free flaps until wing energy unlocks
         if (bird.energy >= cost) { bird.vy = st.flap; bird.energy -= cost; }
         else {
           if (bird.tired <= 0) AUDIO.play('denied');
           bird.vy = st.flap * 0.62; bird.energy = 0; bird.tired = 0.4;
-          if (run.tut.energy) { run.tut.energy = false; addFloat(bird.x, bird.y - 22, 'TIRED! GLIDE + EAT', '#f6c945'); }
+          run.tut.energy = false;
         }
         bird.flapT = 0.24;
         if (run.darwin) run.darwin.flapped = true;
@@ -949,7 +955,7 @@
     if (world.falconTimer > 0 && world.phase === 'fly' && !world.falcon) {
       world.falconTimer -= dt;
       if (world.falconTimer <= 0) {
-        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon, hp: 4, maxhp: 4 }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, 'FALCON!', '#a8b4c4'); } }
+        if (threatFree()) { world.falcon = { state: 'warn', t: 0, x: -20, y: bird.y, snapCd: 0, first: run.tut.falcon, hp: 4, maxhp: 4 }; AUDIO.play('hawkScreech'); if (world.falcon.first) { run.tut.falcon = false; addFloat(BIRD_X, bird.y - 24, '!', '#a8b4c4', true); } }
         else world.falconTimer = 0.5;
       }
     }
@@ -1086,16 +1092,21 @@
       if (o.hp <= 0) { o.state = 'defeated'; o.t = 0; AUDIO.play('die'); bossReward(); }
       return;
     }
-    if (opts && opts.dot && o.hp > 0 && !o.poisonT) { o.poisonT = 3.0; o.poisonTick = 0.6; addFloat(t.x, t.y - 14, 'POISONED', '#c7d94a'); }
+    if (opts && opts.dot && o.hp > 0 && !o.poisonT) { o.poisonT = 3.0; o.poisonTick = 0.6;  }
     if (o.hp <= 0) killEnemy(t);
   }
 
   function killEnemy(t) {
     const o = t.o, kind = t.kind;
     run.kills++;
-    run.score += 20; run.scorePop = 0.25; addDNA(1);
+    // chaining kills inside a short window escalates the payout
+    if (time - (run.lastKill || -9) < 2.2) run.chain = (run.chain || 1) + 1; else run.chain = 1;
+    run.lastKill = time;
+    const gain = 20 * run.chain;
+    run.score += gain; run.scorePop = 0.25; addDNA(1);
     AUDIO.play('kill');
-    addFloat(t.x, t.y - 10, '+20', '#ffd257');
+    freezeT = Math.max(freezeT, 0.05); shakeIt(1.4, 0.12); // hitstop
+    addFloat(t.x, t.y - 10, (run.chain > 1 ? 'x' + run.chain + ' ' : '') + '+' + gain, run.chain > 1 ? '#ff9f4d' : '#ffd257', run.chain > 2);
     spawnParts(10, function () { return sparkle(t.x + rnd(-6, 6), t.y + rnd(-6, 6), pick(['#fff3a8', '#ffd257', '#ff9f4d'])); });
     spawnParts(4, function () { return feather(t.x, t.y); });
     if (Math.random() < 0.3) { // a felled foe sometimes drops a snack
@@ -1114,7 +1125,7 @@
     else if (kind === 'snake') { if (bird.latched && bird.latched.s === o) freeLatch(true); o.state = 'spent'; o.spent = true; }
     else if (kind === 'spider') { o.state = 'spent'; }
     else if (kind === 'durian') { o.state = 'spent'; spawnParts(6, function () { return leaf(t.x, t.y, '#6ea233'); }); }
-    else if (kind === 'hnest') { o.dead = true; run.score += 20; addDNA(2); addFloat(t.x, t.y - 16, 'NEST DOWN!', '#f2a63c'); spawnParts(8, function () { return crumb(t.x, t.y, '#c9b088'); }); }
+    else if (kind === 'hnest') { o.dead = true; run.score += 20; addDNA(2);  spawnParts(8, function () { return crumb(t.x, t.y, '#c9b088'); }); }
     else { const i = world.leapers.indexOf(o); if (i >= 0) world.leapers.splice(i, 1); } // bfrog / piranha / jelly
   }
 
@@ -1136,12 +1147,12 @@
   }
 
   function tryAttack() {
-    if (bird.dead || bird.latched || world.phase !== 'fly') return;
-    if (!unlocked('combat')) return;
-    if (bird.atkCd > 0) return;
+    if (bird.dead || bird.latched || world.phase !== 'fly') return false;
+    if (!unlocked('combat') || bird.atkCd > 0) return false;
     const id = SKILLS[run.skillId] ? run.skillId : 'peck';
     bird.atkCd = SKILLS[id].cd;
     useSkill(id);
+    return true;
   }
 
   function useSkill(id) {
@@ -1303,11 +1314,11 @@
     const order = ['chick', 'noodle', 'lumen'];
     const owned = run.pets.map(function (p) { return p.kind; });
     const next = order.filter(function (k) { return owned.indexOf(k) < 0; })[0];
-    if (!next) { run.score += 100; addFloat(bird.x, bird.y - 32, 'FLOCK BONUS +100', '#ffd257'); return; }
+    if (!next) { run.score += 100; addFloat(bird.x, bird.y - 32, '+100', '#ffd257'); return; }
     run.pets.push({ kind: next, x: bird.x - 14, y: bird.y, t: rnd(0, 6.28), cd: 2 });
     AUDIO.play('petJoin');
-    addFloat(bird.x, bird.y - 32, PET_NAMES[next] + ' JOINS YOU!', '#ffd257', true);
-    guide('pets', ['A PET! IT TRAILS', 'YOU AND HELPS', 'ON EVERY FLIGHT']);
+    addFloat(bird.x, bird.y - 32, PET_NAMES[next], '#ffd257', true);
+    guide('pets', ['IT FOLLOWS YOU.']);
   }
 
   function updatePets(dt) {
@@ -1327,7 +1338,7 @@
         const ts = enemyTargets();
         for (const t of ts) {
           const dx = t.x - p.x, dy = t.y - p.y;
-          if (dx * dx + dy * dy < 44 * 44) { p.cd = 2.6; world.fx.push({ type: 'slash', x: t.x, y: t.y, t: 0, life: 0.16, col: '#ffe27a' }); damageEnemy(t, 1); addFloat(p.x, p.y - 8, 'PIP!', '#ffe27a'); break; }
+          if (dx * dx + dy * dy < 44 * 44) { p.cd = 2.6; world.fx.push({ type: 'slash', x: t.x, y: t.y, t: 0, life: 0.16, col: '#ffe27a' }); damageEnemy(t, 1);  break; }
         }
       }
       tx = p.x - 11; ty = p.y; // the next pet trails this one
@@ -1363,14 +1374,14 @@
     AUDIO.play('whoosh'); shakeIt(1, 0.12);
     spawnParts(6, function () { return { type: 'streak', x: bird.x + rnd(-2, 6), y: bird.y + rnd(-6, 6), vx: -rnd(220, 340), vy: 0, g: 0, t: 0, life: 0.5, color: 'rgba(255,255,255,0.6)' }; });
     if (world.falcon && world.falcon.state === 'chase') world.falcon.x -= 42;
-    addFloat(bird.x, bird.y - 16, 'BOOST!', '#a8e4f2');
+    
   }
   function startLatch(o, s) {
     if (bird.latched) return;
     s.state = 'latched'; s.headX = bird.x - 5; s.headY = bird.y - 3;
     bird.latched = { o: o, s: s, swipes: 0, t: 0, cd: 0 };
     AUDIO.play('chomp'); shakeIt(2.5, 0.25); freezeT = Math.max(freezeT, 0.1);
-    addFloat(bird.x, bird.y - 22, 'SNAKE! SWIPE FREE!', '#c7d94a');
+    
   }
   function updateLatch(dt) {
     const L = bird.latched; if (!L) return;
@@ -1394,7 +1405,7 @@
     const L = bird.latched; if (!L) return;
     if (L.s) { L.s.state = 'recoil'; L.s.t = 0; L.s.spent = true; }
     bird.latched = null; bird.x = BIRD_X;
-    if (escaped) { bird.invuln = 1.0; bird.vy = -160; AUDIO.play('whoosh'); addFloat(bird.x, bird.y - 16, 'SHOOK IT OFF!', '#96f0e4'); run.score += 20; addDNA(2); spawnParts(10, function () { return scaleP(bird.x, bird.y, '#3e7a2e'); }); }
+    if (escaped) { bird.invuln = 1.0; bird.vy = -160; AUDIO.play('whoosh'); addFloat(bird.x, bird.y - 16, '+20', '#96f0e4'); run.score += 20; addDNA(2); spawnParts(10, function () { return scaleP(bird.x, bird.y, '#3e7a2e'); }); }
     else { hurt('snake', { sfx: 'chomp', shake: 3.5, shakeDur: 0.4, freeze: 0.12, flash: 0.14, feathers: 10, knockVy: -120 }); }
   }
   function updateFalcon(dt) {
@@ -1432,7 +1443,7 @@
           s.state = 'windup'; s.t = 0; s.wu = wu;
           s.lockY = clamp(bird.y, topH + 2, botY - 2);
           AUDIO.play('snakeHiss');
-          if (s.first) { run.tut.snake = false; addFloat(ax, topH - 10, 'SNAKE!', '#c7d94a'); }
+          if (s.first) { run.tut.snake = false; addFloat(ax, topH - 10, '!', '#c7d94a', true); }
         }
       } else if (s.state === 'windup') {
         s.t += dt;
@@ -1454,7 +1465,7 @@
           s.state = 'recoil'; s.t = 0;
           if (!s.hit) {
             const d = Math.abs((s.lockY) - bird.y);
-            if (d >= 8 && d <= 20) { slowmo(0.16); AUDIO.play('whoosh'); parts.push(streak(bird.y)); addFloat(bird.x, bird.y - 16, 'WHIFF! +5', '#c7d94a'); run.score += 5; }
+            if (d >= 8 && d <= 20) { slowmo(0.16); AUDIO.play('whoosh'); parts.push(streak(bird.y)); addFloat(bird.x, bird.y - 16, '+5', '#c7d94a'); run.score += 5; }
             else AUDIO.play('snakeWhiff');
           }
         }
@@ -1490,7 +1501,7 @@
         if (Math.random() < 0.04) parts.push(bubble(s.sx, SEA_Y - 2));
         if (s.sx <= BIRD_X + 40 && s.sx > BIRD_X - 2 && threatFree()) {
           s.state = 'telegraph'; s.t = 0; AUDIO.play('snapperRise');
-          if (s.first) { run.tut.snapper = false; addFloat(s.sx, SEA_Y - 22, 'PITCHER!', '#96d454'); }
+          if (s.first) { run.tut.snapper = false; addFloat(s.sx, SEA_Y - 22, '!', '#96d454', true); }
         }
       } else if (s.state === 'telegraph') {
         s.t += dt;
@@ -1520,7 +1531,7 @@
     if (world.hawkTimer > 0 && world.phase === 'fly' && !world.hawk) {
       world.hawkTimer -= dt;
       if (world.hawkTimer <= 0) {
-        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, 'HAWK!', '#7a5a3a'); } }
+        if (threatFree()) { world.hawk = { state: 'warn', t: 0, lockY: bird.y, first: run.tut.hawk, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.hawk.first) { run.tut.hawk = false; addFloat(BIRD_X, bird.y - 22, '!', '#7a5a3a', true); } }
         else world.hawkTimer = 0.5;
       }
     }
@@ -1556,7 +1567,7 @@
       if (d.state === 'hang') {
         if (sx < BIRD_X + 46 && sx > BIRD_X - 6) {
           d.state = 'wobble'; d.t = 0; d.wob = WOB * (d.first ? 1.5 : 1); AUDIO.play('rustle');
-          if (d.first) { run.tut.durian = false; addFloat(sx, d.y - 10, 'DURIAN!', '#c7e88a'); }
+          if (d.first) { run.tut.durian = false; addFloat(sx, d.y - 10, '!', '#c7e88a', true); }
         }
       } else if (d.state === 'wobble') {
         d.t += dt;
@@ -1564,7 +1575,7 @@
       } else if (d.state === 'fall') {
         d.vy += 520 * dt; d.y += d.vy * dt;
         if (!bird.dead && bird.invuln <= 0 && !d.first && Math.abs(sx - bird.x) < 7 && Math.abs(d.y - bird.y) < 7) {
-          if (has('ironbeak')) { d.state = 'spent'; AUDIO.play('shield'); addFloat(bird.x, bird.y - 14, 'CLANG!', '#c9d2e0'); spawnParts(8, function () { return sparkle(bird.x + rnd(-4, 4), bird.y, '#c9d2e0'); }); }
+          if (has('ironbeak')) { d.state = 'spent'; AUDIO.play('shield');  spawnParts(8, function () { return sparkle(bird.x + rnd(-4, 4), bird.y, '#c9d2e0'); }); }
           else {
             hurt('durian', { sfx: 'chomp', shake: 3.5, shakeDur: 0.35, freeze: 0.10, flash: 0.12, feathers: 8, knockVy: 70 });
             spawnParts(6, function () { return leaf(bird.x, bird.y, '#6ea233'); });
@@ -1591,11 +1602,11 @@
           run.score += 60; run.evo += 30; run.scorePop = 0.25; run.bugsChased++; addDNA(3);
           bird.energy = bird.maxEnergy || 100;
           AUDIO.play('heart'); AUDIO.play('confirm');
-          addFloat(bird.x, bird.y - 18, 'CAUGHT! +60', '#fff3a8', true);
+          addFloat(bird.x, bird.y - 18, '+60', '#fff3a8', true);
           slowmo(0.14); freezeT = Math.max(freezeT, 0.06);
           spawnParts(16, function () { return sparkle(c.x + rnd(-8, 8), c.y + rnd(-8, 8), pick(['#fff3a8', '#ffe27a', '#96f0e4'])); });
           world.chaseBug = null;
-          if (run.evo >= run.evoNeed && !run.evoReadyPinged) { run.evoReadyPinged = true; AUDIO.play('evoReady'); addFloat(bird.x, bird.y - 28, 'EVOLUTION READY!', '#3fc0b0'); }
+          if (run.evo >= run.evoNeed && !run.evoReadyPinged) { run.evoReadyPinged = true; AUDIO.play('evoReady'); addFloat(bird.x, bird.y - 28, 'EVO', '#3fc0b0'); }
           return;
         }
       }
@@ -1608,11 +1619,11 @@
   // ---------- Charles Darwin interactive tutorial ----------
   // Leg-1 tutorial: purely action-based — each beat waits for you to DO the thing.
   const DARWIN_STEPS = [
-    { lines: ["I'M DARWIN!", 'TAP OR SPACE', 'TO FLAP!'], cond: function (d) { return d.flapped; } },
-    { lines: ['GOOD! NOW FLY', 'INTO FOOD TO', 'CATCH IT!'], cond: function (d) { return d.ate; } },
-    { lines: ['NOW WAIT...', 'LET IT DIGEST', 'FULLY'], cond: function (d) { return d.digested; } },
-    { lines: ['SKIM THE', 'TREETOPS - SOFT', 'LEAVES ARE SAFE'], cond: function (d) { return d.grazed; } },
-    { lines: ['PERFECT! REACH', 'THE NEST TO', 'HATCH & EVOLVE'], cond: function (d) { return d.t > 3.2; } },
+    { lines: ['TAP TO FLAP'], cond: function (d) { return d.flapped; } },
+    { lines: ['EAT THAT'], cond: function (d) { return d.ate; } },
+    { lines: ['NOW WAIT...'], cond: function (d) { return d.digested; } },
+    { lines: ['LEAVES ARE SOFT'], cond: function (d) { return d.grazed; } },
+    { lines: ['GO. FIND A NEST'], cond: function (d) { return d.t > 2.6; } },
   ];
   function updateDarwin(dt) {
     const d = run.darwin; if (!d || d.done) return;
@@ -1656,7 +1667,7 @@
     return !!(world.chaseBug || world.thermal || world.rush || world.wasps || world.slalom || world.trail || world.storm || world.flutter);
   }
   function startEvent(ev) {
-    if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false; addFloat(bird.x, bird.y - 24, 'CHASE!', '#fff3a8'); } AUDIO.play('evoReady'); }
+    if (ev === 'chase') { world.chaseBug = { x: bird.x + 72, y: bird.y, t: 0, life: 6, phase: 0 }; if (run.tut.chase) { run.tut.chase = false;  } AUDIO.play('evoReady'); }
     else if (ev === 'thermal') startThermal();
     else if (ev === 'wasps') startWasps();
     else if (ev === 'rush') startRush();
@@ -1668,7 +1679,7 @@
 
   function startThermal() {
     world.thermal = { x: W + 24, y: rnd(48, SEA_Y - 48), t: 0, passed: false };
-    world.eventBanner = { text: 'THERMAL RING', t: 0 };
+    world.eventBanner = { text: 'THERMAL', t: 0 };
     AUDIO.play('evoReady');
   }
   function updateThermal(dt) {
@@ -1680,7 +1691,7 @@
       bird.boost = Math.max(bird.boost, 0.7); bird.energy = bird.maxEnergy || 100; bird.vy = -110;
       run.score += 40; run.evo += 20; run.scorePop = 0.25; addDNA(2);
       AUDIO.play('heart'); AUDIO.play('confirm'); slowmo(0.12);
-      addFloat(bird.x, bird.y - 18, 'PERFECT! +40', '#fff3a8', true);
+      addFloat(bird.x, bird.y - 18, '+40', '#fff3a8', true);
       spawnParts(16, function () { return sparkle(th.x + rnd(-10, 10), th.y + rnd(-10, 10), pick(['#fff3a8', '#ffd257', '#a8e4f2'])); });
     }
     if (th.x < -22) world.thermal = null;
@@ -1695,7 +1706,7 @@
   }
   function startRush() {
     world.rush = { t: 0, dur: 4.5, cd: 0, startFood: run.foodEaten };
-    world.eventBanner = { text: 'FRUIT RUSH', t: 0 };
+    world.eventBanner = { text: 'FEAST', t: 0 };
     AUDIO.play('evoReady');
   }
   function updateRush(dt) {
@@ -1708,7 +1719,7 @@
     }
     if (r.t >= r.dur) {
       const eaten = run.foodEaten - r.startFood;
-      if (eaten >= 3) { const bonus = eaten * 8; run.score += bonus; addDNA(eaten); addFloat(bird.x, bird.y - 20, 'FEAST! +' + bonus, '#f6c945', true); AUDIO.play('confirm'); }
+      if (eaten >= 3) { const bonus = eaten * 8; run.score += bonus; addDNA(eaten); addFloat(bird.x, bird.y - 20, '+' + bonus, '#f6c945', true); AUDIO.play('confirm'); }
       world.rush = null;
     }
   }
@@ -1718,7 +1729,7 @@
     const rings = [], n = 4; let y = rnd(50, SEA_Y - 50);
     for (let i = 0; i < n; i++) { y = clamp(y + rnd(-30, 30), 40, SEA_Y - 40); rings.push({ dx: 40 + i * 40, y: y, hit: false }); }
     world.slalom = { t: 0, x0: W + 30, rings: rings, combo: 0 };
-    world.eventBanner = { text: 'RING SLALOM!', t: 0 }; AUDIO.play('evoReady');
+    world.eventBanner = { text: 'SLALOM', t: 0 }; AUDIO.play('evoReady');
   }
   function updateSlalom(dt) {
     const s = world.slalom; if (!s) return;
@@ -1740,7 +1751,7 @@
       }
     }
     if (s.x0 + s.rings[s.rings.length - 1].dx < -20) {
-      if (s.combo >= s.rings.length) { run.score += 60; addDNA(3); addFloat(bird.x, bird.y - 20, 'CLEAN SLALOM! +60', '#96f0e4', true); AUDIO.play('confirm'); slowmo(0.12); }
+      if (s.combo >= s.rings.length) { run.score += 60; addDNA(3); addFloat(bird.x, bird.y - 20, '+60', '#96f0e4', true); AUDIO.play('confirm'); slowmo(0.12); }
       world.slalom = null;
     }
   }
@@ -1760,7 +1771,7 @@
     const dots = [], n = 9; let y = clamp(bird.y, 40, SEA_Y - 40);
     for (let i = 0; i < n; i++) { y = clamp(y + Math.sin(i * 0.9) * 16, 30, SEA_Y - 30); dots.push({ dx: 30 + i * 20, y: y, got: false, ph: rnd(0, 6.28) }); }
     world.trail = { t: 0, x0: W + 20, dots: dots, got: 0 };
-    world.eventBanner = { text: 'FIREFLY TRAIL', t: 0 }; AUDIO.play('evoReady');
+    world.eventBanner = { text: 'TRAIL', t: 0 }; AUDIO.play('evoReady');
   }
   function updateTrail(dt) {
     const tr = world.trail; if (!tr) return;
@@ -1779,7 +1790,7 @@
       }
     }
     if (tr.x0 + tr.dots[tr.dots.length - 1].dx < -16) {
-      if (tr.got >= tr.dots.length) { run.score += 80; addDNA(4); addFloat(bird.x, bird.y - 20, 'FULL TRAIL! +80', '#c7ff9a', true); AUDIO.play('confirm'); slowmo(0.12); }
+      if (tr.got >= tr.dots.length) { run.score += 80; addDNA(4); addFloat(bird.x, bird.y - 20, '+80', '#c7ff9a', true); AUDIO.play('confirm'); slowmo(0.12); }
       world.trail = null;
     }
   }
@@ -1795,7 +1806,7 @@
   // ---------- mini-game: NUT STORM — dodge a rain of falling acorns for a survival bonus ----------
   function startStorm() {
     world.storm = { t: 0, dur: 5.0, cd: 0, drops: [], hits: 0 };
-    world.eventBanner = { text: 'NUT STORM!', t: 0 }; AUDIO.play('snakeHiss');
+    world.eventBanner = { text: 'STORM', t: 0 }; AUDIO.play('snakeHiss');
   }
   function updateStorm(dt) {
     const s = world.storm; if (!s) return;
@@ -1807,14 +1818,14 @@
       if (d.y > SEA_Y - 2) { spawnParts(3, function () { return dust(d.x, SEA_Y, '#a76f3e'); }); s.drops.splice(i, 1); }
     }
     if (s.t >= s.dur && !s.drops.length) {
-      if (s.hits === 0) { run.score += 90; addDNA(5); addFloat(bird.x, bird.y - 20, 'UNSCATHED! +90', '#f6c945', true); AUDIO.play('confirm'); slowmo(0.14); }
-      else if (s.hits <= 2) { run.score += 30; addDNA(2); addFloat(bird.x, bird.y - 20, 'WEATHERED IT +30', '#f6c945'); AUDIO.play('confirm'); }
+      if (s.hits === 0) { run.score += 90; addDNA(5); addFloat(bird.x, bird.y - 20, '+90', '#f6c945', true); AUDIO.play('confirm'); slowmo(0.14); }
+      else if (s.hits <= 2) { run.score += 30; addDNA(2); addFloat(bird.x, bird.y - 20, '+30', '#f6c945'); AUDIO.play('confirm'); }
       world.storm = null;
     }
   }
   function drawStorm() {
     const s = world.storm; if (!s) return;
-    if (s.t < 0.9 && Math.floor(time * 8) % 2) drawTextShadow(ctx, 'LOOK OUT ABOVE!', W / 2, 40, '#f6c945', 1, 'center');
+    if (s.t < 0.9 && Math.floor(time * 8) % 2) ctx.drawImage(SPR.I_DOWN, Math.round(W / 2 - 2), 40);
     for (const d of s.drops) ctx.drawImage(SPR.NUT, Math.round(d.x - SPR.NUT.width / 2), Math.round(d.y - SPR.NUT.height / 2));
   }
 
@@ -1823,7 +1834,7 @@
     const flies = [];
     for (let i = 0; i < 10; i++) flies.push({ x: W + 10 + rnd(0, 60), y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28), got: false });
     world.flutter = { t: 0, flies: flies, got: 0 };
-    world.eventBanner = { text: 'BUTTERFLIES', t: 0 }; AUDIO.play('chirp');
+    world.eventBanner = { text: 'FLUTTER', t: 0 }; AUDIO.play('chirp');
   }
   function updateFlutter(dt) {
     const fl = world.flutter; if (!fl) return;
@@ -1839,7 +1850,7 @@
       }
     }
     if (!alive) {
-      if (fl.got >= 8) { run.score += 50; addDNA(3); addFloat(bird.x, bird.y - 20, 'DANCED THROUGH! +50', '#ffd257', true); AUDIO.play('confirm'); }
+      if (fl.got >= 8) { run.score += 50; addDNA(3); addFloat(bird.x, bird.y - 20, '+50', '#ffd257', true); AUDIO.play('confirm'); }
       world.flutter = null;
     }
     fl.got = fl.flies.filter(function (b) { return b.got; }).length;
@@ -1857,7 +1868,7 @@
   function startWasps() {
     world.wasps = []; world.waspT = 0;
     for (let i = 0; i < 6; i++) world.wasps.push({ x: W + 10 + i * 5, y: rnd(30, SEA_Y - 30), ph: rnd(0, 6.28), hp: 1, maxhp: 1 });
-    world.eventBanner = { text: 'WASP SWARM!', t: 0 }; AUDIO.play('snakeHiss');
+    world.eventBanner = { text: 'WASPS', t: 0 }; AUDIO.play('snakeHiss');
   }
   function updateWasps(dt) {
     if (!world.wasps || !world.wasps.length) return;
@@ -1906,7 +1917,7 @@
     if (world.batTimer > 0 && world.phase === 'fly' && !world.bat) {
       world.batTimer -= dt;
       if (world.batTimer <= 0) {
-        if (threatFree()) { world.bat = { state: 'warn', t: 0, x: W + 8, y: rnd(16, 40), first: run.tut.bat, hp: 2, maxhp: 2 }; AUDIO.play('snakeHiss'); if (world.bat.first) { run.tut.bat = false; addFloat(W - 30, 32, 'BAT!', '#c8b9e0'); } }
+        if (threatFree()) { world.bat = { state: 'warn', t: 0, x: W + 8, y: rnd(16, 40), first: run.tut.bat, hp: 2, maxhp: 2 }; AUDIO.play('snakeHiss'); if (world.bat.first) { run.tut.bat = false; addFloat(W - 30, 32, '!', '#c8b9e0', true); } }
         else world.batTimer = 0.5;
       }
     }
@@ -1935,7 +1946,7 @@
     if (world.dflyTimer > 0 && world.phase === 'fly' && !world.dfly) {
       world.dflyTimer -= dt;
       if (world.dflyTimer <= 0) {
-        if (threatFree()) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: run.tut.dfly, hp: 2, maxhp: 2 }; AUDIO.play('rustle'); if (world.dfly.first) { run.tut.dfly = false; addFloat(W - 26, clamp(bird.y, 24, SEA_Y - 20) - 10, 'DRAGONFLY!', '#7fe0d0'); } }
+        if (threatFree()) { world.dfly = { state: 'hover', t: 0, x: W + 6, y: clamp(bird.y, 24, SEA_Y - 20), first: run.tut.dfly, hp: 2, maxhp: 2 }; AUDIO.play('rustle'); if (world.dfly.first) { run.tut.dfly = false; addFloat(W - 26, clamp(bird.y, 24, SEA_Y - 20) - 10, '!', '#7fe0d0', true); } }
         else world.dflyTimer = 0.5;
       }
     }
@@ -1963,7 +1974,7 @@
     if (world.vultureTimer > 0 && world.phase === 'fly' && !world.vulture) {
       world.vultureTimer -= dt;
       if (world.vultureTimer <= 0) {
-        if (threatFree()) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: run.tut.vulture, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.vulture.first) { run.tut.vulture = false; addFloat(W - 40, 20, 'VULTURE!', '#c97a6a'); } }
+        if (threatFree()) { world.vulture = { state: 'circle', t: 0, cx: W - 44, cy: 24, x: W - 44, y: 24, ang: 0, lockY: bird.y, first: run.tut.vulture, hp: 3, maxhp: 3 }; AUDIO.play('hawkScreech'); if (world.vulture.first) { run.tut.vulture = false; addFloat(W - 40, 20, '!', '#c97a6a', true); } }
         else world.vultureTimer = 0.5;
       }
     }
@@ -2012,7 +2023,7 @@
     if (l.state === 'rise') { l.y -= (11 + Math.sin(l.t * 2) * 4) * dt; if (l.y < 42) l.state = 'drift'; }
     else { l.y -= 7 * dt; if (l.y < 6) { const idx = world.leapers.indexOf(l); if (idx >= 0) world.leapers.splice(idx, 1); return; } }
     l.y += Math.sin(l.t * 3) * 8 * dt;
-    if (l.first && l.sx < W - 12) { run.tut.jelly = false; l.first = false; addFloat(l.sx, l.y - 12, 'JELLYFISH!', '#a8e4f2'); }
+    if (l.first && l.sx < W - 12) { run.tut.jelly = false; l.first = false; addFloat(l.sx, l.y - 12, '!', '#a8e4f2', true); }
     if (Math.random() < 0.04) parts.push(bubble(l.sx + rnd(-4, 4), l.y + 4));
     if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(l.sx - bird.x) < 6 && Math.abs(l.y - bird.y) < 7) hurt('jelly', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -70 });
   }
@@ -2031,7 +2042,7 @@
         if (l.kind === 'piranha' && Math.random() < 0.05) parts.push(bubble(l.sx, SEA_Y - 2));
         if (l.sx <= BIRD_X + 40 && l.sx > BIRD_X - 4 && threatFree()) {
           l.state = 'telegraph'; l.t = 0; AUDIO.play(l.kind === 'piranha' ? 'snapperRise' : 'rustle');
-          if (l.first) { run.tut[l.kind] = false; addFloat(l.sx, SEA_Y - 24, l.kind === 'piranha' ? 'PIRANHA!' : 'BULLFROG!', '#96d454'); }
+          if (l.first) { run.tut[l.kind] = false; addFloat(l.sx, SEA_Y - 24, '!', '#96d454', true); }
         }
       } else if (l.state === 'telegraph') {
         l.t += dt;
@@ -2076,7 +2087,7 @@
       s.worldX -= 12 * dt; // drifts slowly against the scroll — a flying wall
       s.sx = s.worldX - world.dist;
       s.y += Math.sin(s.ph) * 8 * dt;
-      if (s.first && s.sx < W - 12) { s.first = false; run.tut.sbug = false; addFloat(s.sx, s.y - 12, 'SHIELDBUG!', '#c9d2e0'); }
+      if (s.first && s.sx < W - 12) { s.first = false; run.tut.sbug = false; addFloat(s.sx, s.y - 12, '!', '#c9d2e0', true); }
       if (s.sx < -14) { world.sbugs.splice(i, 1); continue; }
       if (!bird.dead && !bird.latched && bird.invuln <= 0 && Math.abs(s.sx - bird.x) < 8 && Math.abs(s.y - bird.y) < 7) hurt('sbug', { sfx: 'hit', shake: 2, feathers: 4, knockVy: -80 });
     }
@@ -2095,7 +2106,7 @@
       const sx = o.x - world.dist + o.w * 0.5;
       n.sx = sx; n.ny = (o.gapY - o.gapH / 2) + 9;
       if (sx < W - 4 && sx > 30 && world.phase === 'fly') {
-        if (n.first) { n.first = false; run.tut.hornet = false; addFloat(sx, n.ny - 14, 'HORNET NEST!', '#f2a63c'); AUDIO.play('snakeHiss'); }
+        if (n.first) { n.first = false; run.tut.hornet = false; addFloat(sx, n.ny - 14, '!', '#f2a63c', true); AUDIO.play('snakeHiss'); }
         n.cd -= dt;
         if (n.cd <= 0 && world.hornets.length < 3) { n.cd = 1.6 * diff().tele; world.hornets.push({ x: sx, y: n.ny + 5, ph: rnd(0, 6.28), hp: 1, maxhp: 1 }); AUDIO.play('rustle'); }
       }
@@ -2149,7 +2160,7 @@
     run.score += 300; addDNA(20);
     bird.maxHearts = Math.min(6, bird.maxHearts + 1); bird.hearts = bird.maxHearts;
     AUDIO.play('heart'); AUDIO.play('evolve');
-    addFloat(bird.x, bird.y - 22, 'BOSS DRIVEN OFF!', '#96f0e4', true);
+    addFloat(bird.x, bird.y - 22, 'DOWN', '#96f0e4', true);
     spawnParts(24, function () { return sparkle(bird.x + rnd(-20, 20), bird.y + rnd(-16, 10), pick(['#fff3a8', '#e0b24a', '#96f0e4'])); });
     grantPet(); // every boss tames a cute companion
   }
@@ -2163,7 +2174,7 @@
     }
     if (B.state === 'enter') {
       B.x += ((W - 64) - B.x) * Math.min(1, dt * 1.5); B.y += (34 - B.y) * Math.min(1, dt * 2);
-      if (B.t > 1.6) { B.state = 'idle'; B.t = 0; if (B.first) { B.first = false; addFloat(W / 2, 62, BOSS_NAMES[B.kind], '#e0b24a', true); } AUDIO.play('hawkScreech'); }
+      if (B.t > 1.6) { B.state = 'idle'; B.t = 0; if (B.first) { B.first = false;  } AUDIO.play('hawkScreech'); }
     } else if (B.state === 'idle') {
       B.x += ((W - 64) - B.x) * Math.min(1, dt * 2); B.y = 34 + Math.sin(B.t * 3) * 3;
       if (B.t > 0.8) {
@@ -2454,13 +2465,15 @@
       updateBirdCosmetics(dt);
       ui.demoY = 78 + Math.sin(time * 1.6) * 7;
       if (Math.sin(time * 1.6) > 0.93 && Math.random() < 0.2) bird && (bird.flapT = 0.22);
+      if (ui.lockNudge > 0) ui.lockNudge -= dt;
       updateTitleScene(dt);
     }
     else if (STATE === 'settings') { ui.t = (ui.t || 0) + dt; if (ui.resetFlash > 0) ui.resetFlash -= dt; updateBirdCosmetics(dt); }
     else if (STATE === 'intro') { updateIntro(dt); updateBirdCosmetics(dt); }
     if (run && run.pets && run.pets.length && (STATE === 'fly' || STATE === 'island')) updatePets(dt);
     updateParts(dt);
-    actionQueued = false; flapQueued = false; attackQueued = false;
+    if (flapBuf > 0) flapBuf = Math.max(0, flapBuf - dt);
+    actionQueued = false; attackQueued = false;
   }
 
   // ---------- render: background ----------
@@ -3071,7 +3084,8 @@
       if (bird.boost > 0) { ctx.globalAlpha = 0.16; SPR.drawBird(ctx, bird.x - tdx * 2, bird.y - bird.vy * 0.02, bird.rot, cfg); }
       ctx.globalAlpha = 1;
     }
-    SPR.drawBird(ctx, bird.x, bird.y, bird.rot, cfg);
+    const lunge = bird.atkLunge > 0 ? Math.round(Math.sin((bird.atkLunge / 0.18) * Math.PI) * 5) : 0;
+    SPR.drawBird(ctx, bird.x + lunge, bird.y, bird.rot, cfg);
     if (bird.carried) {
       const bp = beakPos();
       const spr = bird.carried === 'bug' ? (Math.floor(time * 10) % 2 ? SPR.BUG1 : SPR.BUG2) : FOODS[bird.carried].spr;
@@ -3135,32 +3149,39 @@
     const et = clamp(run.evo / run.evoNeed, 0, 1), ready = run.evo >= run.evoNeed;
     ctx.fillStyle = ready ? (Math.floor(time * 6) % 2 ? '#3fc0b0' : '#96f0e4') : '#3fc0b0';
     ctx.fillRect(ex, ey + 1, Math.round(ew * et), 3);
-    if (ready) drawTextShadow(ctx, 'EVO READY!', W / 2, ey + 8, '#96f0e4', 1, 'center');
+    if (ready) { const p = Math.floor(time * 6) % 2; ctx.drawImage(SPR.I_UP, W / 2 - 2, ey + 7 - p); }
     const scoreScale = run.scorePop > 0 ? 2 : 1;
     if (scoreScale === 2) drawTextShadow(ctx, String(run.score), W - 4, 3, '#fff3a8', 1, 'right');
     else drawTextShadow(ctx, String(run.score), W - 4, 4, '#ffffff', 1, 'right');
-    drawTextShadow(ctx, 'DEPTH ' + run.depth, W - 4, 11, '#c9d2e0', 1, 'right');
-    drawTextShadow(ctx, 'DNA ' + (save.dna + (run.dnaEarned || 0)), W - 4, 18, '#3fc0b0', 1, 'right');
-    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1), ebx + 3, showEnergy ? eby + 8 : eby, '#8fd6c8', 1);
-    const tw = 30, tx2 = 4, ty = H - 9;
-    drawTextShadow(ctx, 'TUMMY', tx2, ty - 7, '#e5c28c', 1);
+    // depth / DNA / kills read as an icon column with right-aligned numbers
+    const icx = W - 9, ntx = icx - 3;
+    ctx.drawImage(SPR.I_DEPTH, icx, 12);
+    drawTextShadow(ctx, String(run.depth), ntx, 12, '#c9d2e0', 1, 'right');
+    ctx.drawImage(SPR.DNA, icx, 20);
+    drawTextShadow(ctx, String(save.dna + (run.dnaEarned || 0)), ntx, 20, '#3fc0b0', 1, 'right');
+    if (run.kills > 0) {
+      ctx.drawImage(SPR.SKULL, icx, 28);
+      drawTextShadow(ctx, String(run.kills), ntx, 28, '#ff9f4d', 1, 'right');
+    }
+    const gy = showEnergy ? eby + 8 : eby;
+    ctx.drawImage(SPR.I_GEN, ebx + 1, gy);
+    drawTextShadow(ctx, String(run.evolutions + 1), ebx + 8, gy, '#8fd6c8', 1);
+    const tw = 30, tx2 = 11, ty = H - 9;
+    ctx.drawImage(SPR.I_GUT, tx2 - 8, ty - 1);
     ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(tx2 - 1, ty, tw + 2, 5);
     const ft = clamp(bird.fullness / st.cap, 0, 1);
     ctx.fillStyle = bird.stuffed ? (Math.floor(time * 8) % 2 ? '#e0525c' : '#f2748f') : (ft > 0.75 ? '#f6c945' : '#96d454');
     ctx.fillRect(tx2, ty + 1, Math.round(tw * ft), 3);
-    if (bird.stuffed) drawTextShadow(ctx, 'STUFFED!', tx2 + tw + 6, ty - 1, '#e0525c', 1);
     if (world && world.gust && world.gust.t < world.gust.warn && Math.floor(time * 8) % 2) {
-      drawTextShadow(ctx, '! GUST ' + (world.gust.dir < 0 ? 'RISING' : 'FALLING') + ' !', W / 2, 40, '#f6c945', 1, 'center');
+      ctx.drawImage(world.gust.dir < 0 ? SPR.I_UP : SPR.I_DOWN, Math.round(W / 2 - 2), 38);
     }
-    if (bird.latched) {
-      const n = bird.latched.swipes;
-      drawTextShadow(ctx, 'SWIPE! ' + n + '/5', W / 2, 30, Math.floor(time * 12) % 2 ? '#f6c945' : '#e0525c', 2, 'center');
-      drawTextShadow(ctx, 'TAP FAST TO SHAKE IT OFF', W / 2, 48, '#ffffff', 1, 'center');
-      const bw = 60, bx = W / 2 - bw / 2;
-      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(bx - 1, 54, bw + 2, 5);
-      ctx.fillStyle = '#96f0e4'; ctx.fillRect(bx, 55, Math.round(bw * n / 5), 3);
+    if (bird.latched) { // struggle meter only — no instructions
+      const n = bird.latched.swipes, bw = 60, bx = W / 2 - bw / 2;
+      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(bx - 1, 33, bw + 2, 7);
+      ctx.fillStyle = Math.floor(time * 12) % 2 ? '#96f0e4' : '#f6c945';
+      ctx.fillRect(bx, 34, Math.round(bw * n / 5), 5);
+      for (let i = 1; i < 5; i++) { ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(bx + Math.round(bw * i / 5), 34, 1, 5); }
     }
-    if (bird.boost > 0) drawTextShadow(ctx, 'BOOST', bird.x - 22, bird.y - 2, '#a8e4f2', 1, 'right');
     // attack-skill button (X key / tap) with cooldown shade — only once combat is unlocked
     ui.atkRect = null;
     if (unlocked('combat')) {
@@ -3180,7 +3201,7 @@
     // active diet passives as tiny badges by the energy bar
     let pxi = 0;
     for (const k in PASSIVES) if (run.passives[k]) { ctx.drawImage(PASSIVES[k].icon, 48 + pxi * 9, 11); pxi++; }
-    if (run.kills > 0) drawTextShadow(ctx, 'KO ' + run.kills, W - 4, 25, '#ff9f4d', 1, 'right');
+
     // boss stamina bar
     if (world.isBoss && world.boss && world.boss.state !== 'defeated') {
       const B = world.boss, bw = 96, bx = W / 2 - bw / 2, by = 20;
@@ -3197,14 +3218,10 @@
     if (!world || world.banner <= 0 || STATE !== 'fly' || world.phase !== 'fly') return;
     const a = clamp(world.banner > 2 ? (2.4 - world.banner) * 3 : world.banner / 0.7, 0, 1);
     ctx.globalAlpha = a;
-    drawPanel(W / 2 - 74, 30, 148, 24);
-    drawTextShadow(ctx, 'DEPTH ' + run.depth, W / 2, 34, '#f6c945', 1, 'center');
-    drawTextShadow(ctx, world.biome.name, W / 2, 43, '#ffffff', 1, 'center');
+    drawPanel(W / 2 - 62, 30, 124, 15);
+    drawTextShadow(ctx, world.biome.name, W / 2, 35, '#ffffff', 1, 'center');
     ctx.globalAlpha = 1;
-    if (run.depth === 1 && world.banner < 1.4) {
-      drawTextShadow(ctx, 'TAP / SPACE TO FLAP', W / 2, 62, '#ffffff', 1, 'center');
-      drawTextShadow(ctx, 'CATCH FOOD ON YOUR BEAK!', W / 2, 70, '#a8e4f2', 1, 'center');
-    }
+
   }
 
   function drawCineTitle() {
@@ -3212,11 +3229,9 @@
     if (!c || c.t < CINE.settle - 0.2) return;
     const a = clamp((c.t - (CINE.settle - 0.2)) * 3, 0, 1);
     ctx.globalAlpha = a;
-    drawPanel(W / 2 - 70, 20, 140, 22);
-    drawTextShadow(ctx, 'DEPTH ' + run.depth + ' - LANDED', W / 2, 24, '#f6c945', 1, 'center');
-    drawTextShadow(ctx, world.biome.name, W / 2, 33, '#ffffff', 1, 'center');
+    drawPanel(W / 2 - 62, 20, 124, 15);
+    drawTextShadow(ctx, world.biome.name, W / 2, 25, '#ffffff', 1, 'center');
     ctx.globalAlpha = 1;
-    if (Math.floor(time * 2) % 2) drawText(ctx, 'TAP TO CONTINUE', W / 2, 50, '#a8e4f2', 1, 'center');
   }
 
   // ---------- render: particles & floats ----------
@@ -3286,11 +3301,12 @@
       const afford = save.dna >= REROLL_COST;
       const bw = 96, bx = W / 2 - bw / 2, by = hy;
       drawPanel(bx, by, bw, 12);
-      drawTextShadow(ctx, 'REROLL -' + REROLL_COST + ' DNA', W / 2, by + 3, afford ? '#3fc0b0' : '#6a5a6a', 1, 'center');
+      ctx.drawImage(SPR.DNA, W / 2 - 16, by + 3);
+      drawTextShadow(ctx, '-' + REROLL_COST, W / 2 + 6, by + 3, afford ? '#3fc0b0' : '#6a5a6a', 1, 'center');
       ui.rerollRect = { x: bx, y: by, w: bw, h: 12 };
       hy += 16;
     }
-    drawTextShadow(ctx, '< > CHOOSE   SPACE/TAP CONFIRM', W / 2, hy, '#8f86a8', 1, 'center');
+    if (Math.floor(time * 2) % 2) drawText(ctx, '< >', W / 2, hy, '#8f86a8', 1, 'center');
   }
 
   // ---------- render: states ----------
@@ -3357,27 +3373,33 @@
     ctx.restore();
     drawHUD();
     if (ui.phase === 'summary') {
-      drawJourneyMap(4); // the run map so far
-      drawPanel(20, 40, 130, 96);
-      drawTextShadow(ctx, 'THE NEST', 85, 46, '#f6c945', 1, 'center');
-      drawText(ctx, 'DEPTH ' + run.depth + ' - GEN ' + (run.evolutions + 1), 85, 56, '#ffffff', 1, 'center');
-      let yy = 68; const keys = ['berry', 'seed', 'nut', 'bug', 'gold']; let any = false;
-      for (const k of keys) {
-        if (!world.legDiet[k]) continue; any = true;
-        const spr = FOODS[k].spr; ctx.drawImage(spr, 34, yy - 2);
-        drawText(ctx, 'X' + world.legDiet[k] + ' ' + FOODS[k].name, 46, yy, '#c9d2e0', 1); yy += 10;
+      drawJourneyMap(14); // the run map so far
+      // panel sized to what's actually in it
+      const keys = ['berry', 'seed', 'nut', 'bug', 'gold'];
+      const eaten = keys.filter(function (k) { return world.legDiet[k]; });
+      const pTop = 46, pH = 34 + Math.max(1, eaten.length) * 10 + 18;
+      drawPanel(24, pTop, 118, pH);
+      drawTextShadow(ctx, 'THE NEST', 83, pTop + 6, '#f6c945', 1, 'center');
+      let yy = pTop + 18;
+      for (const k of eaten) {
+        const spr = FOODS[k].spr; ctx.drawImage(spr, 44, yy - 2);
+        drawText(ctx, 'x' + world.legDiet[k], 56, yy, '#c9d2e0', 1); yy += 10;
       }
-      if (!any) { drawText(ctx, 'NOTHING EATEN...', 85, yy, '#8f86a8', 1, 'center'); yy += 10; }
-      yy = Math.max(yy + 4, 112);
-      if (run.evo >= run.evoNeed) drawTextShadow(ctx, 'A NEW GENERATION STIRS!', 85, yy, '#3fc0b0', 1, 'center');
-      else drawText(ctx, 'HATCH ' + Math.round(run.evo) + '/' + run.evoNeed, 85, yy, '#3fc0b0', 1, 'center');
-      if (Math.floor(time * 2) % 2) drawText(ctx, 'SPACE/TAP TO CONTINUE', 85, 126, '#8f86a8', 1, 'center');
-    } else if (ui.phase === 'mutate') drawCards('HATCH A NEW GENERATION');
+      if (!eaten.length) { drawText(ctx, '-', 83, yy, '#6a5a6a', 1, 'center'); yy += 10; }
+      // hatch progress bar
+      const hbw = 76, hbx = 83 - hbw / 2, hby = pTop + pH - 20;
+      ctx.drawImage(SPR.I_GEN, hbx - 7, hby - 1);
+      ctx.fillStyle = 'rgba(20,12,28,0.8)'; ctx.fillRect(hbx - 1, hby, hbw + 2, 5);
+      const hk = clamp(run.evo / run.evoNeed, 0, 1);
+      ctx.fillStyle = hk >= 1 ? (Math.floor(time * 6) % 2 ? '#96f0e4' : '#3fc0b0') : '#3fc0b0';
+      ctx.fillRect(hbx, hby + 1, Math.round(hbw * hk), 3);
+      if (Math.floor(time * 2) % 2) drawText(ctx, '>', 83, pTop + pH - 10, '#8f86a8', 1, 'center');
+    } else if (ui.phase === 'mutate') drawCards('HATCH');
     else if (ui.phase === 'hatching') {
-      drawTextShadow(ctx, 'GENERATION ' + (run.evolutions + 1) + ' IS BORN!', W / 2, 30, Math.floor(time * 4) % 2 ? '#96f0e4' : '#3fc0b0', 1, 'center');
-      if (ui.lastGain) drawTextShadow(ctx, 'INHERITS: ' + ui.lastGain, W / 2, 42, '#ffffff', 1, 'center');
+      drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1), W / 2, 30, Math.floor(time * 4) % 2 ? '#96f0e4' : '#3fc0b0', 2, 'center');
+      if (ui.lastGain) drawTextShadow(ctx, ui.lastGain, W / 2, 46, '#ffffff', 1, 'center');
     }
-    else if (ui.phase === 'path') drawCards('CHOOSE YOUR MIGRATION');
+    else if (ui.phase === 'path') drawCards('MIGRATE');
     if (ui.flash > 0) { ctx.fillStyle = 'rgba(63,192,176,' + (ui.flash * 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
 
@@ -3393,12 +3415,11 @@
   // the current leg glows and the fork ahead shows a "?" or a boss skull.
   function drawJourneyMap(y) {
     if (!run || !run.journey || !run.journey.length) return;
-    drawTextShadow(ctx, 'YOUR JOURNEY', W / 2, y, '#c9b088', 1, 'center');
     const bossNext = run.depth > 0 && run.depth % 4 === 0;
     const list = run.journey.slice(); list.push({ type: bossNext ? 'bossNext' : 'next' });
     const maxN = 6, show = list.slice(Math.max(0, list.length - maxN));
     const n = show.length, gap = Math.min(48, (W - 44) / Math.max(1, n - 1));
-    const totalW = (n - 1) * gap, x0 = Math.round(W / 2 - totalW / 2), ny = y + 9, cy = ny + 9;
+    const totalW = (n - 1) * gap, x0 = Math.round(W / 2 - totalW / 2), ny = y, cy = ny + 9;
     ctx.fillStyle = '#8f5e34';
     for (let i = 0; i < n - 1; i++) { for (let px = x0 + i * gap + 11; px < x0 + (i + 1) * gap - 11; px += 4) ctx.fillRect(px, cy - 1, 2, 2); }
     for (let i = 0; i < n; i++) {
@@ -3444,30 +3465,33 @@
     drawBackground(time * 10);
     drawSea();
     ctx.fillStyle = 'rgba(10,6,18,0.55)'; ctx.fillRect(0, 0, W, H);
-    drawPanel(W / 2 - 90, 12, 180, 20);
-    drawTextShadow(ctx, 'SETTINGS', W / 2, 18, '#f6c945', 2, 'center');
-    ctx.drawImage(SPR.GEAR, W / 2 - 90 + 6, 15);
+    drawPanel(W / 2 - 90, 10, 180, 18);
+    drawTextShadow(ctx, 'SETTINGS', W / 2, 15, '#f6c945', 2, 'center');
+    ctx.drawImage(SPR.GEAR, W / 2 - 90 + 6, 14);
     const items = settingsItems();
     ui.setRects = [];
-    const rw = 200, rx = W / 2 - rw / 2, y0 = 42, rh = 18;
+    const rw = 200, rx = W / 2 - rw / 2, y0 = 38, rh = 15;
     for (let i = 0; i < items.length; i++) {
-      const it = items[i], sel = (ui.menuSel || 0) === i, ry = y0 + i * (rh + 3);
+      const it = items[i], sel = (ui.menuSel || 0) === i, ry = y0 + i * (rh + 2);
       ui.setRects.push({ x: rx, y: ry, w: rw, h: rh });
       drawPanel(rx, ry, rw, rh);
       if (sel) {
         ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257';
         ctx.fillRect(rx, ry, rw, 1); ctx.fillRect(rx, ry + rh - 1, rw, 1); ctx.fillRect(rx, ry, 1, rh); ctx.fillRect(rx + rw - 1, ry, 1, rh);
       }
+      if (it.disabled) ctx.globalAlpha = 0.45;
       const lcol = it.action ? (it.key === 'reset' ? '#e0525c' : '#f6c945') : '#e5c28c';
-      drawTextShadow(ctx, it.label, rx + 8, ry + 6, sel ? '#ffffff' : lcol, 1);
+      drawTextShadow(ctx, it.label, rx + 8, ry + 5, it.disabled ? '#6e6154' : (sel ? '#ffffff' : lcol), 1);
       if (it.val) {
         const on = it.val === 'ON', off = it.val === 'OFF';
         const vc = on ? '#8fd66a' : (off ? '#8f6a6a' : (sel ? '#ffe27a' : '#c9d2e0'));
-        if (!it.action) drawTextShadow(ctx, '< ' + it.val + ' >', rx + rw - 8, ry + 6, vc, 1, 'right');
-        else drawTextShadow(ctx, it.val, rx + rw - 8, ry + 6, '#e0525c', 1, 'right');
+        if (it.disabled) drawTextShadow(ctx, it.val, rx + rw - 8, ry + 5, '#6e6154', 1, 'right');
+        else if (!it.action) drawTextShadow(ctx, '< ' + it.val + ' >', rx + rw - 8, ry + 5, vc, 1, 'right');
+        else drawTextShadow(ctx, it.val, rx + rw - 8, ry + 5, '#e0525c', 1, 'right');
       }
+      ctx.globalAlpha = 1;
     }
-    drawTextShadow(ctx, 'ARROWS MOVE   < > CHANGE   ESC BACK', W / 2, H - 8, '#8f7a5a', 1, 'center');
+    drawText(ctx, 'ESC', 6, H - 8, '#6a5a48', 1);
     if (ui.resetFlash > 0) { ctx.fillStyle = 'rgba(224,82,92,' + (ui.resetFlash * 0.5).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
   }
 
@@ -3515,7 +3539,7 @@
     if (ui.burst > 0) { ctx.fillStyle = 'rgba(255,243,200,' + clamp(ui.burst, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
     // Darwin's welcome, in beats
     if (t >= INTRO.d1 && t < INTRO.lift) {
-      const lines = t < INTRO.d2 ? ['A NEW FINCH', 'IS BORN...'] : ['EAT, EVOLVE,', 'AND SURVIVE!'];
+      const lines = t < INTRO.d2 ? ['A NEW FINCH...'] : ['EAT. EVOLVE.'];
       ctx.drawImage(SPR.DARWIN, 6, H - 46);
       drawSpeech(28, H - 47, lines, 96);
     }
@@ -3523,7 +3547,7 @@
     FONT.drawTextOutline(ctx, 'FLAPPY DARWIN', cx, 12, '#f6c945', 1, 'center');
     if (t < INTRO.fadein) { ctx.fillStyle = 'rgba(6,5,12,' + (1 - t / INTRO.fadein).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
     if (t > INTRO.end - 0.5) { ctx.fillStyle = 'rgba(6,5,12,' + clamp((t - (INTRO.end - 0.5)) * 2, 0, 1).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
-    if (Math.floor(t * 2) % 2) drawText(ctx, 'TAP TO SKIP', cx, H - 7, '#c9b088', 1, 'center');
+    if (Math.floor(t * 2) % 2) drawText(ctx, 'SKIP >', W - 26, H - 7, '#9a8464', 1);
   }
 
   function renderTitle() {
@@ -3554,26 +3578,31 @@
 
     // menu as vertical wooden cards (compact to fit 4 items)
     const items = menuItems(); ui.menuRects = [];
-    const cw = 116, mx = W / 2 - cw / 2, my0 = 62, sp = 18, ch = 16;
+    const cw = 116, mx = W / 2 - cw / 2, my0 = 58, sp = 17, ch = 15;
     for (let i = 0; i < items.length; i++) {
-      const sel = (ui.menuSel || 0) === i, yy = my0 + i * sp + (sel ? -1 : 0);
+      const it = items[i], sel = (ui.menuSel || 0) === i, yy = my0 + i * sp + (sel && !it.locked ? -1 : 0);
       ui.menuRects.push({ x: mx, y: my0 + i * sp, w: cw, h: ch });
+      if (it.locked) ctx.globalAlpha = 0.45;
       drawPanel(mx, yy, cw, ch);
       if (sel) {
-        ctx.fillStyle = Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257';
+        const sc = it.locked ? '#7a6a5a' : (Math.floor(time * 6) % 2 ? '#f6c945' : '#ffd257');
+        ctx.fillStyle = sc;
         ctx.fillRect(mx, yy, cw, 1); ctx.fillRect(mx, yy + ch - 1, cw, 1); ctx.fillRect(mx, yy, 1, ch); ctx.fillRect(mx + cw - 1, yy, 1, ch);
-        drawText(ctx, '>', mx + 7, yy + 6, '#ffd257', 1); drawText(ctx, '<', mx + cw - 11, yy + 6, '#ffd257', 1);
+        if (!it.locked) { drawText(ctx, '>', mx + 7, yy + 5, '#ffd257', 1); drawText(ctx, '<', mx + cw - 11, yy + 5, '#ffd257', 1); }
       }
-      drawTextShadow(ctx, items[i], W / 2, yy + 5, sel ? '#ffe27a' : '#b79666', 1, 'center');
+      drawTextShadow(ctx, it.label, W / 2, yy + 4, it.locked ? '#6e6154' : (sel ? '#ffe27a' : '#b79666'), 1, 'center');
+      if (it.locked) { drawText(ctx, 'WIP', mx + cw - 17, yy + 4, '#6e6154', 1); ctx.globalAlpha = 1; }
     }
+    if (ui.lockNudge > 0) drawText(ctx, 'NOT IN THIS BUILD', W / 2, my0 + items.length * sp + 1, '#8a6a5a', 1, 'center');
 
     // Darwin welcome sign
     ctx.drawImage(SPR.DARWIN, 4, H - 40);
-    drawSpeech(24, H - 42, ["I'M DARWIN.", 'PICK TUTORIAL', 'IF NEW HERE!'], 74);
+    drawSpeech(24, H - 34, ['NEW? TRY', 'THE TUTORIAL.'], 74);
     // stat plaques
-    drawPlaque(W - 74, H - 44, 70, SPR.DNA, 'DNA ' + save.dna, '#8fd6c8');
-    drawPlaque(W - 74, H - 27, 70, SPR.SKULL, best.score > 0 ? (best.score + ' D' + best.depth) : 'NO RUNS', '#f6c945');
-    drawText(ctx, 'ARROWS + ENTER / TAP', W / 2, H - 5, '#8f7a5a', 1, 'center');
+    drawPlaque(W - 74, H - 46, 70, SPR.DNA, String(save.dna), '#8fd6c8');
+    drawPlaque(W - 74, H - 29, 70, SPR.SKULL, best.score > 0 ? (best.score + ' D' + best.depth) : '-', '#f6c945');
+    drawText(ctx, BUILD, W - 4, H - 8, '#6a5a48', 1, 'right');
+
   }
 
   function renderOver() {
@@ -3583,28 +3612,33 @@
     ctx.fillStyle = 'rgba(10,6,18,0.6)'; ctx.fillRect(0, 0, W, H);
     const py = 22;
     drawPanel(60, py, 200, 136);
-    drawTextShadow(ctx, 'EXTINCT!', W / 2, py + 8, '#e0525c', 2, 'center');
-    drawText(ctx, DEATHS[bird.deathBy] || 'NATURAL SELECTION WINS', W / 2, py + 24, '#c9d2e0', 1, 'center');
-    drawTextShadow(ctx, 'SCORE ' + run.score, W / 2, py + 38, '#ffffff', 2, 'center');
-    if (newBestFlag && Math.floor(time * 4) % 2) drawTextShadow(ctx, 'NEW BEST!', W / 2, py + 52, '#f6c945', 1, 'center');
-    drawText(ctx, 'DEPTH ' + run.depth + '   FOOD ' + run.foodEaten + '   PASSED ' + run.obstaclesPassed, W / 2, py + 62, '#c9d2e0', 1, 'center');
-    drawTextShadow(ctx, 'GEN ' + (run.evolutions + 1) + '   DNA BANKED: ' + save.dna, W / 2, py + 72, '#3fc0b0', 1, 'center');
-    // evolved traits
-    if (run.taken.length === 0) drawText(ctx, 'NO TRAITS - A HUMBLE FINCH', W / 2, py + 84, '#8f86a8', 1, 'center');
-    else {
-      const names = run.taken.map(function (id) { const m = MUTATIONS.filter(function (x) { return x.id === id; })[0]; return m ? m.name : id; });
-      let line = names.slice(0, 3).join(' - ');
-      if (names.length > 3) line += ' +' + (names.length - 3);
-      drawText(ctx, line, W / 2, py + 84, '#ffffff', 1, 'center');
+    drawTextShadow(ctx, 'EXTINCT', W / 2, py + 8, '#e0525c', 2, 'center');
+    drawText(ctx, DEATHS[bird.deathBy] || '?', W / 2, py + 26, '#8f6a6a', 1, 'center');
+    drawTextShadow(ctx, String(run.score), W / 2, py + 38, '#ffffff', 2, 'center');
+    if (newBestFlag && Math.floor(time * 4) % 2) drawTextShadow(ctx, 'BEST', W / 2, py + 54, '#f6c945', 1, 'center');
+    // run record as icon + number columns
+    const rr = [[SPR.I_DEPTH, run.depth], [SPR.BERRY, run.foodEaten], [SPR.I_GEN, run.evolutions + 1], [SPR.DNA, save.dna]];
+    if (run.kills > 0) rr.push([SPR.SKULL, run.kills]);
+    const cw2 = 40, rx0 = Math.round(W / 2 - (rr.length * cw2) / 2);
+    for (let i = 0; i < rr.length; i++) {
+      const cx2 = rx0 + i * cw2 + cw2 / 2;
+      ctx.drawImage(rr[i][0], Math.round(cx2 - rr[i][0].width / 2), py + 64);
+      drawTextShadow(ctx, String(rr[i][1]), cx2, py + 74, '#c9d2e0', 1, 'center');
+    }
+    // trait icons collected this run
+    if (run.taken.length) {
+      const ic = run.taken.map(function (id) { const m = MUTATIONS.filter(function (x) { return x.id === id; })[0]; return m ? m.icon : null; }).filter(Boolean).slice(0, 8);
+      const ix0 = Math.round(W / 2 - (ic.length * 9) / 2);
+      for (let i = 0; i < ic.length; i++) ctx.drawImage(ic[i], ix0 + i * 9, py + 86, 7, 7);
     }
     // options
     ui.overRects = [];
     if (ui.overT > 0.7) {
       const opts = ui.options || ['new'];
-      const labels = { hatch: 'HATCH FROM NEST  -' + hatchCost() + ' DNA', new: 'NEW LINEAGE' };
+      const labels = { hatch: 'HATCH  -' + hatchCost(), new: 'NEW LINEAGE' };
       const oy = py + 100;
       for (let i = 0; i < opts.length; i++) {
-        const bw = opts.length > 1 ? 176 : 130, bx = W / 2 - bw / 2, byy = oy + i * 15, sel = (ui.sel || 0) === i;
+        const bw = opts.length > 1 ? 130 : 110, bx = W / 2 - bw / 2, byy = oy + i * 15, sel = (ui.sel || 0) === i;
         ui.overRects.push({ x: bx, y: byy, w: bw, h: 13 });
         if (sel) drawPanel(bx, byy, bw, 13);
         const col = (opts[i] === 'hatch') ? '#3fc0b0' : '#f6c945';
@@ -3628,11 +3662,11 @@
     if (flashT > 0) { ctx.fillStyle = 'rgba(224,82,92,' + clamp(flashT * 1.4, 0, 0.6).toFixed(2) + ')'; ctx.fillRect(0, 0, W, H); }
     if (paused) {
       ctx.fillStyle = 'rgba(10,6,18,0.7)'; ctx.fillRect(0, 0, W, H);
-      drawTextShadow(ctx, 'PAUSED', W / 2, 74, '#ffffff', 2, 'center');
-      drawText(ctx, 'P TO RESUME', W / 2, 92, '#8f86a8', 1, 'center');
-      if (run && run.journey) drawJourneyMap(112);
+      drawTextShadow(ctx, 'PAUSED', W / 2, 78, '#ffffff', 2, 'center');
+      drawText(ctx, BUILD, W - 4, H - 8, '#5a4c3e', 1, 'right');
+      if (run && run.journey) drawJourneyMap(110);
     }
-    if (AUDIO.isMuted()) drawText(ctx, 'MUTED', 4, H - 24, '#8f86a8', 1);
+
   }
 
   // ---------- debug handle ----------
@@ -3683,7 +3717,7 @@
     kill: function () { if (bird && !bird.dead) { bird.hearts = 0; bird.dead = true; bird.deathBy = 'tree'; gameOver(); } },
     forceChase: function () { if (world) world.chaseBug = { x: bird.x + 44, y: bird.y, t: 0, life: 6, phase: 0 }; },
     forceFalcon: function () { if (world) world.falcon = { state: 'chase', t: 0, x: bird.x - 34, y: bird.y, snapCd: 0, first: false, hp: 4, maxhp: 4 }; },
-    forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL RING', t: 0 }; } },
+    forceThermal: function () { if (world) { world.thermal = { x: bird.x + 60, y: bird.y, t: 0, passed: false }; world.eventBanner = { text: 'THERMAL', t: 0 }; } },
     forceRush: function () { if (world) startRush(); },
     forceWasps: function () { if (world) startWasps(); },
     forceSlalom: function () { if (world) startSlalom(); },
@@ -3699,7 +3733,7 @@
     bossHp: function () { return (world && world.boss) ? world.boss.hp : -1; },
     bossKind: function () { return (world && world.boss) ? world.boss.kind : null; },
     setSkill: function (id) { if (run && SKILLS[id]) run.skillId = id; },
-    attack: function () { attackQueued = true; },
+    attack: function () { attackQueued = true; atkBuf = BUF; },
     atkCd: function () { return bird ? bird.atkCd : -1; },
     targets: function () { return enemyTargets().map(function (t) { return { kind: t.kind, hp: t.o.hp, x: Math.round(t.x), y: Math.round(t.y) }; }); },
     kills: function () { return run ? run.kills : 0; },

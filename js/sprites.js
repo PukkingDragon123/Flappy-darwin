@@ -934,28 +934,28 @@
     '.oo......',
     '.........',
   ]);
-  const SK_SEED = bake([
+  const SK_SEED = bake([   // a spat seed with a speed trail
     '.........',
     '..ooo....',
-    '.onnno...',
-    '.onNno..j',
-    '.oNNo..j.',
-    '..oo..j..',
-    '.....j...',
-    '....j....',
+    '.onnno.f.',
+    'oonNnoff.',
+    'oonnnof..',
+    '.ooooo.f.',
+    '..ooo....',
     '.........',
-  ]);
-  const SK_VOLLEY = bake([
-    'o........',
-    '.f..o....',
-    '..f..f...',
-    'o..f..f..',
-    '.f..f..fo',
-    '..f..f...',
-    'o..f.....',
-    '.f.......',
     '.........',
-  ], Object.assign({}, PAL, { f: '#d9c39a', o: '#77502e' }));
+  ], Object.assign({}, PAL, { f: '#f0e2c4' }));
+  const SK_VOLLEY = bake([   // three quills fanning right
+    'oHf......',
+    '..oHf....',
+    '....oHf..',
+    'oHf......',
+    '..oHf..Hf',
+    '....oHf..',
+    'oHf......',
+    '..oHf....',
+    '....oHf..',
+  ], Object.assign({}, PAL, { f: '#f0e2c4', H: '#d9c39a', o: '#77502e' }));
   const SK_SLASH = bake([
     '......zz.',
     '....zzu..',
@@ -967,17 +967,17 @@
     '....zzu..',
     '......zz.',
   ], Object.assign({}, PAL, { z: '#f2f7ff', u: '#a8e4f2' }));
-  const SK_CHIRP = bake([
-    '...u..u..',
-    '..u..u..u',
-    '.u..u..u.',
-    'u..u..u..',
-    '.u..u..u.',
-    '..u..u..u',
-    '...u..u..',
-    '.........',
-    '.........',
-  ], Object.assign({}, PAL, { u: '#96f0e4' }));
+  const SK_CHIRP = bake([   // nested sound arcs radiating out
+    '....t.z..',
+    '..t.z.u..',
+    '.t.z.u...',
+    't.z.u....',
+    't.z.u....',
+    't.z.u....',
+    '.t.z.u...',
+    '..t.z.u..',
+    '....t.z..',
+  ], Object.assign({}, PAL, { u: '#e6fffb', z: '#96f0e4', t: '#3fc0b0' }));
   const SK_EGG = bake([
     '...ooo...',
     '..owwzo..',
@@ -989,17 +989,17 @@
     '..A.A.A..',
     '.A..A..A.',
   ]);
-  const SK_VORTEX = bake([
-    '..uuuu...',
-    '.u....u..',
-    'u..uu..u.',
-    'u.u..u.u.',
-    'u..uu..u.',
-    '.u....u..',
-    '..uuuu...',
+  const SK_VORTEX = bake([   // a funnel spiralling down to a point
+    'zzzzzzzzz',
+    '.z.....z.',
+    '..zzzzz..',
+    '..u...u..',
+    '...uuu...',
+    '...u.u...',
     '....u....',
-    '...u.....',
-  ], Object.assign({}, PAL, { u: '#a8e4f2' }));
+    '....U....',
+    '....U....',
+  ], Object.assign({}, PAL, { z: '#d8f4fb', u: '#a8e4f2', U: '#68b7cf' }));
   const SK_BOLT = bake([
     '...yyy...',
     '..yyy....',
@@ -1128,6 +1128,44 @@
     '...ooo..',
   ], Object.assign({}, PAL, { q: '#c9b088', w: '#e5d4ac', W: '#a08a60', x: '#241a12', o: '#5a4a30' }));
 
+  // ---- small HUD glyphs (label replacements) ----
+  const I_DEPTH = bake([   // downward chevrons = how deep you've migrated
+    'v...v',
+    '.v.v.',
+    '..v..',
+    'v...v',
+    '.v.v.',
+    '..v..',
+  ], Object.assign({}, PAL, { v: '#c9d2e0' }));
+  const I_GEN = bake([     // a small egg = generation
+    '.oo.',
+    'owwo',
+    'owWo',
+    'oWWo',
+    '.oo.',
+  ]);
+  const I_GUT = bake([     // belly / fullness
+    '.ooo.',
+    'owwwo',
+    'owwWo',
+    'oWWWo',
+    '.ooo.',
+  ]);
+  const I_UP = bake([      // gust / lift arrows
+    '..z..',
+    '.zzz.',
+    'zzzzz',
+    '..z..',
+    '..z..',
+  ], Object.assign({}, PAL, { z: '#f6c945' }));
+  const I_DOWN = bake([
+    '..z..',
+    '..z..',
+    'zzzzz',
+    '.zzz.',
+    '..z..',
+  ], Object.assign({}, PAL, { z: '#f6c945' }));
+
   // ---- gear (settings icon) ----
   const GEAR = bake([
     '..o.o.o..',
@@ -1235,6 +1273,7 @@
     BAT1: BAT1, BAT2: BAT2, DFLY1: DFLY1, DFLY2: DFLY2, BFROG: BFROG,
     JELLY1: JELLY1, JELLY2: JELLY2, PIRANHA: PIRANHA, VULT_MID: VULT_MID, VULT_UP: VULT_UP,
     FIREFLY: FIREFLY, BFLY1: BFLY1, BFLY2: BFLY2, GEAR: GEAR,
+    I_DEPTH: I_DEPTH, I_GEN: I_GEN, I_GUT: I_GUT, I_UP: I_UP, I_DOWN: I_DOWN,
     SK_PECK: SK_PECK, SK_SEED: SK_SEED, SK_VOLLEY: SK_VOLLEY, SK_SLASH: SK_SLASH, SK_CHIRP: SK_CHIRP,
     SK_EGG: SK_EGG, SK_VORTEX: SK_VORTEX, SK_BOLT: SK_BOLT, SK_RAY: SK_RAY, SK_VENOM: SK_VENOM,
     PET_CHICK1: PET_CHICK1, PET_CHICK2: PET_CHICK2, PET_NOODLE: PET_NOODLE, PET_LUMEN: PET_LUMEN,
